@@ -7,7 +7,6 @@ import { router } from 'expo-router';
 import THEME from '../../src/theme';
 import { EarningsDay, EconomicDay } from '../../src/mock';
 import { getFearGreed, getRedditTrending } from '../../src/services/freedata';
-import { getFHQuote } from '../../src/services/finnhub';
 import { TickerLogo } from '../../src/components/ui';
 import { getCongressTrades } from '../../src/services/whalewisdom';
 import { getRecentInsiderTrades, getEarningsCalendar, getEconomicCalendar, getQuote } from '../../src/services/fmp';
@@ -280,35 +279,40 @@ function EarlySignalCell({ cell }: { cell: SignalCell }) {
   );
 }
 
+type CellState = SignalCell | 'loading' | 'empty' | 'soon';
+
 function EarlySignalsCard({
   congress: congProp, reddit: reddProp, insider: insProp,
-}: { congress?: CongressSignal; reddit?: RedditSignal; insider?: InsiderSignal }) {
+}: { congress?: CongressSignal | null; reddit?: RedditSignal | null; insider?: InsiderSignal | null }) {
   const insiderGrad = insProp?.type === 'Sell' ? G.red : G.green;
 
-  const cells: (SignalCell | null)[] = [
-    congProp ? {
+  const cells: CellState[] = [
+    congProp === undefined ? 'loading' : congProp === null ? 'empty' : {
       title: 'Congress', sub: 'Most recent', ticker: congProp.ticker,
       line1: `${congProp.type.toUpperCase()}  ${congProp.amount.split(' - ')[1] ?? congProp.amount}`,
       line1Color: congProp.type === 'Sell' ? colors.status.red : colors.status.green,
       line2: `${congProp.repName.split(' ')[0]} ${congProp.repName.split(' ')[1]?.slice(0, 1) ?? ''}.`,
       route: '/congress', grad: G.blue,
-    } : null,
-    reddProp ? {
+    },
+    reddProp === undefined ? 'loading' : reddProp === null ? 'empty' : {
       title: 'Reddit', sub: 'Trending', ticker: reddProp.ticker,
       line1: `${reddProp.rankChange >= 0 ? '+' : ''}${reddProp.rankChange} to #${reddProp.rank}`,
       line1Color: reddProp.rankChange >= 0 ? colors.status.green : colors.status.red,
       line2: `${reddProp.mentions} mentions today`,
       route: '/reddit', grad: G.orange,
-    } : null,
-    insProp ? {
+    },
+    insProp === undefined ? 'loading' : insProp === null ? 'empty' : {
       title: 'Insider', sub: 'Most recent', ticker: insProp.ticker,
       line1: `${insProp.type.toUpperCase()}  ${insProp.price}`,
       line1Color: insProp.type === 'Sell' ? colors.status.red : colors.status.green,
       line2: `${insProp.insiderName.split(' ').slice(-1)[0]} ${insProp.insiderName.split(' ')[0].slice(0, 1)}.`,
       route: '/insider', grad: insiderGrad,
-    } : null,
-    null, // Super Investors — not yet wired
+    },
+    'soon' as const,
   ];
+
+  const LABELS  = ['Congress', 'Reddit', 'Insider', 'Super Investors'];
+  const ROUTES  = ['/congress', '/reddit', '/insider', '/super-investors'];
 
   return (
     <LinearGradient colors={G.cardDeep} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={es.card}>
@@ -318,20 +322,26 @@ function EarlySignalsCard({
       </View>
       <View style={es.grid}>
         {cells.map((c, i) =>
-          c ? (
-            <EarlySignalCell key={c.title} cell={c} />
+          typeof c === 'object' ? (
+            <EarlySignalCell key={LABELS[i]} cell={c} />
           ) : (
             <TouchableOpacity
               key={i}
               style={[es.cell, { alignItems: 'center', justifyContent: 'center' }]}
-              onPress={() => router.push(i === 3 ? '/super-investors' : i === 0 ? '/congress' : i === 1 ? '/reddit' : '/insider')}
+              onPress={() => router.push(ROUTES[i] as never)}
               activeOpacity={0.7}
             >
-              <ActivityIndicator size="small" color={colors.text.muted} />
-              <Text style={{ color: colors.text.muted, fontSize: fontSize.xs, marginTop: 6 }}>
-                {['Congress', 'Reddit', 'Insider', 'Super Investors'][i]}
+              {c === 'loading' ? (
+                <ActivityIndicator size="small" color={colors.text.muted} />
+              ) : (
+                <Ionicons name={c === 'soon' ? 'time-outline' : 'alert-circle-outline'} size={20} color={colors.text.muted} />
+              )}
+              <Text style={{ color: colors.text.muted, fontSize: fontSize.xs, marginTop: 6, fontWeight: fontWeight.medium }}>
+                {LABELS[i]}
               </Text>
-              <Text style={{ color: colors.text.muted, fontSize: 9, marginTop: 2 }}>Loading…</Text>
+              <Text style={{ color: colors.text.muted, fontSize: 9, marginTop: 2 }}>
+                {c === 'loading' ? 'Loading…' : c === 'soon' ? 'Coming soon' : 'No signal'}
+              </Text>
             </TouchableOpacity>
           )
         )}
@@ -362,9 +372,9 @@ function EarningsDayRow({ day }: { day: EarningsDay }) {
   );
 }
 
-function UpcomingEventsCard({ earnings: earnProp, economic: ecoProp }: { earnings?: EarningsDay[]; economic?: EconomicDay[] }) {
-  const earnings = earnProp ?? [];
-  const economic = ecoProp  ?? [];
+function UpcomingEventsCard({ earnings: earnProp, economic: ecoProp }: { earnings?: EarningsDay[] | null; economic?: EconomicDay[] | null }) {
+  const earningsHint = earnProp === undefined ? 'Loading…' : !earnProp?.length ? 'No upcoming earnings' : null;
+  const economicHint = ecoProp  === undefined ? 'Loading…' : !ecoProp?.length  ? 'No upcoming events'  : null;
 
   return (
     <LinearGradient colors={G.card} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={[s.card, { gap: spacing.md }]}>
@@ -382,9 +392,9 @@ function UpcomingEventsCard({ earnings: earnProp, economic: ecoProp }: { earning
             <Text style={s.eventsSectionLabel}>EARNINGS</Text>
             <Ionicons name="chevron-forward" size={12} color={colors.text.muted} />
           </View>
-          {earnings.length === 0
-            ? <Text style={s.emptyHint}>Loading…</Text>
-            : earnings.slice(0, 3).map(day => <EarningsDayRow key={day.date} day={day} />)
+          {earningsHint
+            ? <Text style={s.emptyHint}>{earningsHint}</Text>
+            : (earnProp ?? []).slice(0, 3).map(day => <EarningsDayRow key={day.date} day={day} />)
           }
         </TouchableOpacity>
 
@@ -400,9 +410,9 @@ function UpcomingEventsCard({ earnings: earnProp, economic: ecoProp }: { earning
             <Text style={s.eventsSectionLabel}>ECONOMIC</Text>
             <Ionicons name="chevron-forward" size={12} color={colors.text.muted} />
           </View>
-          {economic.length === 0
-            ? <Text style={s.emptyHint}>Loading…</Text>
-            : economic.map(day => (
+          {economicHint
+            ? <Text style={s.emptyHint}>{economicHint}</Text>
+            : (ecoProp ?? []).map(day => (
                 <View key={day.date} style={s.economicDay}>
                   <View style={s.economicDot} />
                   <View>
@@ -433,61 +443,65 @@ export default function DashboardScreen() {
   const [fgData,      setFgData]      = useState<FGData | undefined>();
   const [snapTicks,   setSnapTicks]   = useState<SnapTick[] | undefined>();
   const [snapFetchAt, setSnapFetchAt] = useState<Date | undefined>();
-  const [cong,      setCong]      = useState<CongressSignal | undefined>();
-  const [redd,      setRedd]      = useState<RedditSignal | undefined>();
-  const [ins,       setIns]       = useState<InsiderSignal | undefined>();
-  const [earnings,  setEarnings]  = useState<EarningsDay[] | undefined>();
-  const [economic,  setEconomic]  = useState<EconomicDay[] | undefined>();
+  // undefined = loading, null = loaded with no signal, value = has signal
+  const [cong,      setCong]      = useState<CongressSignal | null | undefined>();
+  const [redd,      setRedd]      = useState<RedditSignal | null | undefined>();
+  const [ins,       setIns]       = useState<InsiderSignal | null | undefined>();
+  const [earnings,  setEarnings]  = useState<EarningsDay[] | null | undefined>();
+  const [economic,  setEconomic]  = useState<EconomicDay[] | null | undefined>();
 
   useEffect(() => {
     // Fear & Greed
     getFearGreed().then(fg => setFgData({ value: fg.value, label: fg.label })).catch(() => {});
 
-    // Market indices — SPY from FMP, VIX from Finnhub, BTC from FMP
+    // Market indices — all from FMP stable (VIX uses ^VIX symbol)
     Promise.all([
-      getQuote('SPY'),
-      getFHQuote('^VIX').then(r => r?.price ? r : getFHQuote('VIX')),  // try ^VIX then plain VIX
-      getQuote('BTCUSD'),
+      getQuote('SPY').catch(() => null),
+      getQuote('^VIX').catch(() => null),
+      getQuote('BTCUSD').catch(() => null),
     ]).then(([spy, vix, btc]) => {
       const ticks = [
         { symbol: 'VIX',     value: vix?.price ?? 0,  change: vix?.changePct ?? 0,  isPrice: false },
         { symbol: 'S&P 500', value: spy?.price ?? 0,  change: spy?.changePct ?? 0,  isPrice: true  },
         { symbol: 'Bitcoin', value: btc?.price ?? 0,  change: btc?.changePct ?? 0,  isPrice: true  },
       ];
-      // Only replace mock if we got at least one real price back
-      if (ticks.some(t => t.value > 0)) {
-        setSnapTicks(ticks);
-        setSnapFetchAt(new Date());
-      }
-    }).catch(() => {});
+      if (ticks.some(t => t.value > 0)) setSnapTicks(ticks);
+      setSnapFetchAt(new Date());
+    }).catch(() => { setSnapFetchAt(new Date()); });
 
     // Congress trades
     getCongressTrades(undefined, 5).then(trades => {
       if (trades[0]) {
         const t = trades[0];
         setCong({ ticker: t.ticker, type: t.type === 'Purchase' ? 'Buy' : 'Sell', amount: fmtAmt(t.amountLow, t.amountHigh), repName: t.representative });
+      } else {
+        setCong(null);
       }
-    }).catch(() => {});
+    }).catch(() => setCong(null));
 
     // Reddit trending
     getRedditTrending(1).then(data => {
       if (data.length) {
         const top = [...data].sort((a, b) => Math.abs(b.rankChange) - Math.abs(a.rankChange))[0];
         setRedd({ ticker: top.ticker, rank: top.rank, rankChange: top.rankChange, mentions: top.mentions });
+      } else {
+        setRedd(null);
       }
-    }).catch(() => {});
+    }).catch(() => setRedd(null));
 
     // Recent insider trades
     getRecentInsiderTrades(5).then(trades => {
       if (trades[0]) {
         const t = trades[0];
         setIns({ ticker: t.ticker, type: t.type, price: `$${t.price.toFixed(2)}`, insiderName: t.name });
+      } else {
+        setIns(null);
       }
-    }).catch(() => {});
+    }).catch(() => setIns(null));
 
     // Earnings calendar
     getEarningsCalendar(14).then(cal => {
-      if (!cal.length) return;
+      if (!cal.length) { setEarnings(null); return; }
       const grouped: Record<string, EarningsDay> = {};
       for (const e of cal) {
         if (!grouped[e.date]) grouped[e.date] = { date: new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), preMarket: [], postMarket: [] };
@@ -496,12 +510,12 @@ export default function DashboardScreen() {
         else                  grouped[e.date].postMarket.push(company);
       }
       const days = Object.values(grouped).filter(d => d.preMarket.length + d.postMarket.length > 0).slice(0, 5);
-      if (days.length) setEarnings(days);
-    }).catch(() => {});
+      setEarnings(days.length ? days : null);
+    }).catch(() => setEarnings(null));
 
     // Economic calendar (US, medium+high impact)
     getEconomicCalendar(14).then(cal => {
-      if (!cal.length) return;
+      if (!cal.length) { setEconomic(null); return; }
       const grouped: Record<string, string[]> = {};
       for (const e of cal) {
         if (e.country !== 'US' && e.country !== 'United States') continue;
@@ -513,8 +527,8 @@ export default function DashboardScreen() {
         date: new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
         events,
       }));
-      if (days.length) setEconomic(days);
-    }).catch(() => {});
+      setEconomic(days.length ? days : null);
+    }).catch(() => setEconomic(null));
   }, []);
 
   return (

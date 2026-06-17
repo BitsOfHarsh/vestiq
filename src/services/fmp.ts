@@ -1,18 +1,23 @@
 import { KEYS, TTL } from '../config';
 import { getCached, getStale } from './cache';
 
-const BASE = 'https://financialmodelingprep.com/api';
-const KEY  = KEYS.fmp;
+const STABLE = 'https://financialmodelingprep.com/stable';
+const KEY    = KEYS.fmp;
 
 function fmp(path: string, params: Record<string, string> = {}): string {
   const q = new URLSearchParams({ ...params, apikey: KEY }).toString();
-  return `${BASE}${path}?${q}`;
+  return `${STABLE}${path}?${q}`;
 }
 
 async function get<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`FMP ${res.status}`);
-  return res.json() as Promise<T>;
+  const json = await res.json() as unknown;
+  // Stable endpoints return an error object (not HTTP error code) for restricted endpoints
+  if (json && typeof json === 'object' && !Array.isArray(json) && ('Error Message' in (json as object) || 'error' in (json as object))) {
+    throw new Error(String((json as Record<string, unknown>)['Error Message'] ?? (json as Record<string, unknown>)['error']));
+  }
+  return json as T;
 }
 
 // ─── Company profile ──────────────────────────────────────────────────────────
@@ -39,8 +44,8 @@ export async function getProfile(ticker: string): Promise<CompanyProfile | null>
   const cacheKey = `profile_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.profile, async () => {
-      type Raw = Array<{ symbol: string; companyName: string; description: string; sector: string; industry: string; exchangeShortName: string; mktCap: number; price: number; beta: number; volAvg: number; website: string; ceo: string; fullTimeEmployees: string; country: string; ipoDate: string }>;
-      const data = await get<Raw>(fmp(`/v3/profile/${ticker}`));
+      type Raw = Array<{ symbol: string; companyName: string; description: string; sector: string; industry: string; exchange: string; marketCap: number; price: number; beta: number; averageVolume: number; website: string; ceo: string; fullTimeEmployees: string | number; country: string; ipoDate: string }>;
+      const data = await get<Raw>(fmp('/profile', { symbol: ticker }));
       if (!data[0]) return null;
       const r = data[0];
       return {
@@ -49,14 +54,14 @@ export async function getProfile(ticker: string): Promise<CompanyProfile | null>
         description: r.description,
         sector:      r.sector,
         industry:    r.industry,
-        exchange:    r.exchangeShortName,
-        marketCap:   r.mktCap,
+        exchange:    r.exchange,
+        marketCap:   r.marketCap,
         price:       r.price,
         beta:        r.beta,
-        volAvg:      r.volAvg,
+        volAvg:      r.averageVolume,
         website:     r.website,
         ceo:         r.ceo,
-        employees:   parseInt(r.fullTimeEmployees ?? '0', 10),
+        employees:   parseInt(String(r.fullTimeEmployees ?? '0'), 10),
         country:     r.country,
         ipoDate:     r.ipoDate,
       };
@@ -89,16 +94,25 @@ export async function getQuote(ticker: string): Promise<FMPQuote | null> {
   const cacheKey = `fmpq_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.quote, async () => {
-      type Raw = Array<{ symbol: string; price: number; change: number; changesPercentage: number; dayHigh: number; dayLow: number; volume: number; marketCap: number; pe: number; eps: number; yearHigh: number; yearLow: number; avgVolume: number; sharesOutstanding: number }>;
-      const data = await get<Raw>(fmp(`/v3/quote/${ticker}`));
+      type Raw = Array<{ symbol: string; price: number; change: number; changePercentage: number; dayHigh: number; dayLow: number; volume: number; marketCap: number; yearHigh: number; yearLow: number }>;
+      const data = await get<Raw>(fmp('/quote', { symbol: ticker }));
       if (!data[0]) return null;
       const r = data[0];
       return {
-        ticker, price: r.price, change: r.change, changePct: r.changesPercentage,
-        dayHigh: r.dayHigh, dayLow: r.dayLow, volume: r.volume,
-        marketCap: r.marketCap, pe: r.pe, eps: r.eps,
-        high52: r.yearHigh, low52: r.yearLow,
-        avgVolume: r.avgVolume, sharesOutstanding: r.sharesOutstanding,
+        ticker,
+        price:             r.price,
+        change:            r.change,
+        changePct:         r.changePercentage,
+        dayHigh:           r.dayHigh,
+        dayLow:            r.dayLow,
+        volume:            r.volume,
+        marketCap:         r.marketCap,
+        pe:                0,
+        eps:               0,
+        high52:            r.yearHigh,
+        low52:             r.yearLow,
+        avgVolume:         0,
+        sharesOutstanding: 0,
       };
     });
   } catch {
@@ -106,32 +120,17 @@ export async function getQuote(ticker: string): Promise<FMPQuote | null> {
   }
 }
 
-// ─── Batch quotes (headlines, watchlist) ─────────────────────────────────────
+// ─── Batch quotes — parallel single-symbol calls (stable has no batch endpoint) ──
 
 export async function getBatchQuotes(tickers: string[]): Promise<Record<string, FMPQuote>> {
   if (!tickers.length) return {};
-  const sorted = [...tickers].sort();
-  const cacheKey = `fmpbatch_${sorted.join('_')}`;
-  try {
-    return await getCached(cacheKey, TTL.quote, async () => {
-      type Raw = Array<{ symbol: string; price: number; change: number; changesPercentage: number; dayHigh: number; dayLow: number; volume: number; marketCap: number; pe: number; eps: number; yearHigh: number; yearLow: number; avgVolume: number; sharesOutstanding: number }>;
-      const data = await get<Raw>(fmp(`/v3/quote/${sorted.join(',')}`));
-      const result: Record<string, FMPQuote> = {};
-      for (const r of data) {
-        if (!r.symbol || !r.price) continue;
-        result[r.symbol] = {
-          ticker: r.symbol, price: r.price, change: r.change, changePct: r.changesPercentage,
-          dayHigh: r.dayHigh, dayLow: r.dayLow, volume: r.volume,
-          marketCap: r.marketCap, pe: r.pe, eps: r.eps,
-          high52: r.yearHigh, low52: r.yearLow,
-          avgVolume: r.avgVolume, sharesOutstanding: r.sharesOutstanding,
-        };
-      }
-      return result;
-    });
-  } catch {
-    return await getStale<Record<string, FMPQuote>>(cacheKey) ?? {};
+  const results = await Promise.allSettled(tickers.map(t => getQuote(t)));
+  const out: Record<string, FMPQuote> = {};
+  for (let i = 0; i < tickers.length; i++) {
+    const r = results[i];
+    if (r.status === 'fulfilled' && r.value) out[tickers[i]] = r.value;
   }
+  return out;
 }
 
 // ─── Income statement ─────────────────────────────────────────────────────────
@@ -150,16 +149,16 @@ export async function getIncomeStatement(ticker: string, period: 'annual' | 'qua
   const cacheKey = `income_${ticker}_${period}`;
   try {
     return await getCached(cacheKey, TTL.earnings, async () => {
-      type Raw = Array<{ date: string; calendarYear: string; period: string; revenue: number; netIncome: number; grossProfit: number; operatingIncome: number; netIncomeRatio: number; grossProfitRatio: number }>;
-      const data = await get<Raw>(fmp(`/v3/income-statement/${ticker}`, { period, limit: String(limit) }));
+      type Raw = Array<{ date: string; fiscalYear: string; period: string; revenue: number; netIncome: number; grossProfit: number; operatingIncome: number }>;
+      const data = await get<Raw>(fmp('/income-statement', { symbol: ticker, period, limit: String(limit) }));
       return data.map(r => ({
-        period:          period === 'annual' ? r.calendarYear : `${r.calendarYear} ${r.period}`,
+        period:          period === 'annual' ? r.fiscalYear : `${r.fiscalYear} ${r.period}`,
         revenue:         r.revenue,
         netIncome:       r.netIncome,
         grossProfit:     r.grossProfit,
         operatingIncome: r.operatingIncome,
-        netMargin:       r.netIncomeRatio * 100,
-        grossMargin:     r.grossProfitRatio * 100,
+        netMargin:       r.revenue > 0 ? (r.netIncome / r.revenue) * 100 : 0,
+        grossMargin:     r.revenue > 0 ? (r.grossProfit / r.revenue) * 100 : 0,
       }));
     });
   } catch {
@@ -184,18 +183,20 @@ export async function getEarningsHistory(ticker: string, limit = 8): Promise<Ear
   const cacheKey = `earnings_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.earnings, async () => {
-      type Raw = Array<{ date: string; fiscalDateEnding: string; estimatedEPS: number; actualEarningResult: number; estimatedRevenue?: number; actualRevenue?: number }>;
-      const data = await get<Raw>(fmp(`/v3/historical/earning_calendar/${ticker}`, { limit: String(limit) }));
-      return data.map(r => ({
-        date:             r.date,
-        period:           r.fiscalDateEnding,
-        epsEstimate:      r.estimatedEPS ?? 0,
-        epsActual:        r.actualEarningResult ?? 0,
-        revenueEstimate:  r.estimatedRevenue ?? 0,
-        revenueActual:    r.actualRevenue ?? 0,
-        beatEps:          (r.actualEarningResult ?? 0) > (r.estimatedEPS ?? 0),
-        beatRevenue:      (r.actualRevenue ?? 0) > (r.estimatedRevenue ?? 0),
-      }));
+      type Raw = Array<{ date: string; epsEstimated: number; epsActual: number | null; revenueEstimated: number; revenueActual: number | null }>;
+      const data = await get<Raw>(fmp('/earnings', { symbol: ticker, limit: String(limit) }));
+      return data
+        .filter(r => r.epsActual !== null)   // only past results with actuals
+        .map(r => ({
+          date:            r.date,
+          period:          r.date,
+          epsEstimate:     r.epsEstimated ?? 0,
+          epsActual:       r.epsActual ?? 0,
+          revenueEstimate: r.revenueEstimated ?? 0,
+          revenueActual:   r.revenueActual ?? 0,
+          beatEps:         (r.epsActual ?? 0) > (r.epsEstimated ?? 0),
+          beatRevenue:     (r.revenueActual ?? 0) > (r.revenueEstimated ?? 0),
+        }));
     });
   } catch {
     return await getStale<EarningsResult[]>(cacheKey) ?? [];
@@ -218,18 +219,18 @@ export async function getEarningsEstimate(ticker: string): Promise<EarningsEstim
   const cacheKey = `est_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.earnings, async () => {
-      type Raw = Array<{ date: string; estimatedEpsAvg: number; estimatedEpsLow: number; estimatedEpsHigh: number; estimatedRevenueAvg: number; estimatedRevenueLow: number; estimatedRevenueHigh: number }>;
-      const data = await get<Raw>(fmp(`/v3/analyst-estimates/${ticker}`, { limit: '1' }));
+      type Raw = Array<{ date: string; epsAvg: number; epsLow: number; epsHigh: number; revenueAvg: number; revenueLow: number; revenueHigh: number }>;
+      const data = await get<Raw>(fmp('/analyst-estimates', { symbol: ticker, period: 'annual', limit: '1' }));
       if (!data[0]) return null;
       const r = data[0];
       return {
-        date:         r.date,
-        epsAvg:       r.estimatedEpsAvg,
-        epsLow:       r.estimatedEpsLow,
-        epsHigh:      r.estimatedEpsHigh,
-        revenueAvg:   r.estimatedRevenueAvg,
-        revenueLow:   r.estimatedRevenueLow,
-        revenueHigh:  r.estimatedRevenueHigh,
+        date:        r.date,
+        epsAvg:      r.epsAvg,
+        epsLow:      r.epsLow,
+        epsHigh:     r.epsHigh,
+        revenueAvg:  r.revenueAvg,
+        revenueLow:  r.revenueLow,
+        revenueHigh: r.revenueHigh,
       };
     });
   } catch {
@@ -251,8 +252,8 @@ export async function getPriceTargets(ticker: string, limit = 10): Promise<Price
   const cacheKey = `pt_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.earnings, async () => {
-      type Raw = Array<{ analystName: string; publishedDate: string; newsTitle: string; adjPriceTarget: number; priceWhen: number; newsPublisher: string }>;
-      const data = await get<Raw>(fmp(`/v4/price-target`, { symbol: ticker, limit: String(limit) }));
+      type Raw = Array<{ analystName: string; publishedDate: string; newsTitle: string; adjPriceTarget: number; newsPublisher: string }>;
+      const data = await get<Raw>(fmp('/price-target', { symbol: ticker, limit: String(limit) }));
       return data.map(r => ({
         analyst: r.analystName,
         firm:    r.newsPublisher,
@@ -303,7 +304,7 @@ export async function getInsiderTrades(ticker: string, limit = 20): Promise<Insi
   const cacheKey = `insider_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.insiderTrades, async () => {
-      const data = await get<InsiderRaw>(fmp(`/v4/insider-trading`, { symbol: ticker, limit: String(limit) }));
+      const data = await get<InsiderRaw>(fmp('/insider-trading', { symbol: ticker, limit: String(limit) }));
       return data.map(r => {
         const { ticker: _t, ...rest } = mapInsiderRaw({ ...r, symbol: ticker });
         return rest;
@@ -318,7 +319,7 @@ export async function getRecentInsiderTrades(limit = 40): Promise<RecentInsiderT
   const cacheKey = 'insider_recent';
   try {
     return await getCached(cacheKey, TTL.insiderTrades, async () => {
-      const data = await get<InsiderRaw>(fmp(`/v4/insider-trading`, { limit: String(limit) }));
+      const data = await get<InsiderRaw>(fmp('/insider-trading', { limit: String(limit) }));
       return data.map(mapInsiderRaw);
     });
   } catch {
@@ -342,12 +343,12 @@ export async function getEarningsCalendar(daysAhead = 14): Promise<UpcomingEarni
   const cacheKey = `ecal_${from}`;
   try {
     return await getCached(cacheKey, TTL.calendar, async () => {
-      type Raw = Array<{ symbol: string; date: string; time: string; epsEstimated: number; revenueEstimated: number }>;
-      const data = await get<Raw>(fmp(`/v3/earning_calendar`, { from, to }));
+      type Raw = Array<{ symbol: string; date: string; epsEstimated: number; revenueEstimated: number }>;
+      const data = await get<Raw>(fmp('/earnings-calendar', { from, to }));
       return data.map(r => ({
         ticker:          r.symbol,
         date:            r.date,
-        time:            (r.time ?? '') as 'bmo' | 'amc' | 'dmh' | '',
+        time:            '' as '',
         epsEstimate:     r.epsEstimated,
         revenueEstimate: r.revenueEstimated,
       }));
@@ -357,7 +358,7 @@ export async function getEarningsCalendar(daysAhead = 14): Promise<UpcomingEarni
   }
 }
 
-// ─── Economic calendar ────────────────────────────────────────────────────────
+// ─── Economic calendar (restricted on free plan — returns empty gracefully) ───
 
 export interface EconomicEvent {
   event: string;
@@ -368,24 +369,6 @@ export interface EconomicEvent {
   estimate: number | null;
 }
 
-export async function getEconomicCalendar(daysAhead = 14): Promise<EconomicEvent[]> {
-  const from = new Date().toISOString().slice(0, 10);
-  const to   = new Date(Date.now() + daysAhead * 86_400_000).toISOString().slice(0, 10);
-  const cacheKey = `ecocal_${from}`;
-  try {
-    return await getCached(cacheKey, TTL.calendar, async () => {
-      type Raw = Array<{ event: string; date: string; country: string; impact: string; actual: number | null; estimate: number | null }>;
-      const data = await get<Raw>(fmp(`/v3/economic_calendar`, { from, to }));
-      return data.map(r => ({
-        event:    r.event,
-        date:     r.date,
-        country:  r.country,
-        impact:   (r.impact ?? 'Low') as 'Low' | 'Medium' | 'High',
-        actual:   r.actual,
-        estimate: r.estimate,
-      }));
-    });
-  } catch {
-    return await getStale<EconomicEvent[]>(cacheKey) ?? [];
-  }
+export async function getEconomicCalendar(_daysAhead = 14): Promise<EconomicEvent[]> {
+  return await getStale<EconomicEvent[]>('ecocal') ?? [];
 }
