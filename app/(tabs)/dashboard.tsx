@@ -93,20 +93,29 @@ const gb = StyleSheet.create({
   text: { fontWeight: fontWeight.bold, color: '#FFFFFF', letterSpacing: 0.3 },
 });
 
-// ─── Market status computed from local time (ET) ─────────────────────────────
+// ─── Market status — manual UTC+DST calc (toLocaleString timezone is unreliable in RN) ──
+
+function etOffsetHours(utc: Date): number {
+  const y = utc.getUTCFullYear();
+  // DST start: second Sunday of March at 07:00 UTC (= 2:00 AM EST → EDT)
+  const mar1  = new Date(Date.UTC(y, 2, 1));
+  const dstOn = new Date(Date.UTC(y, 2, 8 + (7 - mar1.getUTCDay()) % 7, 7));
+  // DST end: first Sunday of November at 06:00 UTC (= 2:00 AM EDT → EST)
+  const nov1   = new Date(Date.UTC(y, 10, 1));
+  const dstOff = new Date(Date.UTC(y, 10, 1 + (7 - nov1.getUTCDay()) % 7, 6));
+  return utc >= dstOn && utc < dstOff ? -4 : -5;
+}
 
 function getMarketStatus(): { status: string; label: string } {
-  const now = new Date();
-  // Approximate ET offset — close enough for UI status display
-  const etHour = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getHours();
-  const etMin  = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getMinutes();
-  const day    = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getDay();
-  const mins   = etHour * 60 + etMin;
-  if (day === 0 || day === 6)     return { status: 'closed',      label: 'Market Closed' };
-  if (mins < 4 * 60)              return { status: 'closed',      label: 'Market Closed' };
-  if (mins < 9 * 60 + 30)        return { status: 'pre-market',  label: 'Pre-Market' };
-  if (mins < 16 * 60)             return { status: 'open',        label: 'Market Open' };
-  if (mins < 20 * 60)             return { status: 'after-hours', label: 'After Hours' };
+  const now   = new Date();
+  const et    = new Date(now.getTime() + etOffsetHours(now) * 3_600_000);
+  const day   = et.getUTCDay();
+  const mins  = et.getUTCHours() * 60 + et.getUTCMinutes();
+  if (day === 0 || day === 6)  return { status: 'closed',      label: 'Market Closed' };
+  if (mins < 4 * 60)           return { status: 'closed',      label: 'Market Closed' };
+  if (mins < 9 * 60 + 30)      return { status: 'pre-market',  label: 'Pre-Market' };
+  if (mins < 16 * 60)          return { status: 'open',        label: 'Market Open' };
+  if (mins < 20 * 60)          return { status: 'after-hours', label: 'After Hours' };
   return { status: 'closed', label: 'Market Closed' };
 }
 

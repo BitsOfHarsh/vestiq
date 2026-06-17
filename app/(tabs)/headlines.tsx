@@ -6,8 +6,8 @@ import { router } from 'expo-router';
 import { MockHeadline } from '../../src/mock';
 import { CONTENT } from '../../src/content';
 import THEME from '../../src/theme';
-import { getBusinessHeadlines, getStockNewsSearch } from '../../src/services/newsapi';
-import { getSnapshots } from '../../src/services/polygon';
+import { getTickerNews } from '../../src/services/finnhub';
+import { getBatchQuotes } from '../../src/services/fmp';
 import { TickerLogo } from '../../src/components/ui';
 
 const { colors, fontSize, fontWeight, radius, spacing } = THEME;
@@ -88,47 +88,52 @@ export default function HeadlinesScreen() {
   const loadNews = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch top US business headlines + stock-specific search in parallel
-      const [business, stocks] = await Promise.all([
-        getBusinessHeadlines(50),
-        getStockNewsSearch(50),
-      ]);
+      // Step 1: Fetch company-news for a curated set of major tickers in parallel.
+      // Finnhub general-news has empty `related` on the free plan; company-news reliably
+      // populates it so every article already knows which stock it belongs to.
+      const WATCH = ['AAPL','MSFT','NVDA','TSLA','META','GOOGL','AMZN','JPM','AMD','COIN','NFLX','GS','BAC','UBER','PLTR'];
+      const batches = await Promise.all(WATCH.map(t => getTickerNews(t, 5)));
 
-      // Merge, deduplicate by URL, sort newest first
+      // Step 2: Merge, deduplicate by URL, sort newest first, extract valid ticker from `related`
+      const TICKER_RE = /^[A-Z]{1,5}$/;
       const seen = new Set<string>();
-      const merged = [...business, ...stocks]
+      const merged = batches
+        .flat()
         .filter(a => { if (seen.has(a.url)) return false; seen.add(a.url); return true; })
-        .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+        .sort((a, b) => b.datetime - a.datetime)
+        .map(a => ({
+          ...a,
+          ticker: (a.ticker ?? '').split(',').map(t => t.trim()).find(t => TICKER_RE.test(t)) ?? '',
+        }));
 
       if (!merged.length) return;
 
       const mapped: MockHeadline[] = merged.slice(0, 60).map(a => {
-        const ms = new Date(a.publishedAt).getTime();
+        const ms = a.datetime * 1000;
         return {
           id:           a.id,
           time:         new Date(ms).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
           date:         isToday(ms) ? 'today' : 'yesterday',
           country:      'United States',
-          headline:     a.title,
-          summary:      a.description,
-          // Use matched ticker, or fall back to source name for display
-          ticker:       a.ticker ?? a.source,
-          tickerName:   a.ticker ?? a.source,
+          headline:     a.headline,
+          summary:      a.summary,
+          ticker:       a.ticker,
+          tickerName:   a.ticker,
           tickerPrice:  0,
           tickerChange: 0,
         };
       });
 
-      // Only batch-fetch prices for real tickers (not source-name fallbacks)
-      const uniqueTickers = [...new Set(
-        merged.filter(a => a.ticker !== null).map(a => a.ticker as string)
-      )];
-      const snapshots = uniqueTickers.length ? await getSnapshots(uniqueTickers) : {};
+      // Step 3: Batch-fetch prices via FMP stable (Polygon batch requires paid plan)
+      const uniqueTickers = [...new Set(mapped.map(a => a.ticker).filter(t => t.length > 0))];
+      const quotes = uniqueTickers.length ? await getBatchQuotes(uniqueTickers) : {};
 
+      // Step 4: Merge prices back into articles
       setArticles(mapped.map(a => ({
         ...a,
-        tickerPrice:  snapshots[a.ticker]?.price     ?? 0,
-        tickerChange: snapshots[a.ticker]?.changePct ?? 0,
+        tickerName:   quotes[a.ticker]?.ticker ?? a.ticker,
+        tickerPrice:  quotes[a.ticker]?.price     ?? 0,
+        tickerChange: quotes[a.ticker]?.changePct ?? 0,
       })));
     } catch {
       // keep empty state so user sees failure, not stale mock
