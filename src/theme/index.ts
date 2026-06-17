@@ -1,0 +1,90 @@
+const THEME = {
+  colors: {
+    bg: {
+      primary:   '#090910',
+      secondary: '#111118',
+      card:      '#16161E',
+      elevated:  '#1E1E2A',
+      deep:      '#060609',
+    },
+    text: {
+      primary:   '#F0EFF4',
+      secondary: '#9D99A8',
+      muted:     '#55505E',
+    },
+    accent: {
+      teal:      '#0D9488',
+      tealLight: '#14B8A6',
+      tealDim:   '#0D948820',
+    },
+    status: {
+      green:    '#10B981',
+      greenDim: '#10B98118',
+      red:      '#EF4444',
+      redDim:   '#EF444418',
+      amber:    '#F59E0B',
+      amberDim: '#F59E0B18',
+      blue:     '#3B82F6',
+      blueDim:  '#3B82F618',
+    },
+    border: {
+      default: 'rgba(255,255,255,0.07)',
+      subtle:  'rgba(255,255,255,0.03)',
+      strong:  'rgba(255,255,255,0.14)',
+      glow:    'rgba(13,148,136,0.25)',
+    },
+  },
+  fontSize: {
+    xs:  11,
+    sm:  12,
+    base: 13,
+    md:  14,
+    lg:  16,
+    xl:  20,
+    xxl: 26,
+    hero: 36,
+  },
+  fontWeight: {
+    regular:  '400' as const,
+    medium:   '500' as const,
+    semibold: '600' as const,
+    bold:     '700' as const,
+  },
+  spacing: {
+    xs:   4,
+    sm:   8,
+    md:   12,
+    lg:   16,
+    xl:   20,
+    xxl:  24,
+    xxxl: 32,
+  },
+  radius: {
+    xs:   4,
+    sm:   6,
+    md:   8,
+    lg:   12,
+    xl:   16,
+    xxl:  20,
+    full: 999,
+  },
+  shadow: {
+    card: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.35,
+      shadowRadius: 12,
+      elevation: 10,
+    },
+    sm: {
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 4,
+    },
+  },
+  border: { width: 0.5 },
+} as const;
+
+export default THEME;

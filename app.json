@@ -1,15 +1,18 @@
 {
   "expo": {
-    "name": "vestiq",
+    "name": "Vestiq",
     "slug": "vestiq",
     "version": "1.0.0",
+    "scheme": "vestiq",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vestiq.app"
     },
     "android": {
+      "package": "com.vestiq.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -19,7 +22,11 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
