@@ -771,7 +771,7 @@ export default function ResearchScreen() {
               <View style={[s.resultAccent, { backgroundColor: accentColor }]} />
               <View style={s.resultHeader}>
                 <Text style={s.resultTicker}>{deepResult.ticker}</Text>
-                <Text style={s.resultSkillName}>{activeSkill?.title ?? ''} — Deep Analysis</Text>
+                <Text style={s.resultSkillName}>{activeSkill?.title ?? ''} · Deep analysis</Text>
               </View>
               <View style={s.divider} />
               <View style={s.stanceRow}>

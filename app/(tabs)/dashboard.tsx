@@ -174,7 +174,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
         <View style={s.briefLocked}>
           <Ionicons name="sparkles-outline" size={14} color={colors.accent.violet} />
           <Text style={s.briefLockedText}>
-            Market brief unavailable — tap to retry
+            Market brief unavailable. Tap to retry.
           </Text>
         </View>
       )}
@@ -436,7 +436,7 @@ function UpcomingEventsCard({
             ? <Text style={s.emptyHint}>{notableHint}</Text>
             : (notableProp ?? []).map((item, i) => (
                 <View key={i} style={s.notableRow}>
-                  <View style={s.notableDot} />
+                  <View style={s.notableAccent} />
                   <Text style={s.notableText} numberOfLines={2}>{item}</Text>
                 </View>
               ))
@@ -567,7 +567,7 @@ export default function DashboardScreen() {
       const highEco = cal.filter(e => e.impact === 'High' && (e.country === 'US' || e.country === 'United States'));
       const items = highEco.slice(0, 4).map(e => {
         const d = new Date(e.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        return `${e.event} – ${d}`;
+        return `${e.event} · ${d}`;
       });
       setNotable(items.length ? items : null);
     }).catch(() => setNotable(null));
@@ -752,9 +752,9 @@ const s = StyleSheet.create({
   },
 
   notableRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  notableDot: {
-    width: 5, height: 5, borderRadius: radius.full,
-    backgroundColor: colors.accent.violet, marginTop: 6, flexShrink: 0,
+  notableAccent: {
+    width: 3, height: 14, borderRadius: radius.full,
+    backgroundColor: colors.accent.violet, marginTop: 2, flexShrink: 0,
   },
   notableText: {
     flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,

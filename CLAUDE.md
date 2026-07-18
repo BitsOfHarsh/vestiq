@@ -15,8 +15,6 @@ The UI is dark-mode first, clean, non-intimidating.
 - AsyncStorage for local persistence
 - Anthropic API (claude-sonnet-4-6) for all AI features
 
-
-
 ## Claude API rules — critical
 - All Claude calls go through src/services/claude.ts ONLY
 - Model: claude-sonnet-4-6
@@ -36,7 +34,6 @@ The UI is dark-mode first, clean, non-intimidating.
 - Never call Claude on every screen render (cache aggressively)
 - Never show raw API errors to users (always friendly fallback)
 - Never hardcode API keys (use EXPO_PUBLIC_ env vars)
-- Never use font-weight above 500
 - Never make touch targets smaller than 44×44
 
 ## Key data sources

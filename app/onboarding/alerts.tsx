@@ -79,7 +79,7 @@ export default function AlertsOnboardingScreen() {
           <View style={s.rrRow}>
             <Text style={s.rrText}>Risk/Reward: </Text>
             <Text style={s.rrValue}>4.9x</Text>
-            <Text style={s.rrBadge}> — Excellent</Text>
+            <Text style={s.rrBadge}> · Excellent</Text>
           </View>
         </View>
 
@@ -92,7 +92,7 @@ export default function AlertsOnboardingScreen() {
             <Text style={s.notifApp}>Vestiq</Text>
             <Text style={s.notifTime}>now</Text>
           </View>
-          <Text style={s.notifTitle}>META hit your entry zone — $558</Text>
+          <Text style={s.notifTitle}>META hit your entry zone at $558</Text>
           <Text style={s.notifBody}>R/R 4.9x · Consider buying · Analyst upside 46%</Text>
         </View>
 

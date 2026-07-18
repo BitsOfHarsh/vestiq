@@ -107,9 +107,8 @@ function WatchStockCard({
         <View style={ws.middle}>
           <View style={ws.nameRow}>
             <Text style={ws.ticker}>{stock.ticker}</Text>
-            <Text style={ws.dash}> — </Text>
             <Ionicons name={cfg.icon} size={12} color={cfg.color} />
-            <Text style={[ws.sentiment, { color: cfg.color }]}> {cfg.label}</Text>
+            <Text style={[ws.sentiment, { color: cfg.color }]}>{cfg.label}</Text>
           </View>
           <Text style={ws.name} numberOfLines={1}>{tickerName || stock.ticker}</Text>
         </View>
@@ -146,7 +145,7 @@ const ws = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   middle: { flex: 1 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' },
+  nameRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 5 },
   ticker: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
   dash: { fontSize: fontSize.sm, color: colors.text.muted },
   sentiment: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },

@@ -11,6 +11,13 @@ const MODEL = 'claude-sonnet-4-6';
 
 // ─── Base call ────────────────────────────────────────────────────────────────
 
+// Global writing-style rule appended to every system prompt so all generated
+// copy stays clean. Em-dashes are the #1 "AI-generated" tell — ban them app-wide.
+const STYLE_RULE =
+  ' Writing style for any text you generate: never use em-dashes (—) or en-dashes (–). ' +
+  'Use a period, comma, or hyphen instead. Avoid filler words like "elevate", "seamless", ' +
+  '"unleash", "supercharge". Write plainly and concretely.';
+
 async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
   if (!IS_WEB && !API_KEY) {
     console.error('[Claude] EXPO_PUBLIC_ANTHROPIC_API_KEY is empty — did you restart the Expo server after adding the key?');
@@ -29,7 +36,7 @@ async function callClaude(systemPrompt: string, userMessage: string): Promise<st
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1024,
-      system: systemPrompt,
+      system: systemPrompt + STYLE_RULE,
       messages: [{ role: 'user', content: userMessage }],
     }),
   });
