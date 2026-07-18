@@ -82,7 +82,7 @@ const FEATURED: FeaturedSkill[] = [
     sub: 'Is this a long-term keeper?',
     analyzeHeading: 'fundamentals and\nif it is a good buy:',
     icon: 'diamond',
-    accentColor: '#10B981',
+    accentColor: '#D4A017',   // amber-gold — "premium keeper" (distinct from profit-green)
     systemPrompt: 'You are Vestiq. Analyse business quality for long-term investors. Beginner-friendly. Respond ONLY with valid JSON — no markdown, no extra text:\n{"verdict":"Great Company","score":0,"moat":"Wide","management":"Excellent","metrics":[{"label":"Revenue Growth","value":"+X%","sentiment":"positive"},{"label":"Profit Margin","value":"X%","sentiment":"positive"},{"label":"Debt Level","value":"Low","sentiment":"positive"},{"label":"PE Ratio","value":"Xx","sentiment":"neutral"}],"summary":"2-3 sentence overview","concerns":["concern 1","concern 2"]}. verdict must be one of: Great Company, Good Company, Average, Avoid. moat: Wide/Narrow/None. management: Excellent/Good/Average/Poor. sentiment: positive/neutral/negative.',
     isCompare: false,
   },
@@ -92,7 +92,7 @@ const FEATURED: FeaturedSkill[] = [
     sub: 'Good buying opportunity?',
     analyzeHeading: 'if the dip\nis worth buying:',
     icon: 'flash',
-    accentColor: '#8B5CF6',
+    accentColor: '#DB2777',   // rose — "opportunity" (kills AI-purple, distinct from loss-red)
     systemPrompt: 'You are Vestiq. Score this stock dip 0–100 and assess buying opportunity. Beginner-friendly. Respond ONLY with valid JSON — no markdown, no extra text:\n{"score":0,"verdict":"Good Dip","fromHigh":"-X%","analystUpside":"+X%","support":"$X","isKnife":false,"reasons":["reason 1","reason 2","reason 3"],"warning":null}. verdict must be one of: Strong Buy, Good Dip, Wait, Falling Knife. isKnife true only for Falling Knife.',
     isCompare: false,
   },
