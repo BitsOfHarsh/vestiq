@@ -15,26 +15,7 @@ The UI is dark-mode first, clean, non-intimidating.
 - AsyncStorage for local persistence
 - Anthropic API (claude-sonnet-4-6) for all AI features
 
-## Design system — follow exactly
-- Background primary: #0A0A0A
-- Background secondary: #141414  
-- Background card: #1A1A1A
-- Accent teal: #0D9488
-- Accent teal light: #14B8A6
-- Text primary: #F5F5F4
-- Text secondary: #A8A29E
-- Text muted: #57534E
-- Green (profit): #10B981
-- Red (loss): #EF4444
-- Amber (warning): #F59E0B
-- Blue (info): #3B82F6
-- Border: rgba(255,255,255,0.08)
-- Border hover: rgba(255,255,255,0.15)
 
-- Font sizes: xs=11 sm=12 base=13 md=14 lg=16 xl=20 xxl=26
-- Font weights: regular=400, medium=500 ONLY (never 600, 700, 800)
-- Border radius: sm=6 md=8 lg=12 xl=16
-- ALL touch targets minimum 44×44px
 
 ## Claude API rules — critical
 - All Claude calls go through src/services/claude.ts ONLY

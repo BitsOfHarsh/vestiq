@@ -110,7 +110,7 @@ const s = StyleSheet.create({
   title: { fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm },
   sub:   { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl },
 
-  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: spacing.sm },
+  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.2, marginBottom: spacing.sm },
 
   nameInput: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,

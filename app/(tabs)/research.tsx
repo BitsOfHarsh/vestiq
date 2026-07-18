@@ -21,8 +21,10 @@ import WorthOwningCard, { WorthOwningResult } from '../../src/components/skills/
 import DipScoreCard, { DipScoreResult } from '../../src/components/skills/DipScoreCard';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
-const { width: SCREEN_W } = Dimensions.get('window');
-const CARD_W = (SCREEN_W - spacing.xl * 2 - spacing.sm) / 2;
+// On web the app is constrained to a 390px phone frame (see app/_layout.tsx),
+// but Dimensions.get('window') reports the full browser width — clamp to the frame.
+const FRAME_W = Math.min(Dimensions.get('window').width, 390);
+const CARD_W = (FRAME_W - spacing.xl * 2 - spacing.sm) / 2;
 
 // ─── Parsed skill result union ────────────────────────────────────────────────
 
@@ -209,7 +211,7 @@ function ModelToggle({ model, onToggle }: { model: 'blitz' | 'deep'; onToggle: (
   const deepFilled  = model === 'blitz' ? 2 : 5;
   return (
     <View style={s.modelRow}>
-      <Text style={s.modelLabel}>MODEL</Text>
+      <Text style={s.modelLabel}>Model</Text>
       <ScalePressable style={s.modelPill} onPress={onToggle}>
         <Ionicons name="flash" size={13} color={colors.accent.violet} />
         <Text style={s.modelPillText}>{model === 'blitz' ? 'Blitz' : 'Deep'}</Text>
@@ -495,7 +497,7 @@ export default function ResearchScreen() {
 
         {inputFocused && kbHeight > 0 && (
           <View style={[s.carouselWrap, { bottom: kbHeight + ASK_BAR_H + spacing.md }]}>
-            <Text style={s.carouselLabel}>POPULAR SKILLS</Text>
+            <Text style={s.carouselLabel}>Popular skills</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.carouselContent} keyboardShouldPersistTaps="handled">
               {FEATURED.map((skill) => (
                 <ScalePressable
@@ -592,7 +594,7 @@ export default function ResearchScreen() {
                   </View>
                 ) : (
                   <View>
-                    <Text style={s.stepHint}>Select Ticker A</Text>
+                    <Text style={s.stepHint}>Select ticker A</Text>
                     <View style={s.searchBar}>
                       <Ionicons name="search" size={16} color={accentA} />
                       <TextInput
@@ -619,7 +621,7 @@ export default function ResearchScreen() {
                       <View style={s.vsDividerLine} />
                     </View>
                     <View>
-                      <Text style={s.stepHint}>Select Ticker B</Text>
+                      <Text style={s.stepHint}>Select ticker B</Text>
                       <View style={[s.searchBar, { borderColor: accentA + '60' }]}>
                         <Ionicons name="search" size={16} color={accentA} />
                         <TextInput
@@ -784,11 +786,11 @@ export default function ResearchScreen() {
               <View style={s.divider} />
               <View style={s.keyRow}>
                 <View style={s.keyItem}>
-                  <Text style={[s.keyLabel, { color: colors.status.green }]}>KEY OPPORTUNITY</Text>
+                  <Text style={[s.keyLabel, { color: colors.status.green }]}>Key opportunity</Text>
                   <Text style={s.keyText}>{deepResult.keyOpportunity}</Text>
                 </View>
                 <View style={[s.keyItem, { borderLeftWidth: 0.5, borderLeftColor: colors.border.default, paddingLeft: spacing.md }]}>
-                  <Text style={[s.keyLabel, { color: colors.status.red }]}>KEY RISK</Text>
+                  <Text style={[s.keyLabel, { color: colors.status.red }]}>Key risk</Text>
                   <Text style={s.keyText}>{deepResult.keyRisk}</Text>
                 </View>
               </View>
@@ -797,7 +799,7 @@ export default function ResearchScreen() {
               <View style={[s.debateCard, { backgroundColor: colors.status.green + '0c' }]}>
                 <View style={[s.debateHeader, { borderBottomColor: colors.status.green + '30' }]}>
                   <Ionicons name="trending-up" size={14} color={colors.status.green} />
-                  <Text style={[s.debateLabel, { color: colors.status.green }]}>BULL CASE</Text>
+                  <Text style={[s.debateLabel, { color: colors.status.green }]}>Bull case</Text>
                 </View>
                 {(deepResult.bullCase ?? []).map((pt, i) => (
                   <View key={i} style={s.debatePt}>
@@ -809,7 +811,7 @@ export default function ResearchScreen() {
               <View style={[s.debateCard, { backgroundColor: colors.status.red + '0c' }]}>
                 <View style={[s.debateHeader, { borderBottomColor: colors.status.red + '30' }]}>
                   <Ionicons name="trending-down" size={14} color={colors.status.red} />
-                  <Text style={[s.debateLabel, { color: colors.status.red }]}>BEAR CASE</Text>
+                  <Text style={[s.debateLabel, { color: colors.status.red }]}>Bear case</Text>
                 </View>
                 {(deepResult.bearCase ?? []).map((pt, i) => (
                   <View key={i} style={s.debatePt}>
@@ -893,7 +895,7 @@ const s = StyleSheet.create({
   heroSub:  { fontSize: fontSize.base, fontFamily: fontFamily.regular, color: colors.text.muted },
   heroMain: { fontSize: fontSize.xxxl, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary, lineHeight: 40, marginTop: 4 },
 
-  sectionLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 1.0, textTransform: 'uppercase', marginBottom: spacing.md },
+  sectionLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.2, marginBottom: spacing.md },
 
   skillGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.xs },
   skillCard: { width: CARD_W, minHeight: 162, borderRadius: radius.lg, borderWidth: 0.5, overflow: 'hidden', padding: spacing.md, justifyContent: 'space-between' },
@@ -912,7 +914,7 @@ const s = StyleSheet.create({
 
   dimOverlay:    { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)', zIndex: 10 },
   carouselWrap:  { position: 'absolute', left: 0, right: 0, zIndex: 20 },
-  carouselLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 1.0, textTransform: 'uppercase', paddingHorizontal: spacing.xl, marginBottom: spacing.sm },
+  carouselLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.2, paddingHorizontal: spacing.xl, marginBottom: spacing.sm },
   carouselContent: { paddingHorizontal: spacing.xl, gap: spacing.sm },
   carouselCard:  { width: 130, height: 120, borderRadius: radius.xl, borderWidth: 0.5, borderColor: colors.border.default, overflow: 'hidden', padding: spacing.sm, justifyContent: 'space-between' },
   carouselIconCircle: { width: 36, height: 36, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
@@ -966,7 +968,7 @@ const s = StyleSheet.create({
   stepDot:  { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
   stepNum:  { fontSize: fontSize.xs, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#fff' },
   stepLine: { flex: 1, height: 1.5, marginHorizontal: spacing.sm },
-  stepHint: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: spacing.sm },
+  stepHint: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.2, marginBottom: spacing.sm },
 
   lockedChip: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.bg.elevated, borderRadius: radius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderWidth: 0.5, borderColor: colors.status.green + '50', alignSelf: 'flex-start' },
   lockedChipText: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },

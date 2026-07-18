@@ -23,7 +23,9 @@ import { getHolders } from '../../src/services/whalewisdom';
 import VSkeleton from '../../src/components/ui/Skeleton';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
-const SCREEN_W = Dimensions.get('window').width;
+// On web the app is constrained to a 390px phone frame (see app/_layout.tsx),
+// but Dimensions.get('window') reports the full browser width — clamp to the frame.
+const SCREEN_W = Math.min(Dimensions.get('window').width, 390);
 // chart width = screen - horizontal padding (xl*2) - y-axis (44) - gap (sm)
 const CHART_W = SCREEN_W - spacing.xl * 2 - 44 - spacing.sm;
 const CHART_H = 160;
@@ -170,7 +172,7 @@ function VolumeChart({ data }: { data: { value: number; up: boolean }[] }) {
   );
   return (
     <View style={cht.volWrap}>
-      <Text style={cht.volTitle}>VOLUME</Text>
+      <Text style={cht.volTitle}>Volume</Text>
       <View style={cht.volPlot}>
         <View style={cht.yAxis}>
           {ticks.map((t, i) => <Text key={i} style={cht.yLabel}>{t}</Text>)}
@@ -596,11 +598,11 @@ function EarningsTab({ s }: { s: StockOverview }) {
           </View>
           <View style={ec.upcomingGrid}>
             <View style={ec.upcomingCell}>
-              <Text style={ec.upcomingCellLabel}>EPS ESTIMATE</Text>
+              <Text style={ec.upcomingCellLabel}>EPS estimate</Text>
               <Text style={ec.upcomingCellVal}>${s.earningsUpcoming.epsEstimate}</Text>
             </View>
             <View style={ec.upcomingCell}>
-              <Text style={ec.upcomingCellLabel}>REVENUE ESTIMATE</Text>
+              <Text style={ec.upcomingCellLabel}>Revenue estimate</Text>
               <Text style={ec.upcomingCellVal}>{s.earningsUpcoming.revenueEstimate}</Text>
             </View>
           </View>

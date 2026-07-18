@@ -34,17 +34,17 @@ export default function EntryExitCard({ data, ticker, accentColor }: {
       {/* Three level boxes */}
       <View style={s.levelsRow}>
         <View style={[s.levelBox, { borderColor: colors.status.green + '40', backgroundColor: colors.status.green + '08' }]}>
-          <Text style={[s.levelLabel, { color: colors.status.green }]}>ENTRY</Text>
+          <Text style={[s.levelLabel, { color: colors.status.green }]}>Entry</Text>
           <Text style={s.levelZone}>{data.entry.zone}</Text>
           <Text style={s.levelReason} numberOfLines={2}>{data.entry.reason}</Text>
         </View>
         <View style={[s.levelBox, { borderColor: colors.status.amber + '40', backgroundColor: colors.status.amber + '08' }]}>
-          <Text style={[s.levelLabel, { color: colors.status.amber }]}>STOP</Text>
+          <Text style={[s.levelLabel, { color: colors.status.amber }]}>Stop</Text>
           <Text style={s.levelZone}>{data.stopLoss.zone}</Text>
           <Text style={s.levelReason} numberOfLines={2}>{data.stopLoss.reason}</Text>
         </View>
         <View style={[s.levelBox, { borderColor: colors.accent.violetBright + '40', backgroundColor: colors.accent.violetBright + '08' }]}>
-          <Text style={[s.levelLabel, { color: colors.accent.violetBright }]}>TARGET</Text>
+          <Text style={[s.levelLabel, { color: colors.accent.violetBright }]}>Target</Text>
           <Text style={s.levelZone}>{data.target.zone}</Text>
           <Text style={s.levelReason} numberOfLines={2}>{data.target.reason}</Text>
         </View>

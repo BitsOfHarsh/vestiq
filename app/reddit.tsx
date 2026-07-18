@@ -172,14 +172,14 @@ export default function RedditScreen() {
           <View style={s.rankTable}>
             {/* Column headers */}
             <View style={s.rankColHeaders}>
-              <Text style={[s.rankColHeader, { width: 36 }]}>RANK</Text>
-              <Text style={[s.rankColHeader, { flex: 1 }]}>TICKER</Text>
-              <Text style={[s.rankColHeader, { width: 70 }]}>RANK{'\n'}CHANGE</Text>
+              <Text style={[s.rankColHeader, { width: 36 }]}>Rank</Text>
+              <Text style={[s.rankColHeader, { flex: 1 }]}>Ticker</Text>
+              <Text style={[s.rankColHeader, { width: 70 }]}>Rank{'\n'}change</Text>
             </View>
             <View style={s.rankColHeaders}>
-              <Text style={[s.rankColHeader, { width: 36 }]}>RANK</Text>
-              <Text style={[s.rankColHeader, { flex: 1 }]}>TICKER</Text>
-              <Text style={[s.rankColHeader, { width: 70 }]}>RANK{'\n'}CHANGE</Text>
+              <Text style={[s.rankColHeader, { width: 36 }]}>Rank</Text>
+              <Text style={[s.rankColHeader, { flex: 1 }]}>Ticker</Text>
+              <Text style={[s.rankColHeader, { width: 70 }]}>Rank{'\n'}change</Text>
             </View>
           </View>
 

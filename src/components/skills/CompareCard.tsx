@@ -118,7 +118,7 @@ export default function CompareCard({ data, accentColor }: {
       {/* ── Buy First CTA ───────────────────────────────────── */}
       <View style={[s.buyBox, { borderColor: buyColor + '35', backgroundColor: buyColor + '0e' }]}>
         <View style={s.buyHeader}>
-          <Text style={s.buyLabel}>BUY FIRST</Text>
+          <Text style={s.buyLabel}>Buy first</Text>
           <View style={s.buyTickerRow}>
             <TickerLogo ticker={data.buyFirst ?? '—'} size={22} borderRadius={5} />
             <Text style={[s.buyTicker, { color: buyColor }]}>{data.buyFirst ?? '—'}</Text>

@@ -30,7 +30,7 @@ const s = StyleSheet.create({
   },
   title: {
     fontSize: fontSize.sm, fontWeight: fontWeight.medium,
-    color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5,
+    color: colors.text.muted, letterSpacing: 0.2,
   },
   action: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.accent.violet },
 });

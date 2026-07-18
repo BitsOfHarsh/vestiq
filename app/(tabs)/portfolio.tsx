@@ -867,7 +867,7 @@ const s = StyleSheet.create({
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border.strong, alignSelf: 'center', marginBottom: spacing.xs },
   modalTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },
   fieldGroup: { gap: 4 },
-  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.2 },
   fieldInput: {
     backgroundColor: colors.bg.card, borderRadius: radius.md,
     borderWidth: 0.5, borderColor: colors.border.default,
