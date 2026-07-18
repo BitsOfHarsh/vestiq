@@ -31,7 +31,7 @@ const SIG_COLOR = {
   red:    colors.status.red,
   amber:  colors.status.amber,
   blue:   colors.status.blue,
-  violet: colors.accent.violet,
+  violet: colors.accent.brand,
   orange: '#c06a00',
 };
 
@@ -144,7 +144,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
 
   return (
     <View style={s.snapCard}>
-      {/* Cobalt violet top accent — 3px solid */}
+      {/* Teal top accent */}
       <View style={s.snapAccent} />
 
       {/* Header */}
@@ -172,7 +172,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
         </View>
       ) : (
         <View style={s.briefLocked}>
-          <Ionicons name="sparkles-outline" size={14} color={colors.accent.violet} />
+          <Ionicons name="sparkles-outline" size={14} color={colors.accent.brand} />
           <Text style={s.briefLockedText}>
             Market brief unavailable. Tap to retry.
           </Text>
@@ -336,7 +336,7 @@ function EarlySignalsCard({
   return (
     <View style={es.card}>
       <View style={es.labelRow}>
-        <View style={[es.labelAccent, { backgroundColor: colors.accent.violet }]} />
+        <View style={[es.labelAccent, { backgroundColor: colors.accent.brand }]} />
         <Text style={es.label}>Early signals</Text>
       </View>
       <View style={es.grid}>
@@ -349,8 +349,8 @@ function EarlySignalsCard({
               style={[es.cell, { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.xl }]}
               onPress={() => router.push(ROUTES[i] as never)}
             >
-              {/* Coming-soon violet accent */}
-              <View style={[es.accentBar, { backgroundColor: colors.accent.violet + '60' }]} />
+              {/* Coming-soon accent */}
+              <View style={[es.accentBar, { backgroundColor: colors.accent.brand + '60' }]} />
               {c === 'loading' ? (
                 <ActivityIndicator size="small" color={colors.text.muted} />
               ) : (
@@ -429,7 +429,7 @@ function UpcomingEventsCard({
         {/* Notable */}
         <View style={s.economicCol}>
           <View style={s.eventsSectionHeader}>
-            <View style={[s.sectionAccentBar, { backgroundColor: colors.accent.violet }]} />
+            <View style={[s.sectionAccentBar, { backgroundColor: colors.accent.brand }]} />
             <Text style={s.eventsSectionLabel}>Notable</Text>
           </View>
           {notableHint
@@ -641,7 +641,7 @@ const s = StyleSheet.create({
   snapCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     borderWidth: 0.5, borderColor: colors.border.default,
-    borderTopColor: colors.accent.violet + '50',
+    borderTopColor: colors.accent.brand + '50',
     padding: spacing.lg, gap: spacing.md, overflow: 'hidden',
   },
   snapAccent: { display: 'none' },
@@ -660,15 +660,15 @@ const s = StyleSheet.create({
   },
   briefLocked: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: colors.accent.violetDim, borderRadius: radius.md,
+    backgroundColor: colors.accent.brandDim, borderRadius: radius.md,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
-    borderWidth: 0.5, borderColor: colors.accent.violet + '30',
+    borderWidth: 0.5, borderColor: colors.accent.brand + '30',
   },
   briefLockedText: {
     flex: 1, fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
     color: colors.text.muted,
   },
-  briefLockedAccent: { color: colors.accent.violet },
+  briefLockedAccent: { color: colors.accent.brand },
   snapHeadline: {
     fontSize: fontSize.xl, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold,
     color: colors.text.primary, lineHeight: 28, letterSpacing: -0.3,
@@ -754,7 +754,7 @@ const s = StyleSheet.create({
   notableRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
   notableAccent: {
     width: 3, height: 14, borderRadius: radius.full,
-    backgroundColor: colors.accent.violet, marginTop: 2, flexShrink: 0,
+    backgroundColor: colors.accent.brand, marginTop: 2, flexShrink: 0,
   },
   notableText: {
     flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,

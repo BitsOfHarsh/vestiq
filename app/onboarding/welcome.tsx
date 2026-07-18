@@ -38,7 +38,7 @@ export default function WelcomeScreen() {
           {FEATURES.map(({ icon, text, sub }) => (
             <View key={text} style={s.featureRow}>
               <View style={s.featureIconWrap}>
-                <Ionicons name={icon} size={20} color={colors.accent.violet} />
+                <Ionicons name={icon} size={20} color={colors.accent.brand} />
               </View>
               <View style={s.featureTextBlock}>
                 <Text style={s.featureTitle}>{text}</Text>
@@ -84,7 +84,7 @@ const s = StyleSheet.create({
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   logoPip: {
     width: 8, height: 8, borderRadius: 2,
-    backgroundColor: colors.accent.violet,
+    backgroundColor: colors.accent.brand,
   },
   logoWord: {
     fontSize: fontSize.sm,
@@ -142,7 +142,7 @@ const s = StyleSheet.create({
   // ── Bottom ────────────────────────────────────────────────────────────────────
   bottom: { gap: spacing.sm },
   primaryBtn: {
-    backgroundColor: colors.accent.violet,
+    backgroundColor: colors.accent.brand,
     borderRadius: radius.md,
     height: 52,
     flexDirection: 'row',

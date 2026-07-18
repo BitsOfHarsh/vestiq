@@ -555,7 +555,7 @@ function EarningsTab({ s }: { s: StockOverview }) {
       <View style={d.toggleRow}>
         {(['Past', 'Upcoming'] as const).map(m => (
           <ScalePressable key={m} style={[d.bigToggle, mode === m && d.bigToggleActive]} onPress={() => setMode(m)}>
-            <Ionicons name={m === 'Past' ? 'time-outline' : 'calendar-outline'} size={15} color={mode === m ? colors.accent.violetBright : colors.text.muted} />
+            <Ionicons name={m === 'Past' ? 'time-outline' : 'calendar-outline'} size={15} color={mode === m ? colors.accent.brandBright : colors.text.muted} />
             <Text style={[d.bigToggleText, mode === m && d.bigToggleTextActive]}>{m}</Text>
           </ScalePressable>
         ))}
@@ -1299,9 +1299,9 @@ const d = StyleSheet.create({
   chartsBlock: { paddingHorizontal: spacing.xl, paddingTop: spacing.xl, gap: spacing.lg },
   rangeRow: { gap: spacing.xs, paddingVertical: 2 },
   rangeChip: { paddingHorizontal: spacing.md, paddingVertical: 7, borderRadius: radius.full, minHeight: 34, alignItems: 'center', justifyContent: 'center' },
-  rangeChipActive: { backgroundColor: colors.accent.violet + '25' },
+  rangeChipActive: { backgroundColor: colors.accent.brand + '25' },
   rangeText: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
-  rangeTextActive: { color: colors.accent.violetBright },
+  rangeTextActive: { color: colors.accent.brandBright },
 
   // Tab bar
   tabBar: {
@@ -1314,7 +1314,7 @@ const d = StyleSheet.create({
   tabTextActive: { color: colors.text.primary, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
   tabIndicatorRow: { flexDirection: 'row', paddingHorizontal: spacing.xl },
   tabIndicatorCell: { flex: 1, alignItems: 'center' },
-  tabIndicator: { height: 2, width: '40%', backgroundColor: colors.accent.violet, borderRadius: 1 },
+  tabIndicator: { height: 2, width: '40%', backgroundColor: colors.accent.brand, borderRadius: 1 },
 
   tabBody: { paddingHorizontal: spacing.xl, paddingTop: spacing.lg, gap: spacing.md },
 
@@ -1346,9 +1346,9 @@ const d = StyleSheet.create({
 
   // Earnings
   bigToggle: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: colors.bg.card, borderRadius: radius.lg, borderWidth: 0.5, borderColor: colors.border.default, paddingVertical: spacing.md, minHeight: 48 },
-  bigToggleActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
+  bigToggleActive: { backgroundColor: colors.accent.brandDim, borderColor: colors.accent.brand },
   bigToggleText: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
-  bigToggleTextActive: { color: colors.accent.violetBright },
+  bigToggleTextActive: { color: colors.accent.brandBright },
   earnPeriod: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, marginTop: spacing.sm },
   earnCardRow: { flexDirection: 'row', gap: spacing.sm },
   earnCard: { flex: 1, backgroundColor: colors.bg.card, borderRadius: radius.lg, borderWidth: 0.5, padding: spacing.md, alignItems: 'center', gap: spacing.xs, minHeight: 150, justifyContent: 'center' },
@@ -1409,7 +1409,7 @@ const d = StyleSheet.create({
   newsInner: { flex: 1, gap: spacing.xs },
   newsTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, lineHeight: 21 },
   newsMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  newsSource: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.accent.violet },
+  newsSource: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.accent.brand },
   newsTime: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   newsDivider: { height: 0.5, backgroundColor: colors.border.default, marginVertical: spacing.md },
 
@@ -1421,9 +1421,9 @@ const d = StyleSheet.create({
   sheetClose: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.bg.secondary, alignItems: 'center', justifyContent: 'center' },
   sheetTabRow: { gap: spacing.sm, paddingHorizontal: spacing.xl, paddingBottom: spacing.lg },
   sheetTab: { paddingHorizontal: spacing.md, paddingVertical: 8, borderRadius: radius.full, borderWidth: 0.5, borderColor: colors.border.default, minHeight: 36, justifyContent: 'center' },
-  sheetTabActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
+  sheetTabActive: { backgroundColor: colors.accent.brandDim, borderColor: colors.accent.brand },
   sheetTabText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
-  sheetTabTextActive: { color: colors.accent.violetBright },
+  sheetTabTextActive: { color: colors.accent.brandBright },
   sheetScroll: { paddingHorizontal: spacing.xl, gap: spacing.xl },
   sheetGroup: { gap: spacing.sm },
   sheetGroupHead: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

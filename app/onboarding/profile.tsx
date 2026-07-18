@@ -76,7 +76,7 @@ export default function ProfileScreen() {
                     <Text style={[s.levelLabel, active && s.levelLabelActive]}>{opt.label}</Text>
                     <Text style={s.levelDesc}>{opt.desc}</Text>
                   </View>
-                  {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.violet} />}
+                  {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.brand} />}
                 </ScalePressable>
               );
             })}
@@ -102,10 +102,10 @@ const s = StyleSheet.create({
 
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   dot:       { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  dotDone:   { backgroundColor: colors.accent.violet },
-  dotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
+  dotDone:   { backgroundColor: colors.accent.brand },
+  dotActive: { backgroundColor: colors.accent.brand, width: 10, height: 10, borderRadius: 5 },
   line:      { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  lineDone:  { backgroundColor: colors.accent.violet },
+  lineDone:  { backgroundColor: colors.accent.brand },
 
   title: { fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm },
   sub:   { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl },
@@ -125,15 +125,15 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, minHeight: 68,
   },
-  levelCardActive: { borderColor: colors.accent.violet, backgroundColor: colors.accent.violet + '12' },
+  levelCardActive: { borderColor: colors.accent.brand, backgroundColor: colors.accent.brand + '12' },
   levelEmoji: { fontSize: 24, width: 32, textAlign: 'center' },
   levelBody:  { flex: 1 },
   levelLabel: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
-  levelLabelActive: { color: colors.accent.violetBright },
+  levelLabelActive: { color: colors.accent.brandBright },
   levelDesc:  { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2, lineHeight: 16 },
 
   primaryBtn: {
-    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
+    backgroundColor: colors.accent.brand, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
   primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },

@@ -62,7 +62,7 @@ const FEATURED: FeaturedSkill[] = [
     sub: 'When to buy or sell?',
     analyzeHeading: 'smart entry\nand exit points:',
     icon: 'analytics',
-    accentColor: colors.accent.violet,
+    accentColor: colors.accent.brand,
     systemPrompt: 'You are Vestiq. Identify entry, stop-loss, and target levels based on technicals. Beginner-friendly. Respond ONLY with valid JSON matching this exact schema — no markdown, no extra text:\n{"setup":"one-line setup e.g. Neutral — near 50-day MA","entry":{"zone":"$X–$Y","reason":"brief reason"},"target":{"zone":"$X–$Y","reason":"brief reason"},"stopLoss":{"zone":"$X","reason":"brief reason"},"riskReward":"1:X","bullets":["insight 1","insight 2","insight 3"]}',
     isCompare: false,
   },
@@ -104,7 +104,7 @@ const ASK_SKILL: FeaturedSkill = {
   sub: 'Free-form question',
   analyzeHeading: 'your question:',
   icon: 'chatbubble-ellipses-outline',
-  accentColor: colors.accent.violet,
+  accentColor: colors.accent.brand,
   systemPrompt: 'You are Vestiq, an AI trading assistant for beginner investors. Answer the user\'s question about stocks, markets, or investing clearly and concisely. No markdown formatting — plain sentences only.',
   isCompare: false,
 };
@@ -213,7 +213,7 @@ function ModelToggle({ model, onToggle }: { model: 'blitz' | 'deep'; onToggle: (
     <View style={s.modelRow}>
       <Text style={s.modelLabel}>Model</Text>
       <ScalePressable style={s.modelPill} onPress={onToggle}>
-        <Ionicons name="flash" size={13} color={colors.accent.violet} />
+        <Ionicons name="flash" size={13} color={colors.accent.brand} />
         <Text style={s.modelPillText}>{model === 'blitz' ? 'Blitz' : 'Deep'}</Text>
       </ScalePressable>
       <View style={s.modelBars}>
@@ -663,7 +663,7 @@ export default function ResearchScreen() {
               /* ── Single ticker flow ── */
               <View>
                 <View style={s.searchBar}>
-                  <Ionicons name="search" size={16} color={colors.accent.violet} />
+                  <Ionicons name="search" size={16} color={colors.accent.brand} />
                   <TextInput
                     style={s.searchInput}
                     placeholder="Enter ticker"
@@ -674,7 +674,7 @@ export default function ResearchScreen() {
                     returnKeyType="search"
                     onSubmitEditing={() => { if (query.trim()) runAnalysis(activeSkill, [query.trim()]); }}
                   />
-                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginRight: 4 }} />}
+                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.brand} style={{ marginRight: 4 }} />}
                 </View>
                 {dropOpen && dropResults.length > 0 && (
                   <View style={s.dropdown}>
@@ -700,7 +700,7 @@ export default function ResearchScreen() {
             </Text>
 
             {trendingLoading ? (
-              <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginTop: spacing.lg }} />
+              <ActivityIndicator size="small" color={colors.accent.brand} style={{ marginTop: spacing.lg }} />
             ) : (
               trendingStocks.map((row) => {
                 const pos    = row.changePct >= 0;
@@ -736,7 +736,7 @@ export default function ResearchScreen() {
 
   // ── VIEW: Result ──────────────────────────────────────────────────────────
 
-  const accentColor = activeSkill?.accentColor ?? colors.accent.violet;
+  const accentColor = activeSkill?.accentColor ?? colors.accent.brand;
 
   const STANCE_COLOR: Record<string, string> = {
     'Strong Buy': '#10B981', 'Buy': '#34D399',
@@ -775,8 +775,8 @@ export default function ResearchScreen() {
               </View>
               <View style={s.divider} />
               <View style={s.stanceRow}>
-                <View style={[s.stancePill, { backgroundColor: (STANCE_COLOR[deepResult.stance] ?? colors.accent.violet) + '22' }]}>
-                  <Text style={[s.stanceText, { color: STANCE_COLOR[deepResult.stance] ?? colors.accent.violet }]}>
+                <View style={[s.stancePill, { backgroundColor: (STANCE_COLOR[deepResult.stance] ?? colors.accent.brand) + '22' }]}>
+                  <Text style={[s.stanceText, { color: STANCE_COLOR[deepResult.stance] ?? colors.accent.brand }]}>
                     {deepResult.stance.toUpperCase()}
                   </Text>
                 </View>
@@ -863,7 +863,7 @@ export default function ResearchScreen() {
 
         {!analysisLoading && (
           <ScalePressable style={s.tryAnotherBtn} onPress={goAnalyze}>
-            <Ionicons name="search-outline" size={16} color={colors.accent.violet} />
+            <Ionicons name="search-outline" size={16} color={colors.accent.brand} />
             <Text style={s.tryAnotherText}>Try another stock</Text>
           </ScalePressable>
         )}
@@ -926,7 +926,7 @@ const s = StyleSheet.create({
   askInput: { flex: 1, fontSize: fontSize.base, fontFamily: fontFamily.regular, color: colors.text.primary },
   askTag: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: colors.bg.card, borderRadius: radius.full, paddingHorizontal: spacing.sm, paddingVertical: 5, borderWidth: 0.5, borderColor: colors.border.default },
   askTagText: { fontSize: 11, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
-  askSendBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.accent.violet, alignItems: 'center', justifyContent: 'center' },
+  askSendBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.accent.brand, alignItems: 'center', justifyContent: 'center' },
 
   // ── Analyze ───────────────────────────────────────────────────────────────
   analyzeScroll: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
@@ -944,14 +944,14 @@ const s = StyleSheet.create({
 
   modelRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.bg.elevated, borderRadius: radius.lg, paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 2, borderWidth: 0.5, borderColor: colors.border.default, marginBottom: spacing.lg },
   modelLabel:    { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, letterSpacing: 0.6 },
-  modelPill:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.accent.violetDim, borderRadius: radius.full, paddingHorizontal: spacing.sm, paddingVertical: 4, borderWidth: 0.5, borderColor: colors.accent.violet + '40' },
-  modelPillText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.violet },
+  modelPill:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.accent.brandDim, borderRadius: radius.full, paddingHorizontal: spacing.sm, paddingVertical: 4, borderWidth: 0.5, borderColor: colors.accent.brand + '40' },
+  modelPillText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.brand },
   modelBars:     { flex: 1, gap: 3 },
   modelBarRow:   { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   modelBarLabel: { fontSize: 9, fontFamily: fontFamily.regular, color: colors.text.muted, width: 56 },
   modelSegments: { flexDirection: 'row', gap: 2 },
   modelSeg:      { width: 14, height: 5, borderRadius: 2, backgroundColor: colors.border.default },
-  modelSegOn:    { backgroundColor: colors.accent.violet },
+  modelSegOn:    { backgroundColor: colors.accent.brand },
 
   trendingLabel:  { fontSize: fontSize.xl, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary, marginBottom: spacing.sm },
   trendRowAnalyze:{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm + 2, borderBottomWidth: 0.5, borderBottomColor: colors.border.subtle },
@@ -1009,5 +1009,5 @@ const s = StyleSheet.create({
   debatePtText: { flex: 1, fontSize: fontSize.xs, fontFamily: fontFamily.regular, color: colors.text.secondary, lineHeight: 17 },
 
   tryAnotherBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, marginTop: spacing.lg, paddingVertical: spacing.md, borderRadius: radius.lg, backgroundColor: colors.bg.elevated, borderWidth: 0.5, borderColor: colors.border.default },
-  tryAnotherText: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.violet },
+  tryAnotherText: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.brand },
 });

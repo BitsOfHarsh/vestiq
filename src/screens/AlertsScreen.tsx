@@ -144,8 +144,8 @@ function StockBlock({
         </View>
         <View style={s.stockMeta}>
           <Text style={s.stockTicker}>{item.ticker}</Text>
-          <View style={[s.sourceTag, { backgroundColor: (source === 'portfolio' ? colors.status.blue : colors.accent.violet) + '20' }]}>
-            <Text style={[s.sourceTagText, { color: source === 'portfolio' ? colors.status.blue : colors.accent.violet }]}>
+          <View style={[s.sourceTag, { backgroundColor: (source === 'portfolio' ? colors.status.blue : colors.accent.brand) + '20' }]}>
+            <Text style={[s.sourceTagText, { color: source === 'portfolio' ? colors.status.blue : colors.accent.brand }]}>
               {source === 'portfolio' ? 'Holdings' : 'Watchlist'}
             </Text>
           </View>
@@ -177,7 +177,7 @@ function StockBlock({
       {/* Summary strip */}
       <View style={s.summaryStrip}>
         <Text style={s.summaryText}>
-          <Text style={{ color: colors.accent.violetBright }}>{activeList.length}</Text>
+          <Text style={{ color: colors.accent.brandBright }}>{activeList.length}</Text>
           {' of 4 alerts active on '}
           <Text style={{ color: colors.text.primary }}>{item.ticker}</Text>
         </Text>
@@ -322,8 +322,8 @@ export default function AlertsScreen() {
           <Switch
             value={masterActive}
             onValueChange={(v) => toggleAllAlerts(v)}
-            trackColor={{ false: colors.bg.secondary, true: colors.accent.violet + '60' }}
-            thumbColor={masterActive ? colors.accent.violet : colors.text.muted}
+            trackColor={{ false: colors.bg.secondary, true: colors.accent.brand + '60' }}
+            thumbColor={masterActive ? colors.accent.brand : colors.text.muted}
           />
         </View>
 
@@ -386,9 +386,9 @@ const s = StyleSheet.create({
     borderRadius: radius.full, borderWidth: 0.5,
     borderColor: colors.border.default, backgroundColor: colors.bg.card,
   },
-  filterChipActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
+  filterChipActive: { backgroundColor: colors.accent.brandDim, borderColor: colors.accent.brand },
   filterText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted },
-  filterTextActive: { color: colors.accent.violet },
+  filterTextActive: { color: colors.accent.brand },
 
   // Master toggle
   masterRow: {
@@ -411,9 +411,9 @@ const s = StyleSheet.create({
   },
   tickerBadge: {
     width: 36, height: 36, borderRadius: radius.sm,
-    backgroundColor: colors.accent.violetDim, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.brandDim, alignItems: 'center', justifyContent: 'center',
   },
-  tickerBadgeText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.violetBright },
+  tickerBadgeText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.brandBright },
   stockMeta: { flex: 1, gap: 3 },
   stockTicker: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
   sourceTag: { alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2, borderRadius: radius.sm },
@@ -455,7 +455,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.secondary,
   },
   summaryText: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.secondary },
-  turnOnAll: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.violet },
+  turnOnAll: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.brand },
 
   // Empty
   emptyBlock: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxxl },

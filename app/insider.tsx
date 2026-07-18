@@ -126,7 +126,7 @@ export default function InsiderScreen() {
 
       {loading && trades.length === 0 && (
         <View style={s.loadingWrap}>
-          <ActivityIndicator size="small" color={colors.accent.violet} />
+          <ActivityIndicator size="small" color={colors.accent.brand} />
         </View>
       )}
 

@@ -15,13 +15,13 @@ function TabIcon({ name, outlineName, focused }: { name: IconName; outlineName: 
           top: -10,
           width: 20, height: 2,
           borderRadius: 1,
-          backgroundColor: colors.accent.violet,
+          backgroundColor: colors.accent.brand,
         }} />
       )}
       <Ionicons
         name={focused ? name : outlineName}
         size={22}
-        color={focused ? colors.accent.violet : colors.text.muted}
+        color={focused ? colors.accent.brand : colors.text.muted}
       />
     </View>
   );
@@ -33,7 +33,7 @@ export default function TabsLayout() {
       initialRouteName="dashboard"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent.violet,
+        tabBarActiveTintColor: colors.accent.brand,
         tabBarInactiveTintColor: colors.text.muted,
         tabBarStyle: {
           backgroundColor: colors.bg.primary,

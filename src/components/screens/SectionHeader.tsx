@@ -32,5 +32,5 @@ const s = StyleSheet.create({
     fontSize: fontSize.sm, fontWeight: fontWeight.medium,
     color: colors.text.muted, letterSpacing: 0.2,
   },
-  action: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.accent.violet },
+  action: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.accent.brand },
 });

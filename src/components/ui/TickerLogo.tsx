@@ -56,5 +56,5 @@ const fb = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: { fontWeight: fontWeight.medium, color: colors.accent.violet },
+  text: { fontWeight: fontWeight.medium, color: colors.accent.brand },
 });

@@ -43,8 +43,8 @@ export default function EntryExitCard({ data, ticker, accentColor }: {
           <Text style={s.levelZone}>{data.stopLoss.zone}</Text>
           <Text style={s.levelReason} numberOfLines={2}>{data.stopLoss.reason}</Text>
         </View>
-        <View style={[s.levelBox, { borderColor: colors.accent.violetBright + '40', backgroundColor: colors.accent.violetBright + '08' }]}>
-          <Text style={[s.levelLabel, { color: colors.accent.violetBright }]}>Target</Text>
+        <View style={[s.levelBox, { borderColor: colors.accent.brandBright + '40', backgroundColor: colors.accent.brandBright + '08' }]}>
+          <Text style={[s.levelLabel, { color: colors.accent.brandBright }]}>Target</Text>
           <Text style={s.levelZone}>{data.target.zone}</Text>
           <Text style={s.levelReason} numberOfLines={2}>{data.target.reason}</Text>
         </View>

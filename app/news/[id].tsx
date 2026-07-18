@@ -131,7 +131,7 @@ function WatchStockCard({
         scaleTo={0.95}
       >
         <Text style={ws.readMoreText}>Read More </Text>
-        <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={12} color={colors.accent.violet} />
+        <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={12} color={colors.accent.brand} />
       </ScalePressable>
     </View>
   );
@@ -155,7 +155,7 @@ const ws = StyleSheet.create({
   change: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
   desc: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 20 },
   readMoreBtn: { flexDirection: 'row', alignItems: 'center' },
-  readMoreText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.violet },
+  readMoreText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.brand },
 });
 
 // ─── Sources modal ────────────────────────────────────────────────────────────
@@ -459,7 +459,7 @@ export default function NewsDetailScreen() {
                     style={d.digCard}
                     onPress={() => setAskText(q)}
                   >
-                    <Ionicons name="sparkles-outline" size={14} color={colors.accent.violet} />
+                    <Ionicons name="sparkles-outline" size={14} color={colors.accent.brand} />
                     <Text style={d.digText}>{q}</Text>
                     <Ionicons name="chevron-forward" size={14} color={colors.text.muted} />
                   </ScalePressable>
@@ -544,7 +544,7 @@ const d = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   metaText: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   sourcesRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sourceAvatar: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.accent.violet },
+  sourceAvatar: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.accent.brand },
   sourcesText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   skeletonWrap: { gap: 8 },
@@ -599,7 +599,7 @@ const d = StyleSheet.create({
     paddingHorizontal: spacing.xl, paddingTop: spacing.sm, gap: spacing.sm,
   },
   askInputWrap: {
-    borderWidth: 1, borderColor: colors.accent.violet, borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.accent.brand, borderRadius: radius.lg,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm, minHeight: 44,
     justifyContent: 'center',
   },
@@ -614,6 +614,6 @@ const d = StyleSheet.create({
   askActionText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
   askSendBtn: {
     marginLeft: 'auto' as const, width: 36, height: 36, borderRadius: 18,
-    backgroundColor: colors.accent.violet, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.brand, alignItems: 'center', justifyContent: 'center',
   },
 });

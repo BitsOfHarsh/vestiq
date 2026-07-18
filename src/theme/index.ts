@@ -1,7 +1,7 @@
-// ─── VestIQ Design System — Revolut-inspired ─────────────────────────────────
-// Source: DESIGN-revolut.md
+// ─── VestIQ Design System ────────────────────────────────────────────────────
 // Canvas: true black (#000000) storytelling + surface-elevated (#16181a) cards
-// Accent: cobalt violet (#494fdf) — used sparingly as a brand stamp
+// Accent: teal (#0D9488) — the documented VestIQ brand color, used sparingly
+//         as a brand stamp. Distinct from the semantic profit-green/loss-red.
 // Typography: Inter (400 body / 500 display / 600 emphatic) via expo-google-fonts
 // Elevation: luminance shifts only — no drop shadows
 
@@ -24,12 +24,12 @@ const THEME = {
       disabled:  '#c9c9cd',                   // faint
     },
 
-    // ── Brand accent — cobalt violet ────────────────────────────────────────
+    // ── Brand accent — teal ─────────────────────────────────────────────────
     accent: {
-      violet:      '#494fdf',   // primary — the brand stamp
-      violetBright:'#4f55f1',   // primary-bright
-      violetDeep:  '#3a40c4',   // primary-deep / pressed state
-      violetDim:   '#494fdf22', // translucent surface tint
+      brand:       '#0D9488',   // primary — the brand stamp
+      brandBright: '#14B8A6',   // primary-bright
+      brandDeep:   '#0B7A6E',   // primary-deep / pressed state
+      brandDim:    '#0D948822', // translucent surface tint
     },
 
     // ── Semantic status ──────────────────────────────────────────────────────

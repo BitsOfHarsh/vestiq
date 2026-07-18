@@ -26,7 +26,7 @@ const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 const G = {
   card:   [colors.bg.card,     colors.bg.secondary] as const,
-  violet: [colors.accent.violet, colors.accent.violetDeep] as const,
+  violet: [colors.accent.brand, colors.accent.brandDeep] as const,
   green:  [colors.status.green,  colors.status.green] as const,
   red:    [colors.status.red,    colors.status.red] as const,
   amber:  [colors.status.amber,  colors.status.amber] as const,
@@ -315,7 +315,7 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
                     placeholderTextColor={colors.text.muted}
                     placeholder="e.g. NVDA"
                   />
-                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginRight: 8 }} />}
+                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.brand} style={{ marginRight: 8 }} />}
                 </View>
                 {errors.ticker && <Text style={s.fieldError}>{errors.ticker}</Text>}
                 {dropOpen && dropResults.length > 0 && (
@@ -353,7 +353,7 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
               </View>
 
               <ScalePressable onPress={submit} scaleTo={0.98}>
-                <View style={[s.submitBtn, { backgroundColor: colors.accent.violet }]}>
+                <View style={[s.submitBtn, { backgroundColor: colors.accent.brand }]}>
                   <Text style={s.submitText}>Add to Portfolio</Text>
                 </View>
               </ScalePressable>
@@ -469,7 +469,7 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
                     placeholderTextColor={colors.text.muted}
                     placeholder="e.g. AAPL"
                   />
-                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginRight: 8 }} />}
+                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.brand} style={{ marginRight: 8 }} />}
                 </View>
                 {errors.ticker && <Text style={s.fieldError}>{errors.ticker}</Text>}
                 {dropOpen && dropResults.length > 0 && (
@@ -506,7 +506,7 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
               </View>
 
               <ScalePressable onPress={submit} scaleTo={0.98}>
-                <View style={[s.submitBtn, { backgroundColor: colors.accent.violet }]}>
+                <View style={[s.submitBtn, { backgroundColor: colors.accent.brand }]}>
                   <Text style={s.submitText}>Add to Watchlist</Text>
                 </View>
               </ScalePressable>
@@ -570,7 +570,7 @@ export default function PortfolioScreen() {
 
         {/* ── Hero value section ──────────────────────────────────────────── */}
         <View style={[s.heroSection, { backgroundColor: colors.bg.secondary }]}>
-          <View style={[s.heroGlow, { backgroundColor: colors.accent.violet + '08' }]} />
+          <View style={[s.heroGlow, { backgroundColor: colors.accent.brand + '08' }]} />
           <View style={s.heroHeader}>
             <Text style={s.heroLabel}>Portfolio Value</Text>
             <View style={s.heroIcons}>
@@ -612,7 +612,7 @@ export default function PortfolioScreen() {
               <Text style={s.colTitle}>Holdings</Text>
               {enrichedHoldings.length > 0 && (
                 <ScalePressable style={s.addBtn} onPress={() => setAddHoldVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.violet }]}>
+                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.brand }]}>
                     <Ionicons name="add" size={13} color="#FFFFFF" />
                   </View>
                   <Text style={s.addBtnText}>Add</Text>
@@ -625,7 +625,7 @@ export default function PortfolioScreen() {
                 <Ionicons name="briefcase-outline" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>No holdings yet</Text>
                 <ScalePressable onPress={() => setAddHoldVisible(true)} scaleTo={0.95}>
-                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.violet }]}>
+                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.brand }]}>
                     <Text style={s.colEmptyBtnText}>Add Holdings</Text>
                   </View>
                 </ScalePressable>
@@ -646,7 +646,7 @@ export default function PortfolioScreen() {
               <Text style={s.colTitle}>Watchlist</Text>
               {watchlist.length > 0 && (
                 <ScalePressable style={s.addBtn} onPress={() => setAddWatchVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.violet }]}>
+                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.brand }]}>
                     <Ionicons name="add" size={13} color="#FFFFFF" />
                   </View>
                   <Text style={s.addBtnText}>Add</Text>
@@ -659,7 +659,7 @@ export default function PortfolioScreen() {
                 <Ionicons name="eye-outline" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>Watchlist empty</Text>
                 <ScalePressable onPress={() => setAddWatchVisible(true)} scaleTo={0.95}>
-                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.violet }]}>
+                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.brand }]}>
                     <Text style={s.colEmptyBtnText}>Add Stocks</Text>
                   </View>
                 </ScalePressable>
@@ -687,9 +687,9 @@ export default function PortfolioScreen() {
 
         {/* ── AI Analysis card ────────────────────────────────────────────── */}
         <View style={s.aiCard}>
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.accent.violet + '08', borderRadius: radius.lg }]} pointerEvents="none" />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.accent.brand + '08', borderRadius: radius.lg }]} pointerEvents="none" />
           <View style={s.aiTop}>
-            <View style={[s.aiIconWrap, { backgroundColor: colors.accent.violet }]}>
+            <View style={[s.aiIconWrap, { backgroundColor: colors.accent.brand }]}>
               <Ionicons name="bar-chart" size={16} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
@@ -702,7 +702,7 @@ export default function PortfolioScreen() {
           </View>
           <Text style={s.aiDesc}>{CONTENT.portfolio.aiCard.description}</Text>
           <ScalePressable onPress={() => router.push('/(tabs)/research')} scaleTo={0.98}>
-            <View style={[s.aiBtn, { backgroundColor: colors.accent.violet }]}>
+            <View style={[s.aiBtn, { backgroundColor: colors.accent.brand }]}>
               <Ionicons name="sparkles" size={15} color="#FFFFFF" />
               <Text style={s.aiBtnText}>Analyze Portfolio</Text>
             </View>
@@ -776,18 +776,18 @@ const s = StyleSheet.create({
   tooltipTitle: { fontSize: fontSize.md, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
   tooltipBody: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 20 },
   tooltipClose: { alignSelf: 'flex-end' },
-  tooltipCloseText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.violet },
+  tooltipCloseText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.brand },
 
   // AI card
   aiCard: {
     marginHorizontal: spacing.xl, borderRadius: radius.xl,
     backgroundColor: colors.bg.card,
-    padding: spacing.md, borderWidth: 1, borderColor: colors.accent.violet + '50',
+    padding: spacing.md, borderWidth: 1, borderColor: colors.accent.brand + '50',
     gap: spacing.sm, overflow: 'hidden',
   },
   aiTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   aiIconWrap: { width: 34, height: 34, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  aiTitle: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.accent.violetBright },
+  aiTitle: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.accent.brandBright },
   aiAvail: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, marginTop: 2 },
   aiDesc: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary, lineHeight: 19 },
   aiBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, borderRadius: radius.lg, paddingVertical: 14, minHeight: 48 },
@@ -800,7 +800,7 @@ const s = StyleSheet.create({
   colTitle: { fontSize: fontSize.sm, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   addBtnInner: { width: 18, height: 18, borderRadius: 5, alignItems: 'center', justifyContent: 'center' },
-  addBtnText: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.violet },
+  addBtnText: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.brand },
   colCards: { gap: spacing.sm },
 
   // Column empty state
@@ -882,9 +882,9 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radius.full,
     borderWidth: 0.5, borderColor: colors.border.default, backgroundColor: colors.bg.card,
   },
-  sectorChipActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
+  sectorChipActive: { backgroundColor: colors.accent.brandDim, borderColor: colors.accent.brand },
   sectorChipText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
-  sectorChipTextActive: { color: colors.accent.violet },
+  sectorChipTextActive: { color: colors.accent.brand },
   submitBtn: { borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.md, minHeight: 50, marginTop: spacing.sm },
   submitText: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#FFFFFF' },
   toast: {

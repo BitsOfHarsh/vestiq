@@ -196,10 +196,10 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
                 </View>
               )}
               {idea.timeframe && (
-                <View style={[ti.metric, { borderTopColor: colors.accent.violet }]}>
-                  <Ionicons name="time-outline" size={14} color={colors.accent.violet} />
+                <View style={[ti.metric, { borderTopColor: colors.accent.brand }]}>
+                  <Ionicons name="time-outline" size={14} color={colors.accent.brand} />
                   <Text style={ti.metricLabel}>HORIZON</Text>
-                  <Text style={[ti.metricVal, { color: colors.accent.violet }]}>{idea.timeframe}</Text>
+                  <Text style={[ti.metricVal, { color: colors.accent.brand }]}>{idea.timeframe}</Text>
                 </View>
               )}
             </View>
@@ -375,9 +375,9 @@ function NewsCard({ item, onSourcesPress, onTradeIdeaPress }: { item: Headline; 
       <View style={s.cardFooter}>
         {sourceCount > 1 ? (
           <ScalePressable style={s.sourcesChip} onPress={onSourcesPress}>
-            <Ionicons name="newspaper-outline" size={12} color={colors.accent.violet} />
+            <Ionicons name="newspaper-outline" size={12} color={colors.accent.brand} />
             <Text style={s.sourcesChipText}>{sourceCount} Sources</Text>
-            <Ionicons name="chevron-forward" size={11} color={colors.accent.violet} />
+            <Ionicons name="chevron-forward" size={11} color={colors.accent.brand} />
           </ScalePressable>
         ) : <View />}
         <ScalePressable style={s.tradeIdeaBtn} onPress={onTradeIdeaPress}>
@@ -665,7 +665,7 @@ const s = StyleSheet.create({
     fontWeight: fontWeight.regular, color: colors.text.muted, paddingBottom: 6,
   },
   filterTextActive: { color: colors.text.primary, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
-  filterUnderline:  { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.accent.violet, borderRadius: 1 },
+  filterUnderline:  { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.accent.brand, borderRadius: 1 },
   filterBorder:     { height: 0.5, backgroundColor: colors.border.subtle },
 
   list:      { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
@@ -682,7 +682,7 @@ const s = StyleSheet.create({
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, gap: 8,
   },
   cardTopRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  timeDot:    { width: 6, height: 6, borderRadius: radius.full, backgroundColor: colors.accent.violet + '80' },
+  timeDot:    { width: 6, height: 6, borderRadius: radius.full, backgroundColor: colors.accent.brand + '80' },
   cardTime: {
     fontSize: fontSize.xs, fontFamily: fontFamily.regular,
     fontWeight: fontWeight.regular, color: colors.text.muted,
@@ -721,13 +721,13 @@ const s = StyleSheet.create({
 
   sourcesChip: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: colors.accent.violet + '18', borderRadius: radius.full,
+    backgroundColor: colors.accent.brand + '18', borderRadius: radius.full,
     paddingHorizontal: spacing.sm, paddingVertical: 4,
-    borderWidth: 0.5, borderColor: colors.accent.violet + '40',
+    borderWidth: 0.5, borderColor: colors.accent.brand + '40',
   },
   sourcesChipText: {
     fontSize: fontSize.xs, fontFamily: fontFamily.medium,
-    fontWeight: fontWeight.medium, color: colors.accent.violet,
+    fontWeight: fontWeight.medium, color: colors.accent.brand,
   },
 
   tradeIdeaBtn: {

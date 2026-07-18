@@ -38,7 +38,7 @@ export default function VButton({
     variant === 'primary'
       ? THEME.colors.text.primary
       : variant === 'ghost'
-      ? THEME.colors.accent.violetBright
+      ? THEME.colors.accent.brandBright
       : THEME.colors.text.primary;
 
   return (
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: THEME.colors.accent.violet,
+    backgroundColor: THEME.colors.accent.brand,
   },
   secondary: {
     backgroundColor: THEME.colors.bg.card,

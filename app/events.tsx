@@ -112,7 +112,7 @@ function EarningsTab({ days, loading }: { days: EarningsDay[]; loading: boolean 
   if (loading) {
     return (
       <View style={t.centered}>
-        <ActivityIndicator size="large" color={colors.accent.violet} />
+        <ActivityIndicator size="large" color={colors.accent.brand} />
       </View>
     );
   }
@@ -147,7 +147,7 @@ function EconomicTab({ days, loading }: { days: EconomicDay[]; loading: boolean 
   if (loading) {
     return (
       <View style={t.centered}>
-        <ActivityIndicator size="large" color={colors.accent.violet} />
+        <ActivityIndicator size="large" color={colors.accent.brand} />
       </View>
     );
   }
@@ -269,7 +269,7 @@ export default function EventsScreen() {
               onPress={() => setActive(tb.key)}
             >
               {active_
-                ? <View style={[s.tabBtnGrad, { backgroundColor: colors.accent.violet }]}>
+                ? <View style={[s.tabBtnGrad, { backgroundColor: colors.accent.brand }]}>
                     <Ionicons name={tb.icon as never} size={13} color="#fff" />
                     <Text style={s.tabTextActive}>{tb.label}</Text>
                   </View>
@@ -369,7 +369,7 @@ const t = StyleSheet.create({
   },
   notableTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
   bulletRow:    { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  bulletDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent.violet, marginTop: 5, flexShrink: 0 },
+  bulletDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent.brand, marginTop: 5, flexShrink: 0 },
   bulletText:   { flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary },
 
   // Economic

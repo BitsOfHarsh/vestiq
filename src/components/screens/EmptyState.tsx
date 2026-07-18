@@ -16,7 +16,7 @@ interface EmptyStateProps {
 export default function EmptyState({ icon, title, subtitle, buttonLabel, onPress }: EmptyStateProps) {
   return (
     <View style={s.card}>
-      <Ionicons name={icon} size={40} color={colors.accent.violet} />
+      <Ionicons name={icon} size={40} color={colors.accent.brand} />
       <Text style={s.title}>{title}</Text>
       {subtitle && <Text style={s.subtitle}>{subtitle}</Text>}
       {buttonLabel && onPress && (
@@ -37,7 +37,7 @@ const s = StyleSheet.create({
   title: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary, textAlign: 'center' },
   subtitle: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center', lineHeight: 19 },
   btn: {
-    backgroundColor: colors.accent.violet, borderRadius: radius.md,
+    backgroundColor: colors.accent.brand, borderRadius: radius.md,
     paddingHorizontal: spacing.xl, paddingVertical: spacing.sm,
     minHeight: 44, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xs,
   },

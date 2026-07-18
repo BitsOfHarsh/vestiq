@@ -99,7 +99,7 @@ const mc = StyleSheet.create({
     borderRadius: radius.lg, borderWidth: 0.5, borderColor: colors.border.default,
     padding: spacing.md, gap: spacing.sm, alignItems: 'center',
   },
-  cardSelected: { borderColor: colors.accent.violet, borderWidth: 1.5 },
+  cardSelected: { borderColor: colors.accent.brand, borderWidth: 1.5 },
   rank: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   ticker: { fontSize: fontSize.xl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
   label: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center' },

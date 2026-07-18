@@ -9,7 +9,7 @@ const COLOR_MAP: Record<Color, string> = {
   primary: THEME.colors.text.primary,
   secondary: THEME.colors.text.secondary,
   muted: THEME.colors.text.muted,
-  teal: THEME.colors.accent.violetBright,
+  teal: THEME.colors.accent.brandBright,
   green: THEME.colors.status.green,
   red: THEME.colors.status.red,
   amber: THEME.colors.status.amber,

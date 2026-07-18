@@ -77,7 +77,7 @@ export default function MarketScreen() {
                   </View>
                   <Text style={s.optionSub}>{opt.sub}</Text>
                 </View>
-                {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.violet} />}
+                {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.brand} />}
               </ScalePressable>
             );
           })}
@@ -94,7 +94,7 @@ export default function MarketScreen() {
             <Switch
               value={false}
               disabled
-              trackColor={{ false: colors.bg.secondary, true: colors.accent.violet }}
+              trackColor={{ false: colors.bg.secondary, true: colors.accent.brand }}
               thumbColor={colors.text.muted}
             />
           </View>
@@ -125,10 +125,10 @@ const s = StyleSheet.create({
   // Progress bar
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  progressDotDone: { backgroundColor: colors.accent.violet },
-  progressDotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
+  progressDotDone: { backgroundColor: colors.accent.brand },
+  progressDotActive: { backgroundColor: colors.accent.brand, width: 10, height: 10, borderRadius: 5 },
   progressLine: { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  progressLineDone: { backgroundColor: colors.accent.violet },
+  progressLineDone: { backgroundColor: colors.accent.brand },
 
   // Copy
   title: {
@@ -147,12 +147,12 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, minHeight: 64,
   },
-  optionCardActive: { borderColor: colors.accent.violet, backgroundColor: colors.accent.violetDim },
+  optionCardActive: { borderColor: colors.accent.brand, backgroundColor: colors.accent.brandDim },
   optionFlag: { fontSize: 28 },
   optionBody: { flex: 1 },
   optionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   optionTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
-  optionTitleActive: { color: colors.accent.violetBright },
+  optionTitleActive: { color: colors.accent.brandBright },
   optionSub: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2 },
   popularBadge: { backgroundColor: colors.status.amber + '20', paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.sm },
   popularBadgeText: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.amber },
@@ -176,7 +176,7 @@ const s = StyleSheet.create({
 
   // Primary button
   primaryBtn: {
-    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
+    backgroundColor: colors.accent.brand, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
   primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },

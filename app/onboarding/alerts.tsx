@@ -121,10 +121,10 @@ const s = StyleSheet.create({
   // Progress
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  progressDotDone: { backgroundColor: colors.accent.violet },
-  progressDotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
+  progressDotDone: { backgroundColor: colors.accent.brand },
+  progressDotActive: { backgroundColor: colors.accent.brand, width: 10, height: 10, borderRadius: 5 },
   progressLine: { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  progressLineDone: { backgroundColor: colors.accent.violet },
+  progressLineDone: { backgroundColor: colors.accent.brand },
 
   // Copy
   title: {
@@ -139,15 +139,15 @@ const s = StyleSheet.create({
   // Demo card
   demoCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
-    padding: spacing.md, borderWidth: 0.5, borderColor: colors.accent.violet,
+    padding: spacing.md, borderWidth: 0.5, borderColor: colors.accent.brand,
     gap: spacing.md, marginBottom: spacing.md,
   },
   demoHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   demoBadge: {
     width: 36, height: 36, borderRadius: radius.sm,
-    backgroundColor: colors.accent.violetDim, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.brandDim, alignItems: 'center', justifyContent: 'center',
   },
-  demoBadgeText: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.violetBright },
+  demoBadgeText: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.brandBright },
   demoMeta: { flex: 1 },
   demoTicker: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
   demoName: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
@@ -179,7 +179,7 @@ const s = StyleSheet.create({
   notifTopRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: 2 },
   notifIcon: {
     width: 18, height: 18, borderRadius: 4,
-    backgroundColor: colors.accent.violet, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.brand, alignItems: 'center', justifyContent: 'center',
   },
   notifIconText: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
   notifApp: { flex: 1, fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
@@ -191,7 +191,7 @@ const s = StyleSheet.create({
 
   // Buttons
   primaryBtn: {
-    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
+    backgroundColor: colors.accent.brand, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
   primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
