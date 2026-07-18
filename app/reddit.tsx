@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -7,8 +7,9 @@ import THEME from '../src/theme';
 import { RedditStock, RedditMover } from '../src/mock';
 import { getRedditTrending } from '../src/services/freedata';
 import { getSnapshots } from '../src/services/polygon';
+import ScalePressable from '../src/components/ui/ScalePressable';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 // ─── Rank badge ───────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ function RankBadge({ rank }: { rank: number }) {
 
 const rb = StyleSheet.create({
   wrap: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  text: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  text: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
 });
 
 // ─── Rank change cell ─────────────────────────────────────────────────────────
@@ -45,8 +46,8 @@ function RankChange({ value }: { value: number }) {
 
 const rc = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  text: { fontSize: fontSize.xs, fontWeight: fontWeight.medium },
-  neutral: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.text.muted },
+  text: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
+  neutral: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
 });
 
 // ─── Mover card ───────────────────────────────────────────────────────────────
@@ -57,10 +58,10 @@ function MoverCard({ mover, selected, onPress }: { mover: RedditMover; selected:
   const psPos = mover.prevSession >= 0;
 
   return (
-    <TouchableOpacity
+    <ScalePressable
       style={[mc.card, selected && mc.cardSelected]}
       onPress={onPress}
-      activeOpacity={0.75}
+      scaleTo={0.95}
     >
       <Text style={mc.rank}>{mover.rank}</Text>
       <Text style={mc.ticker}>{mover.ticker}</Text>
@@ -88,7 +89,7 @@ function MoverCard({ mover, selected, onPress }: { mover: RedditMover; selected:
           {psPos ? '+' : ''}{mover.prevSession.toFixed(1)}%
         </Text>
       </View>
-    </TouchableOpacity>
+    </ScalePressable>
   );
 }
 
@@ -98,12 +99,12 @@ const mc = StyleSheet.create({
     borderRadius: radius.lg, borderWidth: 0.5, borderColor: colors.border.default,
     padding: spacing.md, gap: spacing.sm, alignItems: 'center',
   },
-  cardSelected: { borderColor: colors.accent.teal, borderWidth: 1.5 },
-  rank: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.muted },
-  ticker: { fontSize: fontSize.xl, fontWeight: fontWeight.medium, color: colors.text.primary },
-  label: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center' },
+  cardSelected: { borderColor: colors.accent.violet, borderWidth: 1.5 },
+  rank: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  ticker: { fontSize: fontSize.xl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  label: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center' },
   pill: { borderRadius: radius.md, paddingHorizontal: spacing.sm, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', gap: 3, width: '100%', justifyContent: 'center' },
-  pillText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium },
+  pillText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
 });
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -150,13 +151,13 @@ export default function RedditScreen() {
   return (
     <SafeAreaView style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
-        </TouchableOpacity>
+        </ScalePressable>
         <Text style={s.headerTitle}>Reddit Trending</Text>
-        <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="filter-outline" size={20} color={colors.text.secondary} />
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.scroll}>
@@ -206,9 +207,9 @@ export default function RedditScreen() {
             );
           })}
 
-          <TouchableOpacity style={s.showMoreBtn} onPress={() => setShowAllRanks(v => !v)}>
+          <ScalePressable style={s.showMoreBtn} onPress={() => setShowAllRanks(v => !v)}>
             <Ionicons name={showAllRanks ? 'chevron-up' : 'chevron-down'} size={18} color={colors.text.muted} />
-          </TouchableOpacity>
+          </ScalePressable>
         </View>
 
         {/* Notable Top Rank Change */}
@@ -244,14 +245,13 @@ export default function RedditScreen() {
           {activeMover ? (
             <>
               <Text style={s.analysisTitle}>{activeMover.name} ({activeMover.ticker}) Analysis</Text>
-              <TouchableOpacity
+              <ScalePressable
                 style={s.overviewBtn}
-                activeOpacity={0.7}
                 onPress={() => router.push({ pathname: '/stock/[ticker]', params: { ticker: activeMover.ticker, name: activeMover.name } })}
               >
                 <Text style={s.overviewBtnText}>{activeMover.ticker} Overview </Text>
                 <Ionicons name="chevron-forward" size={14} color={colors.text.secondary} />
-              </TouchableOpacity>
+              </ScalePressable>
             </>
           ) : (
             <Text style={{ color: colors.text.muted, fontSize: fontSize.sm, marginTop: spacing.sm }}>
@@ -275,7 +275,7 @@ const s = StyleSheet.create({
     borderBottomWidth: 0.5, borderBottomColor: colors.border.default,
   },
   backBtn: { width: 38, height: 38, justifyContent: 'center' },
-  headerTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary },
+  headerTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   scroll: { padding: spacing.xl, gap: spacing.xl },
 
@@ -286,35 +286,35 @@ const s = StyleSheet.create({
   },
 
   sectionTitleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  sectionTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary },
-  sectionSub: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2 },
+  sectionTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  sectionSub: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2 },
 
   rankTable: { flexDirection: 'row', gap: 0 },
   rankColHeaders: { flex: 1, flexDirection: 'row', gap: 4 },
-  rankColHeader: { fontSize: 9, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.4 },
+  rankColHeader: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.4 },
   rankDivider: { height: 0.5, backgroundColor: colors.border.default },
 
   rankRow: { flexDirection: 'row' },
   rankCell: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.sm },
-  rankTicker: { flex: 1, fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.primary },
+  rankTicker: { flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   showMoreBtn: { alignItems: 'center', paddingVertical: 2 },
 
   metaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  metaText: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.muted },
+  metaText: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   sourcesRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   sourceAvatars: { flexDirection: 'row', alignItems: 'center' },
   sourceAvatar: { width: 20, height: 20, borderRadius: 10, borderWidth: 1.5, borderColor: colors.bg.card },
-  sourcesText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.primary },
+  sourcesText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   moverScroll: { gap: spacing.sm, paddingVertical: 2 },
 
-  analysisTitle: { fontSize: fontSize.xl, fontWeight: fontWeight.medium, color: colors.text.primary, marginTop: spacing.sm },
+  analysisTitle: { fontSize: fontSize.xl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, marginTop: spacing.sm },
   overviewBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     backgroundColor: colors.bg.secondary, borderRadius: radius.lg,
     borderWidth: 0.5, borderColor: colors.border.default,
     paddingVertical: spacing.md, minHeight: 48,
   },
-  overviewBtnText: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.secondary },
+  overviewBtnText: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
 });

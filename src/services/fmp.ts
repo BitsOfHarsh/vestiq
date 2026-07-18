@@ -358,6 +358,47 @@ export async function getEarningsCalendar(daysAhead = 14): Promise<UpcomingEarni
   }
 }
 
+// ─── Most active stocks (volume) ─────────────────────────────────────────────
+
+export interface ActiveStock {
+  ticker: string;
+  name: string;
+  price: number;
+  changePct: number;
+  volume: number;
+}
+
+// Top 10 Nasdaq/S&P 500 stocks by typical daily volume — used as fallback
+const VOLUME_FALLBACK = ['NVDA','AAPL','TSLA','AMD','AMZN','MSFT','META','GOOGL','PLTR','NFLX'];
+
+export async function getMarketActives(): Promise<ActiveStock[]> {
+  const cacheKey = 'fmp_actives';
+  try {
+    return await getCached(cacheKey, 1, async () => {
+      type Raw = Array<{ symbol: string; name: string; price: number; changePercentage: number; volume: number }>;
+      const data = await get<Raw>(fmp('/actives'));
+      if (!Array.isArray(data) || !data.length) throw new Error('empty');
+      return data.slice(0, 10).map(r => ({
+        ticker:    r.symbol,
+        name:      r.name,
+        price:     r.price,
+        changePct: r.changePercentage,
+        volume:    r.volume,
+      }));
+    });
+  } catch {
+    // Fallback: batch-fetch quotes for curated high-volume tickers
+    const quotes = await getBatchQuotes(VOLUME_FALLBACK).catch((): Record<string, FMPQuote> => ({}));
+    return VOLUME_FALLBACK.map(t => ({
+      ticker:    t,
+      name:      quotes[t]?.ticker ?? t,
+      price:     quotes[t]?.price     ?? 0,
+      changePct: quotes[t]?.changePct ?? 0,
+      volume:    quotes[t]?.volume    ?? 0,
+    }));
+  }
+}
+
 // ─── Economic calendar (restricted on free plan — returns empty gracefully) ───
 
 export interface EconomicEvent {

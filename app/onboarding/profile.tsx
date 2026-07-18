@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  View, Text, TextInput, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,8 +8,9 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppStore, ExperienceLevel } from '../../src/store';
 import THEME from '../../src/theme';
+import ScalePressable from '../../src/components/ui/ScalePressable';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 const LEVELS: { key: ExperienceLevel; label: string; emoji: string; desc: string }[] = [
   { key: 'beginner',     label: 'Beginner',     emoji: '🌱', desc: 'New to investing, building my first portfolio' },
@@ -64,19 +65,19 @@ export default function ProfileScreen() {
             {LEVELS.map((opt) => {
               const active = level === opt.key;
               return (
-                <TouchableOpacity
+                <ScalePressable
                   key={opt.key}
                   style={[s.levelCard, active && s.levelCardActive]}
                   onPress={() => setLevel(opt.key)}
-                  activeOpacity={0.75}
+                  scaleTo={0.95}
                 >
                   <Text style={s.levelEmoji}>{opt.emoji}</Text>
                   <View style={s.levelBody}>
                     <Text style={[s.levelLabel, active && s.levelLabelActive]}>{opt.label}</Text>
                     <Text style={s.levelDesc}>{opt.desc}</Text>
                   </View>
-                  {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.teal} />}
-                </TouchableOpacity>
+                  {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.violet} />}
+                </ScalePressable>
               );
             })}
           </View>
@@ -85,9 +86,9 @@ export default function ProfileScreen() {
         </ScrollView>
 
         <View style={s.footer}>
-          <TouchableOpacity style={s.primaryBtn} onPress={proceed} activeOpacity={0.85}>
+          <ScalePressable style={s.primaryBtn} onPress={proceed} scaleTo={0.98}>
             <Text style={s.primaryBtnText}>Continue →</Text>
-          </TouchableOpacity>
+          </ScalePressable>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -101,21 +102,21 @@ const s = StyleSheet.create({
 
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   dot:       { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  dotDone:   { backgroundColor: colors.accent.teal },
-  dotActive: { backgroundColor: colors.accent.teal, width: 10, height: 10, borderRadius: 5 },
+  dotDone:   { backgroundColor: colors.accent.violet },
+  dotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
   line:      { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  lineDone:  { backgroundColor: colors.accent.teal },
+  lineDone:  { backgroundColor: colors.accent.violet },
 
-  title: { fontSize: fontSize.xxl, fontWeight: fontWeight.medium, color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm },
-  sub:   { fontSize: fontSize.md, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl },
+  title: { fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm },
+  sub:   { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl },
 
-  fieldLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: spacing.sm },
+  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: spacing.sm },
 
   nameInput: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     borderWidth: 0.5, borderColor: colors.border.default,
     paddingHorizontal: spacing.md, height: 52,
-    fontSize: fontSize.lg, fontWeight: fontWeight.regular, color: colors.text.primary,
+    fontSize: fontSize.lg, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.primary,
   },
 
   levels: { gap: spacing.sm },
@@ -124,16 +125,16 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, minHeight: 68,
   },
-  levelCardActive: { borderColor: colors.accent.teal, backgroundColor: colors.accent.teal + '12' },
+  levelCardActive: { borderColor: colors.accent.violet, backgroundColor: colors.accent.violet + '12' },
   levelEmoji: { fontSize: 24, width: 32, textAlign: 'center' },
   levelBody:  { flex: 1 },
-  levelLabel: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  levelLabelActive: { color: colors.accent.tealLight },
-  levelDesc:  { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2, lineHeight: 16 },
+  levelLabel: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  levelLabelActive: { color: colors.accent.violetBright },
+  levelDesc:  { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2, lineHeight: 16 },
 
   primaryBtn: {
-    backgroundColor: colors.accent.teal, borderRadius: radius.lg,
+    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
-  primaryBtnText: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
 });

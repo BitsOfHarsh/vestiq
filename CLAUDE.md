@@ -34,7 +34,6 @@ The UI is dark-mode first, clean, non-intimidating.
 - Font sizes: xs=11 sm=12 base=13 md=14 lg=16 xl=20 xxl=26
 - Font weights: regular=400, medium=500 ONLY (never 600, 700, 800)
 - Border radius: sm=6 md=8 lg=12 xl=16
-- NO gradients. NO shadows. NO blur. Flat design only.
 - ALL touch targets minimum 44×44px
 
 ## Claude API rules — critical
@@ -55,14 +54,12 @@ The UI is dark-mode first, clean, non-intimidating.
 ## What NOT to do
 - Never call Claude on every screen render (cache aggressively)
 - Never show raw API errors to users (always friendly fallback)
-- Never use gradients, shadows, or blur effects
 - Never hardcode API keys (use EXPO_PUBLIC_ env vars)
 - Never use font-weight above 500
 - Never make touch targets smaller than 44×44
 
 ## Key data sources
 - Prices: Polygon.io (primary) / Yahoo Finance API (fallback)
-- News: NewsAPI.org
 - Fundamentals: Financial Modeling Prep API
 - Insider trades: Quiver Quant API
 - Push notifications: Expo Notifications (MVP)

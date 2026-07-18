@@ -151,3 +151,70 @@ export async function getMarketIndices(): Promise<{ vix: TickerSnapshot; spy: Ti
   ]);
   return { vix, spy, btc };
 }
+
+// ─── Market news ──────────────────────────────────────────────────────────────
+
+export interface PolygonArticle {
+  id: string;
+  title: string;
+  description: string;
+  articleUrl: string;
+  publishedUtc: string;  // ISO-8601
+  publisherName: string;
+  publisherLogoUrl: string;
+  tickers: string[];
+  primaryTicker: string;
+  sentiment: 'positive' | 'negative' | 'neutral' | '';
+}
+
+export async function getPolygonNews(limit = 50): Promise<PolygonArticle[]> {
+  const cacheKey = 'poly_news_v2';
+  try {
+    return await getCached(cacheKey, TTL.news, async () => {
+      type Raw = {
+        results: Array<{
+          id: string;
+          title: string;
+          description: string;
+          article_url: string;
+          published_utc: string;
+          publisher: { name: string; logo_url: string };
+          tickers: string[];
+          insights?: Array<{ ticker: string; sentiment: string }>;
+        }>;
+      };
+      const data = await get<Raw>(poly('/v2/reference/news', {
+        limit:   String(limit),
+        order:   'desc',
+        sort:    'published_utc',
+        language: 'en',
+      }));
+      // Filter out press release wires (GlobeNewswire, PR Newswire, BusinessWire)
+      const WIRE_DOMAINS = ['globenewswire.com', 'prnewswire.com', 'businesswire.com', 'accesswire.com'];
+      return (data.results ?? [])
+        .filter(r => {
+          const domain = r.article_url ? new URL(r.article_url).hostname.replace(/^www\./, '') : '';
+          return !WIRE_DOMAINS.some(w => domain.endsWith(w));
+        })
+        .map(r => {
+        const primaryTicker = r.tickers?.[0] ?? '';
+        const insight = r.insights?.find(i => i.ticker === primaryTicker) ?? r.insights?.[0];
+        const sentiment = insight?.sentiment as PolygonArticle['sentiment'] ?? '';
+        return {
+          id:               r.id,
+          title:            r.title,
+          description:      r.description ?? '',
+          articleUrl:       r.article_url,
+          publishedUtc:     r.published_utc,
+          publisherName:    r.publisher?.name ?? '',
+          publisherLogoUrl: r.publisher?.logo_url ?? '',
+          tickers:          r.tickers ?? [],
+          primaryTicker,
+          sentiment,
+        };
+      });
+    });
+  } catch {
+    return await getStale<PolygonArticle[]>(cacheKey) ?? [];
+  }
+}

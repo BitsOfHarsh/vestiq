@@ -1,89 +1,120 @@
+// ─── VestIQ Design System — Revolut-inspired ─────────────────────────────────
+// Source: DESIGN-revolut.md
+// Canvas: true black (#000000) storytelling + surface-elevated (#16181a) cards
+// Accent: cobalt violet (#494fdf) — used sparingly as a brand stamp
+// Typography: Inter (400 body / 500 display / 600 emphatic) via expo-google-fonts
+// Elevation: luminance shifts only — no drop shadows
+
 const THEME = {
   colors: {
+    // ── Canvas ──────────────────────────────────────────────────────────────
     bg: {
-      primary:   '#090910',
-      secondary: '#111118',
-      card:      '#16161E',
-      elevated:  '#1E1E2A',
-      deep:      '#060609',
+      primary:   '#000000',   // canvas-dark — true black, not near-black
+      secondary: '#0a0a0a',   // surface-deep — one step above canvas
+      card:      '#16181a',   // surface-elevated — plan/feature cards
+      elevated:  '#1e2024',   // a touch above surface-elevated for nested surfaces
+      deep:      '#000000',   // alias for canvas-dark
     },
+
+    // ── Text ────────────────────────────────────────────────────────────────
     text: {
-      primary:   '#F0EFF4',
-      secondary: '#9D99A8',
-      muted:     '#55505E',
+      primary:   '#ffffff',                   // on-dark
+      secondary: 'rgba(255,255,255,0.72)',     // on-dark-mute
+      muted:     '#8d969e',                   // stone
+      disabled:  '#c9c9cd',                   // faint
     },
+
+    // ── Brand accent — cobalt violet ────────────────────────────────────────
     accent: {
-      teal:      '#0D9488',
-      tealLight: '#14B8A6',
-      tealDim:   '#0D948820',
+      violet:      '#494fdf',   // primary — the brand stamp
+      violetBright:'#4f55f1',   // primary-bright
+      violetDeep:  '#3a40c4',   // primary-deep / pressed state
+      violetDim:   '#494fdf22', // translucent surface tint
     },
+
+    // ── Semantic status ──────────────────────────────────────────────────────
     status: {
-      green:    '#10B981',
-      greenDim: '#10B98118',
-      red:      '#EF4444',
-      redDim:   '#EF444418',
-      amber:    '#F59E0B',
-      amberDim: '#F59E0B18',
-      blue:     '#3B82F6',
-      blueDim:  '#3B82F618',
+      green:    '#428619',   // accent-light-green
+      greenDim: '#42861918',
+      red:      '#e23b4a',   // accent-danger
+      redDim:   '#e23b4a18',
+      amber:    '#b09000',   // accent-yellow
+      amberDim: '#b0900018',
+      blue:     '#007bc2',   // accent-light-blue
+      blueDim:  '#007bc218',
+      pink:     '#e61e49',   // accent-pink (for loss indicators)
     },
+
+    // ── Borders & hairlines ─────────────────────────────────────────────────
     border: {
-      default: 'rgba(255,255,255,0.07)',
-      subtle:  'rgba(255,255,255,0.03)',
-      strong:  'rgba(255,255,255,0.14)',
-      glow:    'rgba(13,148,136,0.25)',
+      default: 'rgba(255,255,255,0.12)',  // hairline-dark
+      subtle:  'rgba(255,255,255,0.06)',  // divider-soft
+      strong:  'rgba(255,255,255,0.22)',  // hairline-dark + emphasis
     },
   },
+
+  // ── Typography ─────────────────────────────────────────────────────────────
+  // Scaled from Revolut web tokens to mobile viewport
   fontSize: {
-    xs:  11,
-    sm:  12,
-    base: 13,
-    md:  14,
-    lg:  16,
-    xl:  20,
-    xxl: 26,
-    hero: 36,
+    xs:      12,   // caption
+    sm:      13,   // caption / metadata
+    base:    14,   // body-sm
+    md:      16,   // body-md  (default body)
+    lg:      18,   // body-lg
+    xl:      20,   // heading-sm / button-lg
+    xxl:     24,   // heading-md
+    xxxl:    32,   // heading-lg (plan card titles)
+    display: 40,   // display-md (feature card titles)
+    hero:    48,   // display-lg (section openers)
   },
+
+  // Revolut uses 400 (body) / 500 (display) / 600 (emphatic/button) / 700 (link-emph)
   fontWeight: {
     regular:  '400' as const,
-    medium:   '500' as const,
-    semibold: '600' as const,
-    bold:     '700' as const,
+    medium:   '500' as const,   // headings, display — Aeonik Pro weight
+    semibold: '600' as const,   // button labels, emphatic body
+    bold:     '700' as const,   // emphatic inline links on dark
   },
+
+  // Inter font family refs (loaded via useFonts in app/_layout.tsx)
+  fontFamily: {
+    regular:  'Inter_400Regular',
+    medium:   'Inter_500Medium',
+    semibold: 'Inter_600SemiBold',
+    bold:     'Inter_700Bold',
+  },
+
+  // ── Spacing (Revolut scale, mobile-adapted) ─────────────────────────────────
+  // Original tokens retained as-is up to xxxl; larger values mapped for mobile
   spacing: {
-    xs:   4,
+    xxs:  4,
+    xs:   6,
     sm:   8,
-    md:   12,
+    md:   14,
     lg:   16,
-    xl:   20,
-    xxl:  24,
-    xxxl: 32,
+    xl:   24,
+    xxl:  32,
+    xxxl: 48,
   },
+
+  // ── Border radius (directly from Revolut rounded scale) ────────────────────
   radius: {
-    xs:   4,
-    sm:   6,
-    md:   8,
-    lg:   12,
-    xl:   16,
-    xxl:  20,
-    full: 999,
+    none: 0,
+    sm:   8,    // inline tags, small chips
+    md:   12,   // inputs, download tiles
+    lg:   20,   // feature cards, plan cards
+    xl:   28,   // product mockup containers
+    full: 9999, // buttons, pills, badges
   },
+
+  // ── Elevation — NO drop shadows ────────────────────────────────────────────
+  // Revolut uses luminance shifts only. We expose zero-shadow as the system default.
+  // Any component using THEME.shadow will render without elevation chrome.
   shadow: {
-    card: {
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.35,
-      shadowRadius: 12,
-      elevation: 10,
-    },
-    sm: {
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
-      elevation: 4,
-    },
+    card: {},
+    sm:   {},
   },
+
   border: { width: 0.5 },
 } as const;
 

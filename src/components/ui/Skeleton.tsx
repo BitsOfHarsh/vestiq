@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, ViewStyle } from 'react-native';
+import { Animated, Easing, ViewStyle } from 'react-native';
 import THEME from '../../theme';
 
 interface VSkeletonProps {
@@ -9,13 +9,19 @@ interface VSkeletonProps {
 }
 
 export default function VSkeleton({ width, height, borderRadius = THEME.radius.md }: VSkeletonProps) {
-  const opacity = useRef(new Animated.Value(0.3)).current;
+  const opacity = useRef(new Animated.Value(0.2)).current;
 
   useEffect(() => {
     const pulse = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.7, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.3, duration: 700, useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: 0.5, duration: 600,
+          easing: Easing.inOut(Easing.ease), useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.2, duration: 600,
+          easing: Easing.inOut(Easing.ease), useNativeDriver: true,
+        }),
       ])
     );
     pulse.start();

@@ -8,7 +8,7 @@ const VARIANT_MAP: Record<Variant, { bg: string; text: string }> = {
   red: { bg: THEME.colors.status.redDim, text: THEME.colors.status.red },
   amber: { bg: THEME.colors.status.amberDim, text: THEME.colors.status.amber },
   blue: { bg: THEME.colors.status.blueDim, text: THEME.colors.status.blue },
-  teal: { bg: THEME.colors.accent.tealDim, text: THEME.colors.accent.tealLight },
+  teal: { bg: THEME.colors.accent.violetDim, text: THEME.colors.accent.violetBright },
   muted: { bg: THEME.colors.border.subtle, text: THEME.colors.text.muted },
 };
 

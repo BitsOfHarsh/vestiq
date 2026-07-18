@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, StyleSheet, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppStore } from '../../src/store';
 import THEME from '../../src/theme';
+import ScalePressable from '../../src/components/ui/ScalePressable';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 type MarketKey = 'us' | 'india' | 'both';
 
@@ -58,11 +59,11 @@ export default function MarketScreen() {
           {MARKETS.map((opt) => {
             const active = selected === opt.key;
             return (
-              <TouchableOpacity
+              <ScalePressable
                 key={opt.key}
                 style={[s.optionCard, active && s.optionCardActive]}
                 onPress={() => setSelected(opt.key)}
-                activeOpacity={0.75}
+                scaleTo={0.95}
               >
                 <Text style={s.optionFlag}>{opt.flag}</Text>
                 <View style={s.optionBody}>
@@ -76,8 +77,8 @@ export default function MarketScreen() {
                   </View>
                   <Text style={s.optionSub}>{opt.sub}</Text>
                 </View>
-                {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.teal} />}
-              </TouchableOpacity>
+                {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.violet} />}
+              </ScalePressable>
             );
           })}
         </View>
@@ -93,24 +94,24 @@ export default function MarketScreen() {
             <Switch
               value={false}
               disabled
-              trackColor={{ false: colors.bg.secondary, true: colors.accent.teal }}
+              trackColor={{ false: colors.bg.secondary, true: colors.accent.violet }}
               thumbColor={colors.text.muted}
             />
           </View>
         </View>
 
         {/* Manual setup link */}
-        <TouchableOpacity style={s.manualLink} onPress={proceed} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable style={s.manualLink} onPress={proceed} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={s.manualLinkText}>I'll add stocks manually</Text>
-        </TouchableOpacity>
+        </ScalePressable>
 
       </View>
 
       {/* Continue */}
       <View style={s.footer}>
-        <TouchableOpacity style={s.primaryBtn} onPress={proceed} activeOpacity={0.85}>
+        <ScalePressable style={s.primaryBtn} onPress={proceed} scaleTo={0.98}>
           <Text style={s.primaryBtnText}>Continue →</Text>
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
     </SafeAreaView>
   );
@@ -124,18 +125,18 @@ const s = StyleSheet.create({
   // Progress bar
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  progressDotDone: { backgroundColor: colors.accent.teal },
-  progressDotActive: { backgroundColor: colors.accent.teal, width: 10, height: 10, borderRadius: 5 },
+  progressDotDone: { backgroundColor: colors.accent.violet },
+  progressDotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
   progressLine: { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  progressLineDone: { backgroundColor: colors.accent.teal },
+  progressLineDone: { backgroundColor: colors.accent.violet },
 
   // Copy
   title: {
-    fontSize: fontSize.xxl, fontWeight: fontWeight.medium,
+    fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
     color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm,
   },
   sub: {
-    fontSize: fontSize.md, fontWeight: fontWeight.regular,
+    fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
     color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl,
   },
 
@@ -146,15 +147,15 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, minHeight: 64,
   },
-  optionCardActive: { borderColor: colors.accent.teal, backgroundColor: colors.accent.tealDim },
+  optionCardActive: { borderColor: colors.accent.violet, backgroundColor: colors.accent.violetDim },
   optionFlag: { fontSize: 28 },
   optionBody: { flex: 1 },
   optionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  optionTitle: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  optionTitleActive: { color: colors.accent.tealLight },
-  optionSub: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2 },
+  optionTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  optionTitleActive: { color: colors.accent.violetBright },
+  optionSub: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginTop: 2 },
   popularBadge: { backgroundColor: colors.status.amber + '20', paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.sm },
-  popularBadgeText: { fontSize: 9, fontWeight: fontWeight.medium, color: colors.status.amber },
+  popularBadgeText: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.amber },
 
   // Sync row
   syncRow: {
@@ -164,19 +165,19 @@ const s = StyleSheet.create({
     opacity: 0.5, marginBottom: spacing.md,
   },
   syncLeft: { flex: 1 },
-  syncTitle: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  syncSub: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted, marginTop: 2 },
+  syncTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  syncSub: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, marginTop: 2 },
   syncRight: { alignItems: 'flex-end', gap: 4 },
-  comingSoon: { fontSize: 9, fontWeight: fontWeight.medium, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  comingSoon: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   // Manual link
   manualLink: { alignItems: 'center', minHeight: 44, justifyContent: 'center' },
-  manualLinkText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted },
+  manualLinkText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
 
   // Primary button
   primaryBtn: {
-    backgroundColor: colors.accent.teal, borderRadius: radius.lg,
+    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
-  primaryBtnText: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
 });

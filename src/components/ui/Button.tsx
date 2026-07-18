@@ -1,4 +1,5 @@
-import { TouchableOpacity, View, Text, ActivityIndicator, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import ScalePressable from './ScalePressable';
 import THEME from '../../theme';
 
 type Variant = 'primary' | 'secondary' | 'ghost';
@@ -37,15 +38,14 @@ export default function VButton({
     variant === 'primary'
       ? THEME.colors.text.primary
       : variant === 'ghost'
-      ? THEME.colors.accent.tealLight
+      ? THEME.colors.accent.violetBright
       : THEME.colors.text.primary;
 
   return (
-    <TouchableOpacity
+    <ScalePressable
       style={containerStyle}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.75}
     >
       {loading ? (
         <ActivityIndicator size="small" color={textColor} />
@@ -55,7 +55,7 @@ export default function VButton({
           <Text style={[styles.label, { color: textColor }]}>{label}</Text>
         </View>
       )}
-    </TouchableOpacity>
+    </ScalePressable>
   );
 }
 
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: THEME.colors.accent.teal,
+    backgroundColor: THEME.colors.accent.violet,
   },
   secondary: {
     backgroundColor: THEME.colors.bg.card,

@@ -1,11 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppStore } from '../../src/store';
 import THEME from '../../src/theme';
+import ScalePressable from '../../src/components/ui/ScalePressable';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 const LEVELS = [
   { label: 'STOP',     price: '$539', color: colors.status.red },
@@ -101,12 +102,12 @@ export default function AlertsOnboardingScreen() {
 
       {/* Footer */}
       <View style={s.footer}>
-        <TouchableOpacity style={s.primaryBtn} onPress={activate} activeOpacity={0.85}>
+        <ScalePressable style={s.primaryBtn} onPress={activate} scaleTo={0.98}>
           <Text style={s.primaryBtnText}>Activate alerts →</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={s.skipLink} onPress={skip} hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}>
+        </ScalePressable>
+        <ScalePressable style={s.skipLink} onPress={skip} hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}>
           <Text style={s.skipLinkText}>Skip for now</Text>
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
     </SafeAreaView>
   );
@@ -120,39 +121,39 @@ const s = StyleSheet.create({
   // Progress
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.xxxl, marginTop: spacing.sm },
   progressDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border.default },
-  progressDotDone: { backgroundColor: colors.accent.teal },
-  progressDotActive: { backgroundColor: colors.accent.teal, width: 10, height: 10, borderRadius: 5 },
+  progressDotDone: { backgroundColor: colors.accent.violet },
+  progressDotActive: { backgroundColor: colors.accent.violet, width: 10, height: 10, borderRadius: 5 },
   progressLine: { flex: 1, height: 1, backgroundColor: colors.border.default, marginHorizontal: 4 },
-  progressLineDone: { backgroundColor: colors.accent.teal },
+  progressLineDone: { backgroundColor: colors.accent.violet },
 
   // Copy
   title: {
-    fontSize: fontSize.xxl, fontWeight: fontWeight.medium,
+    fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
     color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm,
   },
   sub: {
-    fontSize: fontSize.md, fontWeight: fontWeight.regular,
+    fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
     color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xl,
   },
 
   // Demo card
   demoCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
-    padding: spacing.md, borderWidth: 0.5, borderColor: colors.accent.teal,
+    padding: spacing.md, borderWidth: 0.5, borderColor: colors.accent.violet,
     gap: spacing.md, marginBottom: spacing.md,
   },
   demoHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   demoBadge: {
     width: 36, height: 36, borderRadius: radius.sm,
-    backgroundColor: colors.accent.tealDim, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.violetDim, alignItems: 'center', justifyContent: 'center',
   },
-  demoBadgeText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.tealLight },
+  demoBadgeText: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.accent.violetBright },
   demoMeta: { flex: 1 },
-  demoTicker: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  demoName: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
+  demoTicker: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  demoName: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   demoPriceCol: { alignItems: 'flex-end' },
-  demoPrice: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  demoChange: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.status.green },
+  demoPrice: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  demoChange: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.green },
 
   // Level chips — 2×2 grid
   levelRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
@@ -160,14 +161,14 @@ const s = StyleSheet.create({
     width: '47%', borderRadius: radius.md, padding: spacing.sm,
     borderWidth: 0.5, alignItems: 'flex-start',
   },
-  levelLabel: { fontSize: 9, fontWeight: fontWeight.medium, letterSpacing: 0.5, marginBottom: 2 },
-  levelPrice: { fontSize: fontSize.lg, fontWeight: fontWeight.medium },
+  levelLabel: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, letterSpacing: 0.5, marginBottom: 2 },
+  levelPrice: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
 
   // R/R
   rrRow: { flexDirection: 'row', alignItems: 'center' },
-  rrText: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary },
-  rrValue: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.status.green },
-  rrBadge: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.status.green },
+  rrText: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary },
+  rrValue: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.green },
+  rrBadge: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.green },
 
   // Mock notification
   notifCard: {
@@ -178,22 +179,22 @@ const s = StyleSheet.create({
   notifTopRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: 2 },
   notifIcon: {
     width: 18, height: 18, borderRadius: 4,
-    backgroundColor: colors.accent.teal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.violet, alignItems: 'center', justifyContent: 'center',
   },
-  notifIconText: { fontSize: 9, fontWeight: fontWeight.medium, color: '#FFFFFF' },
-  notifApp: { flex: 1, fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.text.secondary },
-  notifTime: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  notifTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.primary },
-  notifBody: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 16 },
+  notifIconText: { fontSize: 9, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  notifApp: { flex: 1, fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
+  notifTime: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  notifTitle: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  notifBody: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 16 },
 
   spacer: { flex: 1 },
 
   // Buttons
   primaryBtn: {
-    backgroundColor: colors.accent.teal, borderRadius: radius.lg,
+    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
     height: 52, alignItems: 'center', justifyContent: 'center',
   },
-  primaryBtnText: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
   skipLink: { alignItems: 'center', minHeight: 44, justifyContent: 'center' },
-  skipLinkText: { fontSize: fontSize.md, fontWeight: fontWeight.regular, color: colors.text.muted },
+  skipLinkText: { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
 });

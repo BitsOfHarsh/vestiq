@@ -13,7 +13,6 @@ export const KEYS = {
   whalewisdom: process.env.EXPO_PUBLIC_WHALEWISDOM_API_KEY ?? '',
   finnhub:     process.env.EXPO_PUBLIC_FINNHUB_API_KEY     ?? '',
   anthropic:   process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY   ?? '',
-  newsapi:     process.env.EXPO_PUBLIC_NEWS_API_KEY        ?? '',
 } as const;
 
 // ─── Cache TTLs (milliseconds) ────────────────────────────────────────────────

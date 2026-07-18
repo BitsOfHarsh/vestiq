@@ -116,6 +116,87 @@ export async function getFHQuote(symbol: string): Promise<FinnhubQuote | null> {
 
 // ─── Analyst recommendations ─────────────────────────────────────────────────
 
+// ─── Symbol search (free tier) ───────────────────────────────────────────────
+
+export interface FinnhubSymbol {
+  ticker: string;
+  name: string;
+  type: string;
+}
+
+export async function searchSymbols(query: string): Promise<FinnhubSymbol[]> {
+  if (query.length < 1) return [];
+  try {
+    type Raw = { count: number; result: Array<{ symbol: string; description: string; type: string; displaySymbol: string }> };
+    const data = await get<Raw>(fh('/search', { q: query }));
+    return (data.result ?? [])
+      .filter(r => r.type === 'Common Stock' || r.type === 'ETP')
+      .slice(0, 8)
+      .map(r => ({ ticker: r.displaySymbol, name: r.description, type: r.type }));
+  } catch {
+    return [];
+  }
+}
+
+// ─── Insider transactions for a specific ticker ───────────────────────────────
+
+export interface FinnhubInsiderTrade {
+  ticker: string;
+  name: string;
+  type: 'Buy' | 'Sell';
+  shares: number;
+  value: number;
+  date: string;
+}
+
+export async function getInsiderTrades(ticker: string): Promise<FinnhubInsiderTrade[]> {
+  const cacheKey = `fh_insider_${ticker}`;
+  try {
+    return await getCached(cacheKey, TTL.insiderTrades, async () => {
+      // Finnhub: `change` = shares transacted, `transactionPrice` = per-share price
+      // `share` = total shares held after transaction (not the traded qty)
+      type Raw = { data: Array<{ name: string; change: number; transactionPrice: number; transactionDate: string; transactionCode: string }> };
+      const data = await get<Raw>(fh('/stock/insider-transactions', { symbol: ticker }));
+      return (data.data ?? [])
+        .filter(r => Math.abs(r.change) > 0 && (r.transactionCode === 'S' || r.transactionCode === 'P'))
+        .slice(0, 10)
+        .map(r => ({
+          ticker,
+          name:   r.name,
+          type:   r.transactionCode === 'S' ? 'Sell' : 'Buy',
+          shares: Math.abs(r.change),
+          value:  Math.abs(r.change) * (r.transactionPrice || 0),
+          date:   r.transactionDate,
+        }));
+    });
+  } catch {
+    return await getStale<FinnhubInsiderTrade[]>(cacheKey) ?? [];
+  }
+}
+
+// Polls a curated list of high-profile stocks and returns the single most recent
+// significant insider trade (value >= $100k), for dashboard Early Signal use
+const INSIDER_WATCHLIST = ['AAPL', 'MSFT', 'NVDA', 'TSLA', 'META', 'AMZN', 'GOOGL', 'AMD'];
+
+export async function getRecentInsiderActivity(): Promise<FinnhubInsiderTrade | null> {
+  const cacheKey = 'fh_insider_recent';
+  try {
+    return await getCached(cacheKey, TTL.insiderTrades, async () => {
+      const results = await Promise.allSettled(INSIDER_WATCHLIST.map(t => getInsiderTrades(t)));
+      const all: FinnhubInsiderTrade[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') all.push(...r.value);
+      }
+      const significant = all
+        .filter(t => t.value >= 100_000)
+        .sort((a, b) => b.date.localeCompare(a.date));
+      return significant[0] ?? null;
+    });
+  } catch {
+    return await getStale<FinnhubInsiderTrade>(cacheKey) ?? null;
+  }
+}
+
 export async function getAnalystRecs(ticker: string): Promise<AnalystRecommendation[]> {
   const cacheKey = `fhrec_${ticker}`;
   try {

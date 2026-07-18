@@ -5,3 +5,4 @@ export { default as VButton } from './Button';
 export { default as VSkeleton } from './Skeleton';
 export { default as VDivider } from './Divider';
 export { default as TickerLogo } from './TickerLogo';
+export { default as ScalePressable } from './ScalePressable';

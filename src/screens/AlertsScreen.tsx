@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
-  TouchableOpacity, Switch,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -12,6 +12,7 @@ import {
   priceDistance, formatCurrency, formatPercent,
 } from '../utils/calculations';
 import THEME from '../theme';
+import ScalePressable from '../components/ui/ScalePressable';
 
 const { colors, fontSize, fontWeight, radius, spacing } = THEME;
 
@@ -143,8 +144,8 @@ function StockBlock({
         </View>
         <View style={s.stockMeta}>
           <Text style={s.stockTicker}>{item.ticker}</Text>
-          <View style={[s.sourceTag, { backgroundColor: (source === 'portfolio' ? colors.status.blue : colors.accent.teal) + '20' }]}>
-            <Text style={[s.sourceTagText, { color: source === 'portfolio' ? colors.status.blue : colors.accent.teal }]}>
+          <View style={[s.sourceTag, { backgroundColor: (source === 'portfolio' ? colors.status.blue : colors.accent.violet) + '20' }]}>
+            <Text style={[s.sourceTagText, { color: source === 'portfolio' ? colors.status.blue : colors.accent.violet }]}>
               {source === 'portfolio' ? 'Holdings' : 'Watchlist'}
             </Text>
           </View>
@@ -176,14 +177,14 @@ function StockBlock({
       {/* Summary strip */}
       <View style={s.summaryStrip}>
         <Text style={s.summaryText}>
-          <Text style={{ color: colors.accent.tealLight }}>{activeList.length}</Text>
+          <Text style={{ color: colors.accent.violetBright }}>{activeList.length}</Text>
           {' of 4 alerts active on '}
           <Text style={{ color: colors.text.primary }}>{item.ticker}</Text>
         </Text>
         {activeList.length < 4 && (
-          <TouchableOpacity onPress={() => onToggleAll(item.ticker)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <ScalePressable onPress={() => onToggleAll(item.ticker)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Text style={s.turnOnAll}>Turn on all</Text>
-          </TouchableOpacity>
+          </ScalePressable>
         )}
       </View>
     </View>
@@ -277,9 +278,9 @@ export default function AlertsScreen() {
     <SafeAreaView style={s.container}>
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="arrow-back" size={22} color={colors.text.primary} />
-        </TouchableOpacity>
+        </ScalePressable>
         <View style={s.headerText}>
           <Text style={s.headerTitle}>Price alerts</Text>
           <Text style={s.headerSub}>Auto-calculated · tap to activate</Text>
@@ -305,13 +306,13 @@ export default function AlertsScreen() {
         {/* ── Filter row ─────────────────────────────────────────────────── */}
         <View style={s.filterRow}>
           {FILTERS.map((f) => (
-            <TouchableOpacity
+            <ScalePressable
               key={f}
               style={[s.filterChip, filter === f && s.filterChipActive]}
               onPress={() => setFilter(f)}
             >
               <Text style={[s.filterText, filter === f && s.filterTextActive]}>{f}</Text>
-            </TouchableOpacity>
+            </ScalePressable>
           ))}
         </View>
 
@@ -321,8 +322,8 @@ export default function AlertsScreen() {
           <Switch
             value={masterActive}
             onValueChange={(v) => toggleAllAlerts(v)}
-            trackColor={{ false: colors.bg.secondary, true: colors.accent.teal + '60' }}
-            thumbColor={masterActive ? colors.accent.teal : colors.text.muted}
+            trackColor={{ false: colors.bg.secondary, true: colors.accent.violet + '60' }}
+            thumbColor={masterActive ? colors.accent.violet : colors.text.muted}
           />
         </View>
 
@@ -385,9 +386,9 @@ const s = StyleSheet.create({
     borderRadius: radius.full, borderWidth: 0.5,
     borderColor: colors.border.default, backgroundColor: colors.bg.card,
   },
-  filterChipActive: { backgroundColor: colors.accent.tealDim, borderColor: colors.accent.teal },
+  filterChipActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
   filterText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted },
-  filterTextActive: { color: colors.accent.teal },
+  filterTextActive: { color: colors.accent.violet },
 
   // Master toggle
   masterRow: {
@@ -410,9 +411,9 @@ const s = StyleSheet.create({
   },
   tickerBadge: {
     width: 36, height: 36, borderRadius: radius.sm,
-    backgroundColor: colors.accent.tealDim, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.accent.violetDim, alignItems: 'center', justifyContent: 'center',
   },
-  tickerBadgeText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.tealLight },
+  tickerBadgeText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.violetBright },
   stockMeta: { flex: 1, gap: 3 },
   stockTicker: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
   sourceTag: { alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2, borderRadius: radius.sm },
@@ -454,7 +455,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.secondary,
   },
   summaryText: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.secondary },
-  turnOnAll: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.teal },
+  turnOnAll: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.accent.violet },
 
   // Empty
   emptyBlock: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxxl },

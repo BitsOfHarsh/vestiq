@@ -1,10 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import THEME from '../../src/theme';
 
+const { colors } = THEME;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function TabIcon({ name, outlineName, focused }: { name: IconName; outlineName: IconName; focused: boolean }) {
-  return <Ionicons name={focused ? name : outlineName} size={22} color={focused ? '#0D9488' : '#57534E'} />;
+  return <Ionicons name={focused ? name : outlineName} size={22} color={focused ? colors.accent.violet : colors.text.muted} />;
 }
 
 export default function TabsLayout() {
@@ -13,12 +15,12 @@ export default function TabsLayout() {
       initialRouteName="dashboard"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#0D9488',
-        tabBarInactiveTintColor: '#57534E',
+        tabBarActiveTintColor: colors.accent.violet,
+        tabBarInactiveTintColor: colors.text.muted,
         tabBarStyle: {
-          backgroundColor: '#111111',
+          backgroundColor: colors.bg.secondary,
           borderTopWidth: 0.5,
-          borderTopColor: 'rgba(255,255,255,0.08)',
+          borderTopColor: colors.border.default,
           height: 60,
           paddingBottom: 8,
         },

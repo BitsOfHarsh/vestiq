@@ -35,6 +35,11 @@ yarn-error.*
 .env.*
 .env*.local
 
+# Claude Code internals
+.claude/
+.agents/
+skills-lock.json
+
 # typescript
 *.tsbuildinfo
 

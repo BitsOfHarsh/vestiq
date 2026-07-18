@@ -1,5 +1,6 @@
-import { TouchableOpacity, View, ViewStyle, StyleProp } from 'react-native';
+import { View, ViewStyle, StyleProp } from 'react-native';
 import THEME from '../../theme';
+import ScalePressable from './ScalePressable';
 
 interface VCardProps {
   children: React.ReactNode;
@@ -19,9 +20,9 @@ export default function VCard({ children, style, onPress, padding = 16 }: VCardP
 
   if (onPress) {
     return (
-      <TouchableOpacity style={[cardStyle, style]} onPress={onPress} activeOpacity={0.75}>
+      <ScalePressable style={[cardStyle, style]} onPress={onPress} scaleTo={0.95}>
         {children}
-      </TouchableOpacity>
+      </ScalePressable>
     );
   }
 

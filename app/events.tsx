@@ -1,172 +1,292 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import THEME from '../src/theme';
 import { TickerLogo } from '../src/components/ui';
-import {
-  MOCK_UPCOMING_EVENTS,
-  NotableEvent,
-  EarningsDay,
-  EarningsCompany,
-  EconomicDay,
-} from '../src/mock';
+import ScalePressable from '../src/components/ui/ScalePressable';
+import { EarningsDay, EarningsCompany, EconomicDay } from '../src/mock';
+import { getEarningsCalendar, getEconomicCalendar } from '../src/services/fmp';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 type Tab = 'notable' | 'earnings' | 'economic';
 
 // ─── Notable tab ──────────────────────────────────────────────────────────────
 
-function NotableTab({ events }: { events: NotableEvent[] }) {
+function NotableTab() {
   return (
-    <ScrollView contentContainerStyle={tab.scroll} showsVerticalScrollIndicator={false}>
-      {events.map((event, ei) => (
-        <View key={ei} style={tab.notableCard}>
-          <Text style={tab.notableTitle}>{event.title}</Text>
-          <View style={tab.bulletList}>
-            {event.bullets.map((b, bi) => (
-              <View key={bi} style={tab.bulletRow}>
-                <View style={tab.bulletDot} />
-                <Text style={tab.bulletText}>{b}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      ))}
-      <View style={{ height: spacing.xxxl }} />
-    </ScrollView>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingBottom: 60 }}>
+      <Ionicons name="star-outline" size={36} color={colors.text.muted} />
+      <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary }}>
+        Coming soon
+      </Text>
+      <Text style={{ fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center', paddingHorizontal: 40 }}>
+        Curated market-moving events will appear here
+      </Text>
+    </View>
   );
 }
 
 // ─── Earnings tab ─────────────────────────────────────────────────────────────
 
-function CompanyRow({ company }: { company: EarningsCompany }) {
+function CompanyBlock({ company }: { company: EarningsCompany }) {
   const hasBeat = company.beatPct !== undefined;
-  const hasVerdict = company.verdict !== undefined;
   return (
-    <View style={tab.companyRow}>
-      <TickerLogo ticker={company.ticker} size={32} borderRadius={7} />
-      <Text style={tab.companyTicker}>{company.ticker}</Text>
+    <View style={t.companyBlock}>
+      <TickerLogo
+        ticker={company.ticker} size={52} borderRadius={10}
+        onPress={() => router.push({ pathname: '/stock/[ticker]', params: { ticker: company.ticker } })}
+      />
+      <Text style={t.companyTicker}>{company.ticker}</Text>
       {hasBeat && (
-        <View style={tab.beatChip}>
-          <Text style={tab.beatText}>{company.beatPct}% Beat</Text>
-        </View>
-      )}
-      {hasVerdict && !hasBeat && (
-        <View style={[tab.verdictChip, { backgroundColor: (company.verdict === 'Beat' ? colors.status.green : colors.status.red) + '20' }]}>
-          <Text style={[tab.verdictText, { color: company.verdict === 'Beat' ? colors.status.green : colors.status.red }]}>
-            {company.verdict}
-          </Text>
+        <View style={t.beatBadge}>
+          <Text style={t.beatPct}>{company.beatPct}%</Text>
+          <Text style={t.beatLabel}>Beat</Text>
         </View>
       )}
     </View>
   );
 }
 
-function EarningsTab({ days }: { days: EarningsDay[] }) {
+function EarningsDayCard({ day }: { day: EarningsDay }) {
+  const parts = day.date.split(' '); // e.g. ["Mon,", "Jun", "22"] or ["Mon", "Jun", "22"]
+  const weekday = parts[0].replace(',', '');
+  const dayNum  = parts[parts.length - 1];
+
+  const hasPreMarket  = day.preMarket.length > 0;
+  const hasPostMarket = day.postMarket.length > 0;
+
   return (
-    <ScrollView contentContainerStyle={tab.scroll} showsVerticalScrollIndicator={false}>
-      {days.map((day) => (
-        <View key={day.date} style={tab.earningsDayBlock}>
-          <Text style={tab.earningsDayLabel}>{day.date}</Text>
+    <View style={t.dayRow}>
+      {/* Left: date */}
+      <View style={t.dayNumCol}>
+        <Text style={t.weekday}>{weekday}</Text>
+        <Text style={t.dayNum}>{dayNum}</Text>
+      </View>
 
-          {day.preMarket.length > 0 && (
-            <View style={tab.timeBlock}>
-              <Text style={tab.timeLabel}>PRE-MARKET</Text>
-              {day.preMarket.map((c) => <CompanyRow key={c.ticker} company={c} />)}
+      {/* Right: card with pre/post sections */}
+      <View style={t.dayCard}>
+        <View style={t.sectionsRow}>
+
+          {/* Pre-Market */}
+          <View style={[t.section, hasPreMarket && hasPostMarket && t.sectionBorder]}>
+            <View style={t.sectionHeader}>
+              <Ionicons name="sunny-outline" size={13} color={colors.status.amber} />
+              <Text style={t.sectionLabel}>Pre-Market</Text>
             </View>
-          )}
+            {hasPreMarket
+              ? (
+                <View style={t.companiesRow}>
+                  {day.preMarket.map(c => <CompanyBlock key={c.ticker} company={c} />)}
+                </View>
+              )
+              : <Text style={t.noEarnings}>No earnings available</Text>
+            }
+          </View>
 
-          {day.postMarket.length > 0 && (
-            <View style={tab.timeBlock}>
-              <Text style={tab.timeLabel}>AFTER HOURS</Text>
-              {day.postMarket.map((c) => <CompanyRow key={c.ticker} company={c} />)}
+          {/* Post-Market */}
+          <View style={t.section}>
+            <View style={t.sectionHeader}>
+              <Ionicons name="moon-outline" size={13} color={colors.status.blue} />
+              <Text style={t.sectionLabel}>Post-Market</Text>
             </View>
-          )}
+            {hasPostMarket
+              ? (
+                <View style={t.companiesRow}>
+                  {day.postMarket.map(c => <CompanyBlock key={c.ticker} company={c} />)}
+                </View>
+              )
+              : <Text style={t.noEarnings}>No earnings available</Text>
+            }
+          </View>
 
-          {day.preMarket.length === 0 && day.postMarket.length === 0 && (
-            <Text style={tab.emptyText}>No earnings</Text>
-          )}
         </View>
-      ))}
-      <View style={{ height: spacing.xxxl }} />
+      </View>
+    </View>
+  );
+}
+
+function EarningsTab({ days, loading }: { days: EarningsDay[]; loading: boolean }) {
+  if (loading) {
+    return (
+      <View style={t.centered}>
+        <ActivityIndicator size="large" color={colors.accent.violet} />
+      </View>
+    );
+  }
+  if (!days.length) {
+    return (
+      <View style={t.centered}>
+        <Ionicons name="calendar-outline" size={36} color={colors.text.muted} />
+        <Text style={t.emptyLabel}>No upcoming earnings</Text>
+      </View>
+    );
+  }
+
+  // Month header from first day
+  const firstDate = days[0]?.date ?? '';
+  const monthParts = firstDate.split(' ');
+  const monthYear  = monthParts.length >= 3
+    ? `${monthParts[monthParts.length - 2]} ${new Date().getFullYear()}`
+    : '';
+
+  return (
+    <ScrollView contentContainerStyle={t.scroll} showsVerticalScrollIndicator={false}>
+      {monthYear ? <Text style={t.monthHeader}>{monthYear}</Text> : null}
+      {days.map(day => <EarningsDayCard key={day.date} day={day} />)}
+      <View style={{ height: 60 }} />
     </ScrollView>
   );
 }
 
 // ─── Economic tab ─────────────────────────────────────────────────────────────
 
-function EconomicTab({ days }: { days: EconomicDay[] }) {
+function EconomicTab({ days, loading }: { days: EconomicDay[]; loading: boolean }) {
+  if (loading) {
+    return (
+      <View style={t.centered}>
+        <ActivityIndicator size="large" color={colors.accent.violet} />
+      </View>
+    );
+  }
+  if (!days.length) {
+    return (
+      <View style={t.centered}>
+        <Ionicons name="calendar-outline" size={36} color={colors.text.muted} />
+        <Text style={t.emptyLabel}>No economic events</Text>
+      </View>
+    );
+  }
   return (
-    <ScrollView contentContainerStyle={tab.scroll} showsVerticalScrollIndicator={false}>
+    <ScrollView contentContainerStyle={t.scroll} showsVerticalScrollIndicator={false}>
       {days.map((day) => (
-        <View key={day.date} style={tab.economicDayBlock}>
-          <Text style={tab.earningsDayLabel}>{day.date}</Text>
-          <View style={tab.economicEvents}>
+        <View key={day.date} style={t.ecoCard}>
+          <Text style={t.ecoDayLabel}>{day.date}</Text>
+          <View style={{ gap: 8 }}>
             {day.events.map((ev, i) => (
-              <View key={i} style={tab.economicRow}>
-                <View style={tab.economicDot} />
-                <Text style={tab.economicText}>{ev}</Text>
+              <View key={i} style={t.ecoRow}>
+                <View style={t.ecoDot} />
+                <Text style={t.ecoText}>{ev}</Text>
               </View>
             ))}
           </View>
         </View>
       ))}
-      <View style={{ height: spacing.xxxl }} />
+      <View style={{ height: 60 }} />
     </ScrollView>
   );
 }
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'notable',  label: 'Notable' },
-  { key: 'earnings', label: 'Earnings' },
-  { key: 'economic', label: 'Economic' },
+const TABS: { key: Tab; icon: string; label: string }[] = [
+  { key: 'notable',  icon: 'globe-outline',      label: 'Notable'  },
+  { key: 'earnings', icon: 'trending-up-outline', label: 'Earnings' },
+  { key: 'economic', icon: 'calendar-outline',    label: 'Economic' },
 ];
 
 export default function EventsScreen() {
   const params = useLocalSearchParams<{ tab?: Tab }>();
-  const [active, setActive] = useState<Tab>(params.tab ?? 'notable');
-  const { notable, earnings, economic } = MOCK_UPCOMING_EVENTS;
+  const [active, setActive] = useState<Tab>(params.tab ?? 'earnings');
+
+  const [earnings,  setEarnings]  = useState<EarningsDay[]>([]);
+  const [economic,  setEconomic]  = useState<EconomicDay[]>([]);
+  const [earnLoad,  setEarnLoad]  = useState(true);
+  const [ecoLoad,   setEcoLoad]   = useState(true);
+
+  useEffect(() => {
+    // Earnings from FMP only
+    getEarningsCalendar(14).then(cal => {
+      const TICKER_RE = /^[A-Z]{1,5}$/;
+      const today = new Date();
+      const todayISO = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      const grouped: Record<string, EarningsDay> = {};
+      for (const e of cal) {
+        if (!TICKER_RE.test(e.ticker)) continue;
+        if (!grouped[e.date]) grouped[e.date] = {
+          date: new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+          preMarket: [], postMarket: [],
+        };
+        const company: EarningsCompany = { ticker: e.ticker, name: e.ticker };
+        if (e.time === 'bmo') grouped[e.date].preMarket.push(company);
+        else                  grouped[e.date].postMarket.push(company);
+      }
+      const days = Object.entries(grouped)
+        .filter(([iso, d]) => iso >= todayISO && d.preMarket.length + d.postMarket.length > 0)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, d]) => d);
+      setEarnings(days);
+    }).catch(() => {}).finally(() => setEarnLoad(false));
+
+    // Economic calendar from FMP — US only, medium/high impact
+    getEconomicCalendar(14).then(cal => {
+      const grouped: Record<string, string[]> = {};
+      for (const e of cal) {
+        if (e.country !== 'US' && e.country !== 'United States') continue;
+        if (e.impact === 'Low') continue;
+        if (!grouped[e.date]) grouped[e.date] = [];
+        grouped[e.date].push(e.event);
+      }
+      const days: EconomicDay[] = Object.entries(grouped)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, events]) => ({
+          date: new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+          events,
+        }));
+      setEconomic(days);
+    }).catch(() => {}).finally(() => setEcoLoad(false));
+  }, []);
 
   return (
     <SafeAreaView style={s.container}>
 
       {/* Header */}
       <View style={s.header}>
-        <TouchableOpacity
+        <ScalePressable
           onPress={() => router.back()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={s.backBtn}
+          scaleTo={0.88}
         >
           <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
-        </TouchableOpacity>
+        </ScalePressable>
         <Text style={s.headerTitle}>Upcoming Events</Text>
-        <View style={{ width: 38 }} />
+        <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
+          <Ionicons name="options-outline" size={20} color={colors.text.secondary} />
+        </ScalePressable>
       </View>
 
       {/* Tab bar */}
       <View style={s.tabBar}>
-        {TABS.map((t) => (
-          <TouchableOpacity
-            key={t.key}
-            style={[s.tabBtn, active === t.key && s.tabBtnActive]}
-            onPress={() => setActive(t.key)}
-            activeOpacity={0.7}
-          >
-            <Text style={[s.tabText, active === t.key && s.tabTextActive]}>{t.label}</Text>
-          </TouchableOpacity>
-        ))}
+        {TABS.map((tb) => {
+          const active_ = active === tb.key;
+          return (
+            <ScalePressable
+              key={tb.key}
+              style={[s.tabBtn, active_ && s.tabBtnActive]}
+              onPress={() => setActive(tb.key)}
+            >
+              {active_
+                ? <View style={[s.tabBtnGrad, { backgroundColor: colors.accent.violet }]}>
+                    <Ionicons name={tb.icon as never} size={13} color="#fff" />
+                    <Text style={s.tabTextActive}>{tb.label}</Text>
+                  </View>
+                : <>
+                    <Ionicons name={tb.icon as never} size={13} color={colors.text.muted} />
+                    <Text style={s.tabText}>{tb.label}</Text>
+                  </>
+              }
+            </ScalePressable>
+          );
+        })}
       </View>
 
       {/* Content */}
-      {active === 'notable'  && <NotableTab events={notable} />}
-      {active === 'earnings' && <EarningsTab days={earnings} />}
-      {active === 'economic' && <EconomicTab days={economic} />}
+      {active === 'notable'  && <NotableTab />}
+      {active === 'earnings' && <EarningsTab days={earnings} loading={earnLoad} />}
+      {active === 'economic' && <EconomicTab days={economic} loading={ecoLoad} />}
 
     </SafeAreaView>
   );
@@ -182,79 +302,83 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.xl, paddingVertical: spacing.md,
     borderBottomWidth: 0.5, borderBottomColor: colors.border.default,
   },
-  backBtn: { width: 38, height: 44, justifyContent: 'center' },
-  headerTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary },
+  backBtn:     { width: 38, height: 44, justifyContent: 'center' },
+  headerTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   tabBar: {
     flexDirection: 'row', paddingHorizontal: spacing.xl, paddingVertical: spacing.sm,
     gap: spacing.sm, borderBottomWidth: 0.5, borderBottomColor: colors.border.default,
   },
   tabBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: spacing.md, paddingVertical: 7,
     borderRadius: radius.full, borderWidth: 0.5, borderColor: colors.border.default,
-    minHeight: 34,
+    minHeight: 34, overflow: 'hidden',
   },
-  tabBtnActive: { backgroundColor: colors.accent.teal, borderColor: colors.accent.teal },
-  tabText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.secondary },
-  tabTextActive: { color: '#FFFFFF' },
+  tabBtnActive: { borderColor: 'transparent', padding: 0 },
+  tabBtnGrad: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingHorizontal: spacing.md, paddingVertical: 7, minHeight: 34,
+    borderRadius: radius.full,
+  },
+  tabText:       { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
+  tabTextActive: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#ffffff' },
 });
 
-const tab = StyleSheet.create({
-  scroll: { padding: spacing.xl, gap: spacing.md },
+const t = StyleSheet.create({
+  scroll:  { padding: spacing.xl, gap: spacing.md },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
+  emptyLabel: { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+
+  monthHeader: {
+    fontSize: fontSize.xl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary,
+    marginBottom: spacing.sm,
+  },
+
+  // Day row layout
+  dayRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+  dayNumCol: { width: 36, alignItems: 'flex-start', paddingTop: spacing.md },
+  weekday:  { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  dayNum:   { fontSize: fontSize.xl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+
+  dayCard: {
+    flex: 1, backgroundColor: colors.bg.card, borderRadius: radius.lg,
+    borderWidth: 0.5, borderColor: colors.border.default, overflow: 'hidden',
+  },
+  sectionsRow: { flexDirection: 'row' },
+  section:     { flex: 1, padding: spacing.md, gap: spacing.sm },
+  sectionBorder: { borderRightWidth: 0.5, borderRightColor: colors.border.default },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  sectionLabel:  { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary, letterSpacing: 0.3 },
+
+  companiesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  companyBlock: { alignItems: 'center', gap: 4 },
+  companyTicker: { fontSize: fontSize.xs, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
+  beatBadge: {
+    backgroundColor: colors.status.amber + '22', borderRadius: radius.sm,
+    paddingHorizontal: 6, paddingVertical: 2, alignItems: 'center',
+  },
+  beatPct:   { fontSize: 10, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.status.amber },
+  beatLabel: { fontSize: 9,  fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.status.amber },
+  noEarnings: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, paddingVertical: 4 },
 
   // Notable
   notableCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
-    borderWidth: 0.5, borderColor: colors.border.default,
-    padding: spacing.md, gap: spacing.sm,
+    borderWidth: 0.5, borderColor: colors.border.default, padding: spacing.md, gap: spacing.sm,
   },
-  notableTitle: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-
-  bulletList: { gap: 5 },
-  bulletRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  bulletDot: {
-    width: 6, height: 6, borderRadius: 3,
-    backgroundColor: colors.accent.teal, marginTop: 5, flexShrink: 0,
-  },
-  bulletText: { flex: 1, fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary },
-
-  // Earnings
-  earningsDayBlock: {
-    backgroundColor: colors.bg.card, borderRadius: radius.lg,
-    borderWidth: 0.5, borderColor: colors.border.default,
-    padding: spacing.md, gap: spacing.md,
-  },
-  earningsDayLabel: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted },
-  timeBlock: { gap: spacing.sm },
-  timeLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.text.muted, letterSpacing: 0.5 },
-  companyRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, minHeight: 36 },
-  companyBadge: {
-    width: 32, height: 32, borderRadius: radius.sm,
-    backgroundColor: colors.bg.secondary, alignItems: 'center', justifyContent: 'center',
-    borderWidth: 0.5, borderColor: colors.border.default,
-  },
-  companyBadgeText: { fontSize: 10, fontWeight: fontWeight.medium, color: colors.accent.tealLight },
-  companyTicker: { flex: 1, fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.primary },
-  beatChip: {
-    backgroundColor: colors.status.green + '20', borderRadius: radius.sm,
-    paddingHorizontal: 8, paddingVertical: 3,
-  },
-  beatText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium, color: colors.status.green },
-  verdictChip: { borderRadius: radius.sm, paddingHorizontal: 8, paddingVertical: 3 },
-  verdictText: { fontSize: fontSize.xs, fontWeight: fontWeight.medium },
-  emptyText: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.muted },
+  notableTitle: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  bulletRow:    { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  bulletDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent.violet, marginTop: 5, flexShrink: 0 },
+  bulletText:   { flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary },
 
   // Economic
-  economicDayBlock: {
+  ecoCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
-    borderWidth: 0.5, borderColor: colors.border.default,
-    padding: spacing.md, gap: spacing.md,
+    borderWidth: 0.5, borderColor: colors.border.default, padding: spacing.md, gap: spacing.sm,
   },
-  economicEvents: { gap: 8 },
-  economicRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  economicDot: {
-    width: 6, height: 6, borderRadius: 3,
-    backgroundColor: colors.text.muted, marginTop: 5, flexShrink: 0,
-  },
-  economicText: { flex: 1, fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary },
+  ecoDayLabel: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
+  ecoRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  ecoDot:  { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.text.muted, marginTop: 5, flexShrink: 0 },
+  ecoText: { flex: 1, fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary },
 });

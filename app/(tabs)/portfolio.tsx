@@ -1,16 +1,18 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Modal, Pressable, TextInput,
+  View, Text, StyleSheet, ScrollView,
+  Modal, Pressable, TextInput, KeyboardAvoidingView, Platform,
+  ActivityIndicator,
 } from 'react-native';
+import ScalePressable from '../../src/components/ui/ScalePressable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useAppStore } from '../../src/store';
 import { CONTENT } from '../../src/content';
 import { Holding, WatchlistItem } from '../../src/services/types';
 import { getSnapshots } from '../../src/services/polygon';
+import { searchSymbols, FinnhubSymbol } from '../../src/services/finnhub';
 import { TickerLogo } from '../../src/components/ui';
 import {
   formatCurrency, formatPercent,
@@ -18,19 +20,19 @@ import {
 } from '../../src/utils/calculations';
 import THEME from '../../src/theme';
 
-const { colors, fontSize, fontWeight, radius, spacing, shadow } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
-// ─── Gradient palette ─────────────────────────────────────────────────────────
+// ─── Solid colour palette (replaces gradient G — Revolut uses no vivid gradients) ──
 
 const G = {
-  card:   ['#1B1B26', '#111118'] as const,
-  teal:   ['#0D9488', '#0F766E'] as const,
-  green:  ['#10B981', '#059669'] as const,
-  red:    ['#EF4444', '#DC2626'] as const,
-  amber:  ['#F59E0B', '#D97706'] as const,
-  blue:   ['#3B82F6', '#1D4ED8'] as const,
-  purple: ['#8B5CF6', '#6D28D9'] as const,
-  hero:   ['#0D1117', '#090910'] as const,
+  card:   [colors.bg.card,     colors.bg.secondary] as const,
+  violet: [colors.accent.violet, colors.accent.violetDeep] as const,
+  green:  [colors.status.green,  colors.status.green] as const,
+  red:    [colors.status.red,    colors.status.red] as const,
+  amber:  [colors.status.amber,  colors.status.amber] as const,
+  blue:   [colors.status.blue,   colors.status.blue] as const,
+  purple: ['#7c3aed', '#5b21b6'] as const,
+  hero:   [colors.bg.secondary, colors.bg.primary] as const,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -83,13 +85,13 @@ function TooltipModal({ metric, onClose }: { metric: string; onClose: () => void
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={s.tooltipOverlay} onPress={onClose}>
-        <LinearGradient colors={G.card} style={s.tooltipBox}>
+        <View style={s.tooltipBox}>
           <Text style={s.tooltipTitle}>{metric}</Text>
           <Text style={s.tooltipBody}>{METRIC_EXPLANATIONS[metric]}</Text>
-          <TouchableOpacity onPress={onClose} style={s.tooltipClose}>
+          <ScalePressable onPress={onClose} style={s.tooltipClose} scaleTo={0.95}>
             <Text style={s.tooltipCloseText}>Got it</Text>
-          </TouchableOpacity>
-        </LinearGradient>
+          </ScalePressable>
+        </View>
       </Pressable>
     </Modal>
   );
@@ -110,7 +112,7 @@ function MetricRow({ title, subtitle, value, metricKey }: {
   return (
     <>
       <View style={s.metricRow}>
-        <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={s.metricAccent} />
+        <View style={[s.metricAccent, { backgroundColor: color }]} />
         <View style={s.metricRowLeft}>
           <View style={s.metricTitleRow}>
             <Text style={s.metricTitle}>{title}</Text>
@@ -122,9 +124,9 @@ function MetricRow({ title, subtitle, value, metricKey }: {
         </View>
         <View style={s.metricRowRight}>
           <Text style={[s.metricValue, { color }]}>{displayVal}</Text>
-          <TouchableOpacity onPress={() => setTooltip(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <ScalePressable onPress={() => setTooltip(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
             <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
-          </TouchableOpacity>
+          </ScalePressable>
         </View>
       </View>
       {tooltip && <TooltipModal metric={title} onClose={() => setTooltip(false)} />}
@@ -135,13 +137,10 @@ function MetricRow({ title, subtitle, value, metricKey }: {
 // ─── Score bar ────────────────────────────────────────────────────────────────
 
 function ScoreBar({ score }: { score: number }) {
-  const grad = score >= 65 ? G.green : score >= 50 ? G.amber : G.red;
+  const color = score >= 65 ? colors.status.green : score >= 50 ? colors.status.amber : colors.status.red;
   return (
     <View style={s.scoreTrack}>
-      <LinearGradient
-        colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        style={[s.scoreFill, { width: `${score}%` }]}
-      />
+      <View style={[s.scoreFill, { width: `${score}%` as `${number}%`, backgroundColor: color }]} />
     </View>
   );
 }
@@ -161,13 +160,11 @@ function CompactHoldingCard({ holding }: { holding: Holding }) {
   const gainColor = gain >= 0 ? colors.status.green : colors.status.red;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.75}
+    <ScalePressable
       onPress={() => router.push({ pathname: '/stock/[ticker]', params: { ticker: holding.ticker, name: holding.name, price: String(holding.currentPrice), sector: holding.sector } })}
     >
-      <LinearGradient colors={G.card} style={s.compactCard}>
-        {/* Colored top accent */}
-        <LinearGradient colors={gainGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.compactAccent} />
+      <View style={s.compactCard}>
+        <View style={[s.compactAccent, { backgroundColor: gainColor }]} />
 
         <View style={s.compactTop}>
           <GradBadge ticker={holding.ticker} size={30} />
@@ -183,8 +180,8 @@ function CompactHoldingCard({ holding }: { holding: Holding }) {
             {gain >= 0 ? '+' : ''}{formatPercent(gainPct, 1)}
           </Text>
         </View>
-      </LinearGradient>
-    </TouchableOpacity>
+      </View>
+    </ScalePressable>
   );
 }
 
@@ -193,15 +190,13 @@ function CompactHoldingCard({ holding }: { holding: Holding }) {
 function CompactWatchCard({ item }: { item: WatchlistItem }) {
   const dip = calculateDipScore(item);
   const verdictColor = dip.verdict === 'buy' ? colors.status.green : dip.verdict === 'watch' ? colors.status.amber : colors.text.muted;
-  const verdictGrad  = dip.verdict === 'buy' ? G.green : dip.verdict === 'watch' ? G.amber : G.card;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.75}
+    <ScalePressable
       onPress={() => router.push({ pathname: '/stock/[ticker]', params: { ticker: item.ticker, name: item.name, price: String(item.price), sector: item.sector } })}
     >
-      <LinearGradient colors={G.card} style={s.compactCard}>
-        <LinearGradient colors={verdictGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.compactAccent} />
+      <View style={s.compactCard}>
+        <View style={[s.compactAccent, { backgroundColor: verdictColor }]} />
 
         <View style={s.compactTop}>
           <GradBadge ticker={item.ticker} size={30} />
@@ -219,8 +214,8 @@ function CompactWatchCard({ item }: { item: WatchlistItem }) {
             </Text>
           </View>
         </View>
-      </LinearGradient>
-    </TouchableOpacity>
+      </View>
+    </ScalePressable>
   );
 }
 
@@ -233,6 +228,28 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
   const [form, setForm] = useState({ ...EMPTY_HOLD_FORM });
   const [toast, setToast] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dropResults, setDropResults] = useState<FinnhubSymbol[]>([]);
+  const [dropOpen, setDropOpen]       = useState(false);
+  const [dropLoading, setDropLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTickerChange = (text: string) => {
+    const upper = text.toUpperCase();
+    setForm(f => ({ ...f, ticker: upper }));
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!upper.trim()) { setDropResults([]); setDropOpen(false); setDropLoading(false); return; }
+    setDropLoading(true); setDropOpen(true);
+    debounceRef.current = setTimeout(async () => {
+      const res = await searchSymbols(upper).catch(() => []);
+      setDropResults(res);
+      setDropLoading(false);
+    }, 300);
+  };
+
+  const pickSymbol = (sym: FinnhubSymbol) => {
+    setForm(f => ({ ...f, ticker: sym.ticker, name: sym.name }));
+    setDropOpen(false); setDropResults([]);
+  };
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -259,17 +276,16 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
     setTimeout(() => { setToast(''); onClose(); }, 1200);
   };
 
-  const field = (label: string, key: keyof typeof form, opts: { numeric?: boolean; caps?: boolean } = {}) => (
+  const field = (label: string, key: keyof typeof form, opts: { numeric?: boolean } = {}) => (
     <View style={s.fieldGroup}>
       <Text style={s.fieldLabel}>{label}</Text>
       <TextInput
         style={[s.fieldInput, errors[key] && s.fieldInputError]}
         value={form[key]}
-        onChangeText={(v) => setForm((f) => ({ ...f, [key]: opts.caps ? v.toUpperCase() : v }))}
+        onChangeText={(v) => setForm((f) => ({ ...f, [key]: v }))}
         keyboardType={opts.numeric ? 'decimal-pad' : 'default'}
-        autoCapitalize={opts.caps ? 'characters' : 'words'}
         placeholderTextColor={colors.text.muted}
-        placeholder={key === 'ticker' ? 'e.g. NVDA' : key === 'avgCost' ? '0.00' : ''}
+        placeholder={key === 'avgCost' ? '0.00' : ''}
       />
       {errors[key] && <Text style={s.fieldError}>{errors[key]}</Text>}
     </View>
@@ -277,41 +293,82 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={s.modalOverlay} onPress={onClose}>
-        <Pressable style={s.modalSheet} onPress={() => {}}>
-          <View style={s.handle} />
-          <Text style={s.modalTitle}>Add Holding</Text>
-          {field('Ticker', 'ticker', { caps: true })}
-          {field('Company name', 'name')}
-          {field('Number of shares', 'shares', { numeric: true })}
-          {field('Average buy price ($)', 'avgCost', { numeric: true })}
-          <View style={s.fieldGroup}>
-            <Text style={s.fieldLabel}>Sector</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.sectorScroll}>
-              {SECTORS.map((sec) => (
-                <TouchableOpacity
-                  key={sec}
-                  style={[s.sectorChip, form.sector === sec && s.sectorChipActive]}
-                  onPress={() => setForm((f) => ({ ...f, sector: sec }))}
-                >
-                  <Text style={[s.sectorChipText, form.sector === sec && s.sectorChipTextActive]}>{sec}</Text>
-                </TouchableOpacity>
-              ))}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Pressable style={s.modalOverlay} onPress={onClose}>
+          <Pressable style={s.modalSheet} onPress={() => {}}>
+            <View style={s.handle} />
+            <Text style={s.modalTitle}>Add Holding</Text>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ gap: spacing.md }}
+            >
+              {/* Ticker field with dropdown */}
+              <View style={s.fieldGroup}>
+                <Text style={s.fieldLabel}>Ticker</Text>
+                <View style={[s.fieldInput, errors.ticker && s.fieldInputError, { flexDirection: 'row', alignItems: 'center', paddingVertical: 0 }]}>
+                  <TextInput
+                    style={{ flex: 1, fontSize: fontSize.md, fontFamily: fontFamily.regular, color: colors.text.primary, paddingVertical: spacing.sm }}
+                    value={form.ticker}
+                    onChangeText={handleTickerChange}
+                    autoCapitalize="characters"
+                    placeholderTextColor={colors.text.muted}
+                    placeholder="e.g. NVDA"
+                  />
+                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginRight: 8 }} />}
+                </View>
+                {errors.ticker && <Text style={s.fieldError}>{errors.ticker}</Text>}
+                {dropOpen && dropResults.length > 0 && (
+                  <View style={s.dropdown}>
+                    {dropResults.slice(0, 5).map(sym => (
+                      <ScalePressable key={sym.ticker} style={s.dropRow} onPress={() => pickSymbol(sym)}>
+                        <TickerLogo ticker={sym.ticker} size={28} borderRadius={6} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.dropTicker}>{sym.ticker}</Text>
+                          <Text style={s.dropName} numberOfLines={1}>{sym.name}</Text>
+                        </View>
+                      </ScalePressable>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              {field('Company name', 'name')}
+              {field('Number of shares', 'shares', { numeric: true })}
+              {field('Average buy price ($)', 'avgCost', { numeric: true })}
+
+              <View style={s.fieldGroup}>
+                <Text style={s.fieldLabel}>Sector</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.sectorScroll}>
+                  {SECTORS.map((sec) => (
+                    <ScalePressable
+                      key={sec}
+                      style={[s.sectorChip, form.sector === sec && s.sectorChipActive]}
+                      onPress={() => setForm((f) => ({ ...f, sector: sec }))}
+                    >
+                      <Text style={[s.sectorChipText, form.sector === sec && s.sectorChipTextActive]}>{sec}</Text>
+                    </ScalePressable>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <ScalePressable onPress={submit} scaleTo={0.98}>
+                <View style={[s.submitBtn, { backgroundColor: colors.accent.violet }]}>
+                  <Text style={s.submitText}>Add to Portfolio</Text>
+                </View>
+              </ScalePressable>
+
+              {toast.length > 0 && (
+                <View style={s.toast}>
+                  <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
+                  <Text style={s.toastText}>{toast}</Text>
+                </View>
+              )}
+              <View style={{ height: spacing.md }} />
             </ScrollView>
-          </View>
-          <TouchableOpacity onPress={submit}>
-            <LinearGradient colors={G.teal} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.submitBtn}>
-              <Text style={s.submitText}>Add to Portfolio</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          {toast.length > 0 && (
-            <View style={s.toast}>
-              <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
-              <Text style={s.toastText}>{toast}</Text>
-            </View>
-          )}
+          </Pressable>
         </Pressable>
-      </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -325,6 +382,28 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
   const [form, setForm] = useState({ ...EMPTY_WATCH_FORM });
   const [toast, setToast] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dropResults, setDropResults] = useState<FinnhubSymbol[]>([]);
+  const [dropOpen, setDropOpen]       = useState(false);
+  const [dropLoading, setDropLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTickerChange = (text: string) => {
+    const upper = text.toUpperCase();
+    setForm(f => ({ ...f, ticker: upper }));
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!upper.trim()) { setDropResults([]); setDropOpen(false); setDropLoading(false); return; }
+    setDropLoading(true); setDropOpen(true);
+    debounceRef.current = setTimeout(async () => {
+      const res = await searchSymbols(upper).catch(() => []);
+      setDropResults(res);
+      setDropLoading(false);
+    }, 300);
+  };
+
+  const pickSymbol = (sym: FinnhubSymbol) => {
+    setForm(f => ({ ...f, ticker: sym.ticker, name: sym.name }));
+    setDropOpen(false); setDropResults([]);
+  };
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -351,17 +430,16 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
     setTimeout(() => { setToast(''); onClose(); }, 1200);
   };
 
-  const field = (label: string, key: keyof typeof form, opts: { numeric?: boolean; caps?: boolean } = {}) => (
+  const field = (label: string, key: keyof typeof form, opts: { numeric?: boolean } = {}) => (
     <View style={s.fieldGroup}>
       <Text style={s.fieldLabel}>{label}</Text>
       <TextInput
         style={[s.fieldInput, errors[key] && s.fieldInputError]}
         value={form[key]}
-        onChangeText={(v) => setForm((f) => ({ ...f, [key]: opts.caps ? v.toUpperCase() : v }))}
+        onChangeText={(v) => setForm((f) => ({ ...f, [key]: v }))}
         keyboardType={opts.numeric ? 'decimal-pad' : 'default'}
-        autoCapitalize={opts.caps ? 'characters' : 'words'}
         placeholderTextColor={colors.text.muted}
-        placeholder={key === 'ticker' ? 'e.g. AAPL' : key === 'price' ? '0.00' : ''}
+        placeholder={key === 'price' ? '0.00' : ''}
       />
       {errors[key] && <Text style={s.fieldError}>{errors[key]}</Text>}
     </View>
@@ -369,40 +447,81 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={s.modalOverlay} onPress={onClose}>
-        <Pressable style={s.modalSheet} onPress={() => {}}>
-          <View style={s.handle} />
-          <Text style={s.modalTitle}>Add to Watchlist</Text>
-          {field('Ticker', 'ticker', { caps: true })}
-          {field('Company name', 'name')}
-          {field('Current price ($)', 'price', { numeric: true })}
-          <View style={s.fieldGroup}>
-            <Text style={s.fieldLabel}>Sector</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.sectorScroll}>
-              {SECTORS.map((sec) => (
-                <TouchableOpacity
-                  key={sec}
-                  style={[s.sectorChip, form.sector === sec && s.sectorChipActive]}
-                  onPress={() => setForm((f) => ({ ...f, sector: sec }))}
-                >
-                  <Text style={[s.sectorChipText, form.sector === sec && s.sectorChipTextActive]}>{sec}</Text>
-                </TouchableOpacity>
-              ))}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Pressable style={s.modalOverlay} onPress={onClose}>
+          <Pressable style={s.modalSheet} onPress={() => {}}>
+            <View style={s.handle} />
+            <Text style={s.modalTitle}>Add to Watchlist</Text>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ gap: spacing.md }}
+            >
+              {/* Ticker field with dropdown */}
+              <View style={s.fieldGroup}>
+                <Text style={s.fieldLabel}>Ticker</Text>
+                <View style={[s.fieldInput, errors.ticker && s.fieldInputError, { flexDirection: 'row', alignItems: 'center', paddingVertical: 0 }]}>
+                  <TextInput
+                    style={{ flex: 1, fontSize: fontSize.md, fontFamily: fontFamily.regular, color: colors.text.primary, paddingVertical: spacing.sm }}
+                    value={form.ticker}
+                    onChangeText={handleTickerChange}
+                    autoCapitalize="characters"
+                    placeholderTextColor={colors.text.muted}
+                    placeholder="e.g. AAPL"
+                  />
+                  {dropLoading && <ActivityIndicator size="small" color={colors.accent.violet} style={{ marginRight: 8 }} />}
+                </View>
+                {errors.ticker && <Text style={s.fieldError}>{errors.ticker}</Text>}
+                {dropOpen && dropResults.length > 0 && (
+                  <View style={s.dropdown}>
+                    {dropResults.slice(0, 5).map(sym => (
+                      <ScalePressable key={sym.ticker} style={s.dropRow} onPress={() => pickSymbol(sym)}>
+                        <TickerLogo ticker={sym.ticker} size={28} borderRadius={6} />
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.dropTicker}>{sym.ticker}</Text>
+                          <Text style={s.dropName} numberOfLines={1}>{sym.name}</Text>
+                        </View>
+                      </ScalePressable>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              {field('Company name', 'name')}
+              {field('Current price ($)', 'price', { numeric: true })}
+
+              <View style={s.fieldGroup}>
+                <Text style={s.fieldLabel}>Sector</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.sectorScroll}>
+                  {SECTORS.map((sec) => (
+                    <ScalePressable
+                      key={sec}
+                      style={[s.sectorChip, form.sector === sec && s.sectorChipActive]}
+                      onPress={() => setForm((f) => ({ ...f, sector: sec }))}
+                    >
+                      <Text style={[s.sectorChipText, form.sector === sec && s.sectorChipTextActive]}>{sec}</Text>
+                    </ScalePressable>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <ScalePressable onPress={submit} scaleTo={0.98}>
+                <View style={[s.submitBtn, { backgroundColor: colors.accent.violet }]}>
+                  <Text style={s.submitText}>Add to Watchlist</Text>
+                </View>
+              </ScalePressable>
+
+              {toast.length > 0 && (
+                <View style={s.toast}>
+                  <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
+                  <Text style={s.toastText}>{toast}</Text>
+                </View>
+              )}
+              <View style={{ height: spacing.md }} />
             </ScrollView>
-          </View>
-          <TouchableOpacity onPress={submit}>
-            <LinearGradient colors={G.teal} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.submitBtn}>
-              <Text style={s.submitText}>Add to Watchlist</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          {toast.length > 0 && (
-            <View style={s.toast}>
-              <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
-              <Text style={s.toastText}>{toast}</Text>
-            </View>
-          )}
+          </Pressable>
         </Pressable>
-      </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -450,30 +569,26 @@ export default function PortfolioScreen() {
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* ── Hero value section ──────────────────────────────────────────── */}
-        <LinearGradient colors={['#0D1117', '#090910']} style={s.heroSection}>
-          {/* Subtle teal glow at bottom */}
-          <LinearGradient
-            colors={['transparent', colors.accent.teal + '12']}
-            style={s.heroGlow}
-          />
+        <View style={[s.heroSection, { backgroundColor: colors.bg.secondary }]}>
+          <View style={[s.heroGlow, { backgroundColor: colors.accent.violet + '08' }]} />
           <View style={s.heroHeader}>
             <Text style={s.heroLabel}>Portfolio Value</Text>
             <View style={s.heroIcons}>
-              <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
                 <Ionicons name="search-outline" size={20} color={colors.text.secondary} />
-              </TouchableOpacity>
-              <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              </ScalePressable>
+              <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
                 <Ionicons name="star-outline" size={20} color={colors.text.secondary} />
-              </TouchableOpacity>
+              </ScalePressable>
             </View>
           </View>
           <Text style={s.heroSub}>Value in USD</Text>
           <Text style={s.heroValue}>{formatCurrency(totalValue)}</Text>
           <View style={s.heroCashRow}>
             <Text style={s.heroCash}>Available cash: $0</Text>
-            <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
               <Ionicons name="pencil-outline" size={12} color={colors.text.muted} />
-            </TouchableOpacity>
+            </ScalePressable>
           </View>
           <View style={s.heroStatsRow}>
             <View style={[s.heroStatPill, { backgroundColor: pnlColor + '15', borderColor: pnlColor + '30' }]}>
@@ -486,49 +601,7 @@ export default function PortfolioScreen() {
               <Text style={[s.heroStatText, { color: colors.text.muted }]}>Today +0.00%</Text>
             </View>
           </View>
-        </LinearGradient>
-
-        {/* ── Portfolio Metrics ────────────────────────────────────────────── */}
-        <LinearGradient colors={G.card} style={s.metricsCard}>
-          <Text style={s.metricsHeading}>Portfolio Metrics</Text>
-          <MetricRow title="Volatility"   subtitle="Risk level of your portfolio"  value={metrics.volatility} metricKey="volatility" />
-          <View style={s.divider} />
-          <MetricRow title="Sharpe Ratio" subtitle="Risk-adjusted returns"          value={metrics.sharpe}    metricKey="sharpe" />
-          <View style={s.divider} />
-          <MetricRow title="Beta"         subtitle="Market correlation"              value={metrics.beta}      metricKey="beta" />
-          <View style={s.divider} />
-          <MetricRow title="Drawdown"     subtitle="Maximum decline from peak"       value={metrics.drawdown}  metricKey="drawdown" />
-        </LinearGradient>
-
-        {/* ── AI Analysis card ────────────────────────────────────────────── */}
-        <LinearGradient colors={['#0D1B1A', '#0A1210']} style={s.aiCard}>
-          {/* teal glow border effect */}
-          <LinearGradient
-            colors={[colors.accent.teal + '40', 'transparent']}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFillObject}
-            pointerEvents="none"
-          />
-          <View style={s.aiTop}>
-            <LinearGradient colors={G.teal} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.aiIconWrap}>
-              <Ionicons name="bar-chart" size={16} color="#FFFFFF" />
-            </LinearGradient>
-            <View style={{ flex: 1 }}>
-              <Text style={s.aiTitle}>AI Portfolio Analysis</Text>
-              <Text style={s.aiAvail}>(1/1 analysis available today)</Text>
-            </View>
-            <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="information-circle-outline" size={17} color={colors.text.muted} />
-            </TouchableOpacity>
-          </View>
-          <Text style={s.aiDesc}>{CONTENT.portfolio.aiCard.description}</Text>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/research')} activeOpacity={0.8}>
-            <LinearGradient colors={G.teal} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.aiBtn}>
-              <Ionicons name="sparkles" size={15} color="#FFFFFF" />
-              <Text style={s.aiBtnText}>Analyze Portfolio</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </LinearGradient>
+        </View>
 
         {/* ── Holdings + Watchlist side by side ───────────────────────────── */}
         <View style={s.columnsContainer}>
@@ -537,24 +610,26 @@ export default function PortfolioScreen() {
           <View style={s.column}>
             <View style={s.colHeader}>
               <Text style={s.colTitle}>Holdings</Text>
-              <TouchableOpacity style={s.addBtn} onPress={() => setAddHoldVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <LinearGradient colors={G.teal} style={s.addBtnInner}>
-                  <Ionicons name="add" size={13} color="#FFFFFF" />
-                </LinearGradient>
-                <Text style={s.addBtnText}>Add</Text>
-              </TouchableOpacity>
+              {enrichedHoldings.length > 0 && (
+                <ScalePressable style={s.addBtn} onPress={() => setAddHoldVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
+                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.violet }]}>
+                    <Ionicons name="add" size={13} color="#FFFFFF" />
+                  </View>
+                  <Text style={s.addBtnText}>Add</Text>
+                </ScalePressable>
+              )}
             </View>
 
             {enrichedHoldings.length === 0 ? (
-              <LinearGradient colors={G.card} style={s.colEmpty}>
+              <View style={s.colEmpty}>
                 <Ionicons name="briefcase-outline" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>No holdings yet</Text>
-                <TouchableOpacity onPress={() => setAddHoldVisible(true)} activeOpacity={0.8}>
-                  <LinearGradient colors={G.teal} style={s.colEmptyBtn}>
+                <ScalePressable onPress={() => setAddHoldVisible(true)} scaleTo={0.95}>
+                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.violet }]}>
                     <Text style={s.colEmptyBtnText}>Add Holdings</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </LinearGradient>
+                  </View>
+                </ScalePressable>
+              </View>
             ) : (
               <View style={s.colCards}>
                 {enrichedHoldings.map(h => <CompactHoldingCard key={h.ticker} holding={h} />)}
@@ -562,28 +637,33 @@ export default function PortfolioScreen() {
             )}
           </View>
 
+          {/* Separator */}
+          <View style={s.columnSeparator} />
+
           {/* Watchlist */}
           <View style={s.column}>
             <View style={s.colHeader}>
               <Text style={s.colTitle}>Watchlist</Text>
-              <TouchableOpacity style={s.addBtn} onPress={() => setAddWatchVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <LinearGradient colors={G.teal} style={s.addBtnInner}>
-                  <Ionicons name="add" size={13} color="#FFFFFF" />
-                </LinearGradient>
-                <Text style={s.addBtnText}>Add</Text>
-              </TouchableOpacity>
+              {watchlist.length > 0 && (
+                <ScalePressable style={s.addBtn} onPress={() => setAddWatchVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
+                  <View style={[s.addBtnInner, { backgroundColor: colors.accent.violet }]}>
+                    <Ionicons name="add" size={13} color="#FFFFFF" />
+                  </View>
+                  <Text style={s.addBtnText}>Add</Text>
+                </ScalePressable>
+              )}
             </View>
 
             {watchlist.length === 0 ? (
-              <LinearGradient colors={G.card} style={s.colEmpty}>
+              <View style={s.colEmpty}>
                 <Ionicons name="eye-outline" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>Watchlist empty</Text>
-                <TouchableOpacity onPress={() => setAddWatchVisible(true)} activeOpacity={0.8}>
-                  <LinearGradient colors={G.teal} style={s.colEmptyBtn}>
+                <ScalePressable onPress={() => setAddWatchVisible(true)} scaleTo={0.95}>
+                  <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.violet }]}>
                     <Text style={s.colEmptyBtnText}>Add Stocks</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </LinearGradient>
+                  </View>
+                </ScalePressable>
+              </View>
             ) : (
               <View style={s.colCards}>
                 {enrichedWatchlist.map(item => <CompactWatchCard key={item.ticker} item={item} />)}
@@ -591,6 +671,42 @@ export default function PortfolioScreen() {
             )}
           </View>
 
+        </View>
+
+        {/* ── Portfolio Metrics ────────────────────────────────────────────── */}
+        <View style={s.metricsCard}>
+          <Text style={s.metricsHeading}>Portfolio Metrics</Text>
+          <MetricRow title="Volatility"   subtitle="Risk level of your portfolio"  value={metrics.volatility} metricKey="volatility" />
+          <View style={s.divider} />
+          <MetricRow title="Sharpe Ratio" subtitle="Risk-adjusted returns"          value={metrics.sharpe}    metricKey="sharpe" />
+          <View style={s.divider} />
+          <MetricRow title="Beta"         subtitle="Market correlation"              value={metrics.beta}      metricKey="beta" />
+          <View style={s.divider} />
+          <MetricRow title="Drawdown"     subtitle="Maximum decline from peak"       value={metrics.drawdown}  metricKey="drawdown" />
+        </View>
+
+        {/* ── AI Analysis card ────────────────────────────────────────────── */}
+        <View style={s.aiCard}>
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.accent.violet + '08', borderRadius: radius.lg }]} pointerEvents="none" />
+          <View style={s.aiTop}>
+            <View style={[s.aiIconWrap, { backgroundColor: colors.accent.violet }]}>
+              <Ionicons name="bar-chart" size={16} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={s.aiTitle}>AI Portfolio Analysis</Text>
+              <Text style={s.aiAvail}>(1/1 analysis available today)</Text>
+            </View>
+            <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
+              <Ionicons name="information-circle-outline" size={17} color={colors.text.muted} />
+            </ScalePressable>
+          </View>
+          <Text style={s.aiDesc}>{CONTENT.portfolio.aiCard.description}</Text>
+          <ScalePressable onPress={() => router.push('/(tabs)/research')} scaleTo={0.98}>
+            <View style={[s.aiBtn, { backgroundColor: colors.accent.violet }]}>
+              <Ionicons name="sparkles" size={15} color="#FFFFFF" />
+              <Text style={s.aiBtnText}>Analyze Portfolio</Text>
+            </View>
+          </ScalePressable>
         </View>
 
         <View style={{ height: spacing.xxxl }} />
@@ -622,95 +738,97 @@ const s = StyleSheet.create({
   },
   heroHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   heroIcons: { flexDirection: 'row', gap: spacing.sm },
-  heroLabel: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.secondary },
-  heroSub: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  heroValue: { fontSize: 38, fontWeight: fontWeight.bold, color: colors.text.primary, marginTop: spacing.xs, letterSpacing: -1 },
+  heroLabel: { fontSize: fontSize.md, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.secondary },
+  heroSub: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  heroValue: { fontSize: 38, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary, marginTop: spacing.xs, letterSpacing: -1 },
   heroCashRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  heroCash: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
+  heroCash: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
   heroStatsRow: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap', marginTop: spacing.xs },
   heroStatPill: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: spacing.sm, paddingVertical: 5,
     borderRadius: radius.full, borderWidth: 0.5,
   },
-  heroStatText: { fontSize: fontSize.xs, fontWeight: fontWeight.semibold },
+  heroStatText: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold },
 
   // Metrics card
   metricsCard: {
     marginHorizontal: spacing.xl, borderRadius: radius.xl,
+    backgroundColor: colors.bg.card,
     borderWidth: 0.5, borderColor: colors.border.default,
     padding: spacing.md, gap: spacing.md, overflow: 'hidden',
-    ...THEME.shadow.card,
   },
-  metricsHeading: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.primary },
+  metricsHeading: { fontSize: fontSize.md, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
   metricRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   metricAccent: { width: 3, height: 34, borderRadius: 2, flexShrink: 0 },
   metricRowLeft: { flex: 1, gap: 2 },
   metricRowRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   metricTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  metricTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.primary },
-  metricLabelPill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.xs },
-  metricLabelText: { fontSize: 10, fontWeight: fontWeight.semibold },
-  metricSub: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  metricValue: { fontSize: fontSize.md, fontWeight: fontWeight.bold },
+  metricTitle: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
+  metricLabelPill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.sm },
+  metricLabelText: { fontSize: 10, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold },
+  metricSub: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  metricValue: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold },
 
   // Tooltip
   tooltipOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: spacing.xl },
-  tooltipBox: { borderRadius: radius.xl, padding: spacing.xl, gap: spacing.md, borderWidth: 0.5, borderColor: colors.border.default, ...THEME.shadow.card },
-  tooltipTitle: { fontSize: fontSize.md, fontWeight: fontWeight.semibold, color: colors.text.primary },
-  tooltipBody: { fontSize: fontSize.sm, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 20 },
+  tooltipBox: { backgroundColor: colors.bg.card, borderRadius: radius.xl, padding: spacing.xl, gap: spacing.md, borderWidth: 0.5, borderColor: colors.border.default },
+  tooltipTitle: { fontSize: fontSize.md, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
+  tooltipBody: { fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, lineHeight: 20 },
   tooltipClose: { alignSelf: 'flex-end' },
-  tooltipCloseText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.accent.teal },
+  tooltipCloseText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.violet },
 
   // AI card
   aiCard: {
     marginHorizontal: spacing.xl, borderRadius: radius.xl,
-    padding: spacing.md, borderWidth: 1, borderColor: colors.accent.teal + '50',
+    backgroundColor: colors.bg.card,
+    padding: spacing.md, borderWidth: 1, borderColor: colors.accent.violet + '50',
     gap: spacing.sm, overflow: 'hidden',
-    ...THEME.shadow.card,
   },
   aiTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   aiIconWrap: { width: 34, height: 34, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  aiTitle: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: colors.accent.tealLight },
-  aiAvail: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted, marginTop: 2 },
-  aiDesc: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.secondary, lineHeight: 19 },
+  aiTitle: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.accent.violetBright },
+  aiAvail: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, marginTop: 2 },
+  aiDesc: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary, lineHeight: 19 },
   aiBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, borderRadius: radius.lg, paddingVertical: 14, minHeight: 48 },
-  aiBtnText: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: '#FFFFFF' },
+  aiBtnText: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#FFFFFF' },
 
   // Two-column layout
   columnsContainer: { flexDirection: 'row', gap: spacing.md, paddingHorizontal: spacing.xl, alignItems: 'flex-start' },
   column: { flex: 1 },
   colHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm },
-  colTitle: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.text.primary },
+  colTitle: { fontSize: fontSize.sm, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   addBtnInner: { width: 18, height: 18, borderRadius: 5, alignItems: 'center', justifyContent: 'center' },
-  addBtnText: { fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.accent.teal },
+  addBtnText: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.accent.violet },
   colCards: { gap: spacing.sm },
 
   // Column empty state
   colEmpty: {
+    backgroundColor: colors.bg.card,
     borderRadius: radius.xl, borderWidth: 0.5, borderColor: colors.border.default,
     padding: spacing.md, alignItems: 'center', gap: spacing.sm,
-    overflow: 'hidden', ...THEME.shadow.sm,
+    overflow: 'hidden',
   },
-  colEmptyText: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center' },
+  colEmptyText: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted, textAlign: 'center' },
   colEmptyBtn: { borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 7, alignItems: 'center' },
-  colEmptyBtnText: { fontSize: fontSize.xs, fontWeight: fontWeight.bold, color: '#FFFFFF' },
+  colEmptyBtnText: { fontSize: fontSize.xs, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#FFFFFF' },
 
   // Compact cards
   compactCard: {
+    backgroundColor: colors.bg.card,
     borderRadius: radius.lg, borderWidth: 0.5, borderColor: colors.border.default,
-    padding: spacing.sm, gap: 5, overflow: 'hidden', ...THEME.shadow.sm,
+    padding: spacing.sm, gap: 5, overflow: 'hidden',
   },
   compactAccent: { height: 2, borderRadius: 1, marginBottom: 4 },
   compactTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   gradBadge: { alignItems: 'center', justifyContent: 'center' },
-  gradBadgeText: { fontWeight: fontWeight.bold, color: '#FFFFFF', letterSpacing: 0.2 },
-  compactTicker: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, color: colors.text.primary },
-  compactSub: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  compactValue: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.text.primary },
-  compactPnLPill: { flexDirection: 'row', alignItems: 'center', gap: 3, alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.xs },
-  compactPnL: { fontSize: 10, fontWeight: fontWeight.semibold },
+  gradBadgeText: { fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#FFFFFF', letterSpacing: 0.2 },
+  compactTicker: { fontSize: fontSize.sm, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },
+  compactSub: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  compactValue: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
+  compactPnLPill: { flexDirection: 'row', alignItems: 'center', gap: 3, alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: radius.sm },
+  compactPnL: { fontSize: 10, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold },
   compactScoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 
   // Score bar
@@ -721,38 +839,59 @@ const s = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'flex-end' },
   modalSheet: {
     backgroundColor: colors.bg.secondary,
-    borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl,
-    padding: spacing.xl, gap: spacing.md, paddingBottom: spacing.xxxl,
+    borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
+    paddingHorizontal: spacing.xl, paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
     borderTopWidth: 0.5, borderColor: colors.border.default,
+    maxHeight: '85%',
+  },
+
+  // Ticker dropdown
+  dropdown: {
+    backgroundColor: colors.bg.elevated, borderRadius: radius.lg,
+    borderWidth: 0.5, borderColor: colors.border.default,
+    marginTop: 4, overflow: 'hidden',
+  },
+  dropRow: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 2,
+    borderBottomWidth: 0.5, borderBottomColor: colors.border.subtle,
+  },
+  dropTicker: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.primary },
+  dropName:   { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+
+  // Column separator
+  columnSeparator: {
+    width: 0.5, backgroundColor: colors.border.default, alignSelf: 'stretch',
   },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border.strong, alignSelf: 'center', marginBottom: spacing.xs },
-  modalTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.bold, color: colors.text.primary },
+  modalTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: colors.text.primary },
   fieldGroup: { gap: 4 },
-  fieldLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.semibold, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
   fieldInput: {
     backgroundColor: colors.bg.card, borderRadius: radius.md,
     borderWidth: 0.5, borderColor: colors.border.default,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
-    fontSize: fontSize.md, fontWeight: fontWeight.regular, color: colors.text.primary,
+    fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.primary,
     minHeight: 44,
   },
   fieldInputError: { borderColor: colors.status.red },
-  fieldError: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.status.red },
+  fieldError: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.status.red },
   sectorScroll: { gap: spacing.sm, paddingVertical: 2 },
   sectorChip: {
     paddingHorizontal: spacing.md, paddingVertical: 6, borderRadius: radius.full,
     borderWidth: 0.5, borderColor: colors.border.default, backgroundColor: colors.bg.card,
   },
-  sectorChipActive: { backgroundColor: colors.accent.tealDim, borderColor: colors.accent.teal },
-  sectorChipText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted },
-  sectorChipTextActive: { color: colors.accent.teal },
+  sectorChipActive: { backgroundColor: colors.accent.violetDim, borderColor: colors.accent.violet },
+  sectorChipText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted },
+  sectorChipTextActive: { color: colors.accent.violet },
   submitBtn: { borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.md, minHeight: 50, marginTop: spacing.sm },
-  submitText: { fontSize: fontSize.md, fontWeight: fontWeight.bold, color: '#FFFFFF' },
+  submitText: { fontSize: fontSize.md, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold, color: '#FFFFFF' },
   toast: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
     backgroundColor: colors.bg.card, borderRadius: radius.md,
     padding: spacing.md, borderWidth: 0.5, borderColor: colors.status.green + '40',
     alignSelf: 'center',
   },
-  toastText: { fontSize: fontSize.sm, fontWeight: fontWeight.semibold, color: colors.status.green },
+  toastText: { fontSize: fontSize.sm, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold, color: colors.status.green },
 });

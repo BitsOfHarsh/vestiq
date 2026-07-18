@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -7,8 +7,9 @@ import THEME from '../src/theme';
 import { InsiderTrade } from '../src/mock';
 import { getRecentInsiderTrades } from '../src/services/fmp';
 import { TickerLogo } from '../src/components/ui';
+import ScalePressable from '../src/components/ui/ScalePressable';
 
-const { colors, fontSize, fontWeight, radius, spacing } = THEME;
+const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
 const TYPE_COLOR = { Buy: colors.status.green, Sell: colors.status.red };
 
@@ -19,9 +20,9 @@ function InsiderCard({ item }: { item: InsiderTrade }) {
     <View style={s.card}>
       {/* Left */}
       <View style={s.logoCol}>
-        <TouchableOpacity style={s.arrowBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable style={s.arrowBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="open-outline" size={13} color={colors.text.muted} />
-        </TouchableOpacity>
+        </ScalePressable>
         <TickerLogo ticker={item.ticker} size={52} borderRadius={10} />
         <Text style={s.logoTicker}>{item.ticker}</Text>
       </View>
@@ -52,10 +53,10 @@ function InsiderCard({ item }: { item: InsiderTrade }) {
           <Text style={s.metaValue}>{item.dateRange}</Text>
         </View>
 
-        <TouchableOpacity style={s.seeWhyBtn} activeOpacity={0.7}>
+        <ScalePressable style={s.seeWhyBtn}>
           <Text style={s.seeWhyText}>See why </Text>
           <Ionicons name="chevron-forward" size={13} color={colors.text.secondary} />
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
     </View>
   );
@@ -98,13 +99,13 @@ export default function InsiderScreen() {
   return (
     <SafeAreaView style={s.container}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
-        </TouchableOpacity>
+        </ScalePressable>
         <Text style={s.headerTitle}>Active Insider Trades</Text>
-        <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
           <Ionicons name="information-circle-outline" size={22} color={colors.text.secondary} />
-        </TouchableOpacity>
+        </ScalePressable>
       </View>
 
       <View style={s.searchWrap}>
@@ -125,7 +126,7 @@ export default function InsiderScreen() {
 
       {loading && trades.length === 0 && (
         <View style={s.loadingWrap}>
-          <ActivityIndicator size="small" color={colors.accent.teal} />
+          <ActivityIndicator size="small" color={colors.accent.violet} />
         </View>
       )}
 
@@ -149,7 +150,7 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.xl, paddingVertical: spacing.md,
   },
   backBtn: { width: 38, height: 38, justifyContent: 'center' },
-  headerTitle: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary },
+  headerTitle: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   searchWrap: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
@@ -158,10 +159,10 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
     borderWidth: 0.5, borderColor: colors.border.default, minHeight: 44,
   },
-  searchInput: { flex: 1, fontSize: fontSize.md, color: colors.text.primary, fontWeight: fontWeight.regular },
+  searchInput: { flex: 1, fontSize: fontSize.md, color: colors.text.primary, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular },
 
   colHeaders: { flexDirection: 'row', paddingHorizontal: spacing.xl, paddingBottom: spacing.sm },
-  colHeader: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.muted, flex: 1 },
+  colHeader: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.muted, flex: 1 },
 
   list: { paddingHorizontal: spacing.xl, paddingBottom: spacing.xl },
 
@@ -177,18 +178,18 @@ const s = StyleSheet.create({
     paddingVertical: spacing.xl, gap: spacing.sm, position: 'relative',
   },
   arrowBtn: { position: 'absolute', top: spacing.sm, right: spacing.sm },
-  logoTicker: { fontSize: fontSize.lg, fontWeight: fontWeight.medium, color: colors.text.primary },
+  logoTicker: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
 
   detailCol: { flex: 1, padding: spacing.md, gap: spacing.sm },
-  insiderLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  insiderName: { fontSize: fontSize.md, fontWeight: fontWeight.medium, color: colors.text.primary },
-  insiderTitle: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.secondary, marginBottom: 2 },
+  insiderLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  insiderName: { fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  insiderTitle: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.secondary, marginBottom: 2 },
 
   metaGrid: { flexDirection: 'row', gap: spacing.md },
   metaCell: { gap: 2 },
-  metaLabel: { fontSize: fontSize.xs, fontWeight: fontWeight.regular, color: colors.text.muted },
-  metaValue: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.primary },
-  typeText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium },
+  metaLabel: { fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  metaValue: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary },
+  typeText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium },
 
   seeWhyBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -196,6 +197,6 @@ const s = StyleSheet.create({
     paddingVertical: spacing.sm, minHeight: 36,
     borderWidth: 0.5, borderColor: colors.border.default, marginTop: 2,
   },
-  seeWhyText: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.text.secondary },
+  seeWhyText: { fontSize: fontSize.sm, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },
   loadingWrap: { alignItems: 'center', paddingVertical: spacing.xl },
 });

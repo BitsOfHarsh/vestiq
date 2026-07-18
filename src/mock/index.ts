@@ -224,7 +224,14 @@ export interface HeadlineDetail {
   };
 }
 
-export interface MockHeadline {
+export interface SourceArticle {
+  url: string;
+  headline: string;
+  source: string;   // human-readable publisher name e.g. "Yahoo Finance"
+  domain: string;   // domain for favicon e.g. "finance.yahoo.com"
+}
+
+export interface Headline {
   id: string;
   time: string;
   date: 'today' | 'yesterday';
@@ -235,10 +242,15 @@ export interface MockHeadline {
   tickerName: string;
   tickerPrice: number;
   tickerChange: number;
+  url?: string;
+  source?: string;
+  logoUrl?: string;
   detail?: HeadlineDetail;
+  sourceCount?: number;
+  clusterArticles?: SourceArticle[];
 }
 
-export const MOCK_HEADLINES: MockHeadline[] = [
+export const MOCK_HEADLINES: Headline[] = [
   {
     id: '1', time: '19:30', date: 'today', country: 'United States',
     headline: "Apple's Siri AI Finally Works, Easing Two-Year AI Crisis",
@@ -713,37 +725,25 @@ export const MOCK_UPCOMING_EVENTS = {
 
   earnings: [
     {
-      date: 'Wed, Jun 17',
-      preMarket: [
-        { ticker: 'RR',  name: 'Rolls-Royce' },
-        { ticker: 'JBL', name: 'Jabil' },
-        { ticker: 'KMX', name: 'CarMax',  beatPct: 96, verdict: 'Beat' as const },
-      ],
-      postMarket: [],
-    },
-    {
-      date: 'Thu, Jun 18',
-      preMarket: [
-        { ticker: 'ACN', name: 'Accenture', beatPct: 89, verdict: 'Beat' as const },
-        { ticker: 'KR',  name: 'Kroger',    beatPct: 92, verdict: 'Beat' as const },
-      ],
-      postMarket: [],
-    },
-    {
-      date: 'Mon, Jun 22',
+      date: 'Tue, Jun 23',
       preMarket: [],
       postMarket: [
-        { ticker: 'AREC', name: 'American Resources' },
+        { ticker: 'CCL', name: 'Carnival' },
+        { ticker: 'FDX', name: 'FedEx' },
       ],
     },
     {
-      date: 'Tue, Jun 23',
-      preMarket: [
-        { ticker: 'ROAD', name: 'Construction Partners' },
-      ],
+      date: 'Wed, Jun 24',
+      preMarket: [],
       postMarket: [
-        { ticker: 'FDX',  name: 'FedEx' },
-        { ticker: 'WGO',  name: 'Winnebago' },
+        { ticker: 'MU', name: 'Micron Technology' },
+      ],
+    },
+    {
+      date: 'Thu, Jun 25',
+      preMarket: [],
+      postMarket: [
+        { ticker: 'NKE', name: 'Nike' },
       ],
     },
   ] as EarningsDay[],
@@ -896,7 +896,7 @@ export interface StatItem { label: string; value: string }
 export interface IncomePeriod { period: string; revenue: number; netIncome: number; margin: number }
 export interface EarningsQuarter { period: string; actualEps: number; estEps: number; beatPct: number; actualRev: number; estRev: number }
 export interface InsiderTxn { name: string; title: string; trades: number; type: 'Buy' | 'Sell'; date: string; average?: string; value: string }
-export interface StockNews { title: string; source: string; time: string }
+export interface StockNews { title: string; source: string; time: string; url?: string }
 export interface SuperHolder { name: string; weightPct: number }
 
 export interface StockOverview {
@@ -906,15 +906,16 @@ export interface StockOverview {
   industry: string;
   price: {
     atClose: number; closeChange: number; closeChangePct: number; closeDate: string;
-    postMarket: number; postChange: number; postChangePct: number;
+    postMarket: number; postChange: number; postChangePct: number; hasPostData: boolean;
   };
   chart: number[];
   volume: { value: number; up: boolean }[];
   keyStats: StatItem[];
   income: IncomePeriod[];
+  incomeQuarterly: IncomePeriod[];
   priceTarget: { low: number; median: number; high: number; current: number };
   analystRating: { verdict: AnalystVerdict; score: number };
-  about: string;
+  about: string | null;
   profileSheet: {
     marketCap: string; enterpriseValue: string;
     pe: string; pb: string; ps: string; evEbitda: string;
@@ -965,7 +966,7 @@ const NVDA_OVERVIEW: StockOverview = {
   ticker: 'NVDA', name: 'NVIDIA Corporation', sector: 'Technology', industry: 'Semiconductors',
   price: {
     atClose: 207.42, closeChange: -5.03, closeChangePct: -2.37, closeDate: 'Jun 16, 2026',
-    postMarket: 207.78, postChange: +0.36, postChangePct: +0.17,
+    postMarket: 207.78, postChange: +0.36, postChangePct: +0.17, hasPostData: false,
   },
   chart: [208.9, 209.4, 210.2, 208.8, 209.7, 209.1, 209.9, 209.2, 208.7, 209.3, 209.0, 208.6, 209.1, 208.9, 209.4, 209.0, 208.8, 209.2, 209.6, 210.0, 209.5, 209.0, 208.6, 208.9, 209.3, 209.1, 208.7, 208.5, 208.9, 208.6, 208.3, 208.7, 208.4, 208.8, 208.5, 208.2, 207.9, 208.3, 207.6, 207.42],
   volume: [2.1, 2.8, 2.4, 1.9, 2.6, 1.7, 1.4, 2.0, 1.6, 1.2, 1.8, 1.3, 2.2, 1.5, 1.1, 1.9, 1.4, 1.0, 1.6, 1.2, 0.9, 1.4, 1.1, 1.7, 1.3, 1.0, 1.5, 1.2, 0.8, 1.3, 1.0, 1.6, 1.2, 0.9, 1.4, 1.8, 2.3, 3.1, 4.2, 5.7].map((v, i) => ({ value: v, up: i % 3 !== 0 })),
@@ -980,11 +981,17 @@ const NVDA_OVERVIEW: StockOverview = {
     { label: 'Beta', value: '2.20' },
   ],
   income: [
-    { period: 'FY2022', revenue: 27, netIncome: 9, margin: 36 },
-    { period: 'FY2023', revenue: 27, netIncome: 4, margin: 16 },
-    { period: 'FY2024', revenue: 61, netIncome: 30, margin: 49 },
-    { period: 'FY2025', revenue: 130, netIncome: 73, margin: 56 },
-    { period: 'FY2026', revenue: 216, netIncome: 120, margin: 56 },
+    { period: 'FY2022', revenue: 26_974_000_000, netIncome:  9_752_000_000, margin: 36 },
+    { period: 'FY2023', revenue: 26_974_000_000, netIncome:  4_368_000_000, margin: 16 },
+    { period: 'FY2024', revenue: 60_922_000_000, netIncome: 29_760_000_000, margin: 49 },
+    { period: 'FY2025', revenue: 130_497_000_000, netIncome: 72_880_000_000, margin: 56 },
+    { period: 'FY2026', revenue: 216_000_000_000, netIncome: 120_960_000_000, margin: 56 },
+  ],
+  incomeQuarterly: [
+    { period: 'Q2 FY25', revenue: 30_040_000_000, netIncome: 16_599_000_000, margin: 55 },
+    { period: 'Q3 FY25', revenue: 35_082_000_000, netIncome: 19_309_000_000, margin: 55 },
+    { period: 'Q4 FY25', revenue: 39_331_000_000, netIncome: 22_091_000_000, margin: 56 },
+    { period: 'Q1 FY26', revenue: 44_062_000_000, netIncome: 18_775_000_000, margin: 43 },
   ],
   priceTarget: { low: 139, median: 294, high: 500, current: 207.42 },
   analystRating: { verdict: 'Buy', score: 72 },
@@ -1090,9 +1097,16 @@ export function getStockOverview(
 
   const income: IncomePeriod[] = FY.map((period, i) => {
     const growth = 0.4 + i * 0.18 + rand() * 0.1;
-    const rev = (revenueFY / 1e9) * growth / (0.4 + 4 * 0.18);
+    const rev = revenueFY * growth / (0.4 + 4 * 0.18);
     const margin = Math.round(12 + rand() * 44);
-    return { period, revenue: +rev.toFixed(0), netIncome: +(rev * margin / 100).toFixed(0), margin };
+    return { period, revenue: Math.round(rev), netIncome: Math.round(rev * margin / 100), margin };
+  });
+
+  const QQ = ['Q1', 'Q2', 'Q3', 'Q4'].map(q => `${q} FY26`);
+  const incomeQuarterly: IncomePeriod[] = QQ.map((period, i) => {
+    const rev = (revenueFY / 4) * (0.85 + i * 0.1 + rand() * 0.1);
+    const margin = Math.round(12 + rand() * 44);
+    return { period, revenue: Math.round(rev), netIncome: Math.round(rev * margin / 100), margin };
   });
 
   const low = +(basePrice * (0.6 + rand() * 0.15)).toFixed(0);
@@ -1123,10 +1137,10 @@ export function getStockOverview(
   const sec = sector ?? 'Technology';
 
   return {
-    ticker: t, name: company, sector: sec, industry: sec,
+    ticker: t, name: company, sector: sec, industry: '',
     price: {
       atClose: basePrice, closeChange, closeChangePct, closeDate: 'Jun 16, 2026',
-      postMarket: +(basePrice + postChange).toFixed(2), postChange, postChangePct,
+      postMarket: +(basePrice + postChange).toFixed(2), postChange, postChangePct, hasPostData: false,
     },
     chart, volume,
     keyStats: [
@@ -1140,9 +1154,10 @@ export function getStockOverview(
       { label: 'Beta', value: (0.6 + rand() * 1.8).toFixed(2) },
     ],
     income,
+    incomeQuarterly,
     priceTarget: { low, median, high, current: basePrice },
     analystRating: { verdict: VERDICTS[verdictIdx], score: sentimentScore },
-    about: `${company} operates in the ${sec.toLowerCase()} sector. This is an AI-generated overview based on the latest available market data and analyst coverage.`,
+    about: null,
     profileSheet: {
       marketCap: fmtBig(marketCap), enterpriseValue: fmtBig(marketCap * (0.95 + rand() * 0.1)),
       pe: `${pe.toFixed(2)}x`, pb: `${(2 + rand() * 24).toFixed(2)}x`,

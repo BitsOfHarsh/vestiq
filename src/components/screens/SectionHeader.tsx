@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import ScalePressable from '../ui/ScalePressable';
 import THEME from '../../theme';
 
 const { colors, fontSize, fontWeight, spacing } = THEME;
@@ -14,9 +15,9 @@ export default function SectionHeader({ title, action, onAction }: SectionHeader
     <View style={s.row}>
       <Text style={s.title}>{title}</Text>
       {action && (
-        <TouchableOpacity onPress={onAction} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <ScalePressable onPress={onAction} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={s.action}>{action}</Text>
-        </TouchableOpacity>
+        </ScalePressable>
       )}
     </View>
   );
@@ -31,5 +32,5 @@ const s = StyleSheet.create({
     fontSize: fontSize.sm, fontWeight: fontWeight.medium,
     color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 0.5,
   },
-  action: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.accent.teal },
+  action: { fontSize: fontSize.sm, fontWeight: fontWeight.medium, color: colors.accent.violet },
 });
