@@ -197,6 +197,41 @@ export async function getRecentInsiderActivity(): Promise<FinnhubInsiderTrade | 
   }
 }
 
+// ─── Quarterly EPS surprises ──────────────────────────────────────────────────
+
+export interface EarningsResult {
+  period: string;
+  epsEstimate: number;
+  epsActual: number;
+  revenueEstimate: number;
+  revenueActual: number;
+  beatEps: boolean;
+  beatRevenue: boolean;
+}
+
+export async function getFinnhubEarnings(ticker: string, limit = 8): Promise<EarningsResult[]> {
+  const cacheKey = `fh_earnings_${ticker}`;
+  try {
+    return await getCached(cacheKey, TTL.earnings, async () => {
+      type Raw = Array<{ period: string; estimate: number; actual: number; surprise: number }>;
+      const data = await get<Raw>(fh('/stock/earnings', { symbol: ticker, limit: String(limit) }));
+      return data
+        .filter(r => r.actual !== null && r.actual !== undefined)
+        .map(r => ({
+          period:          r.period,
+          epsEstimate:     r.estimate ?? 0,
+          epsActual:       r.actual ?? 0,
+          revenueEstimate: 0,
+          revenueActual:   0,
+          beatEps:         (r.actual ?? 0) >= (r.estimate ?? 0),
+          beatRevenue:     false,
+        }));
+    });
+  } catch {
+    return await getStale<EarningsResult[]>(cacheKey) ?? [];
+  }
+}
+
 export async function getAnalystRecs(ticker: string): Promise<AnalystRecommendation[]> {
   const cacheKey = `fhrec_${ticker}`;
   try {

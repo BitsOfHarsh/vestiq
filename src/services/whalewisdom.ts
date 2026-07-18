@@ -1,16 +1,22 @@
 import { KEYS, TTL } from '../config';
 import { getCached, getStale } from './cache';
 
-const BASE = 'https://whalewisdom.com/api';
+const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+const BASE = IS_WEB ? '/api/whalewisdom' : 'https://whalewisdom.com/api';
 const KEY  = KEYS.whalewisdom;
 
 function ww(path: string, params: Record<string, string> = {}): string {
+  if (IS_WEB) {
+    const q = new URLSearchParams({ path, ...params }).toString();
+    return `${BASE}?${q}`;
+  }
   const q = new URLSearchParams({ ...params, api_key: KEY }).toString();
   return `${BASE}${path}?${q}`;
 }
 
 async function get<T>(url: string): Promise<T> {
-  const res = await fetch(url, { headers: { 'X-Api-Key': KEY } });
+  const headers: Record<string, string> = IS_WEB ? {} : { 'X-Api-Key': KEY };
+  const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`WhaleWisdom ${res.status}`);
   return res.json() as Promise<T>;
 }

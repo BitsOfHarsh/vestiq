@@ -5,9 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import THEME from '../src/theme';
 import { APP_CONFIG } from '../src/config';
 
-// In mock/dev mode, always show onboarding so you can test it.
-// Flip FORCE_ONBOARDING to false once you're happy with the flow.
-const FORCE_ONBOARDING = __DEV__;
+const FORCE_ONBOARDING = false;
 
 export default function Index() {
   const [ready, setReady] = useState(false);

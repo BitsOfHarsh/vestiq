@@ -52,8 +52,11 @@ async function fetchPolygon(ticker: string): Promise<number> {
 }
 
 async function fetchYahoo(ticker: string): Promise<number> {
-  const url  = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
-  const res  = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+  const url = IS_WEB
+    ? `/api/quote?ticker=${encodeURIComponent(ticker)}`
+    : `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+  const res  = await fetch(url, IS_WEB ? {} : { headers: { 'User-Agent': 'Mozilla/5.0' } });
   if (!res.ok) throw new Error(`Yahoo ${res.status}`);
   const data = await res.json() as { chart?: { result?: Array<{ meta?: { regularMarketPrice?: number } }> } };
   const price = data.chart?.result?.[0]?.meta?.regularMarketPrice;
@@ -83,8 +86,11 @@ export async function getYahooQuote(ticker: string): Promise<YahooQuote | null> 
   } catch { /* proceed to fetch */ }
 
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+    const url = IS_WEB
+      ? `/api/quote?ticker=${encodeURIComponent(ticker)}`
+      : `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+    const res = await fetch(url, IS_WEB ? {} : { headers: { 'User-Agent': 'Mozilla/5.0' } });
     if (!res.ok) throw new Error(`Yahoo ${res.status}`);
     type Meta = {
       regularMarketPrice?: number;

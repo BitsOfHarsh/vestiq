@@ -48,6 +48,8 @@ export interface RedditRank {
   sentiment: number | null;   // 0–1 if provided
 }
 
+const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+
 export async function getRedditTrending(page = 1): Promise<RedditRank[]> {
   const cacheKey = `reddit_trending_${page}`;
   try {
@@ -62,7 +64,10 @@ export async function getRedditTrending(page = 1): Promise<RedditRank[]> {
           sentiment: number | null;
         }>;
       };
-      const res  = await fetch(`https://apewisdom.io/api/v1.0/filter/all-stocks/page/${page}`);
+      const url = IS_WEB
+        ? `/api/reddit?page=${page}`
+        : `https://apewisdom.io/api/v1.0/filter/all-stocks/page/${page}`;
+      const res  = await fetch(url);
       if (!res.ok) throw new Error(`Apewisdom ${res.status}`);
       const json = await res.json() as Raw;
       return (json.results ?? []).map(r => ({

@@ -1,7 +1,8 @@
 import { getCached, getStale } from './cache';
 
-const HOUSE_URL  = 'https://housestockwatcher.com/api/transactions';
-const SENATE_URL = 'https://senatestockwatcher.com/api/transactions';
+const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+const HOUSE_URL  = IS_WEB ? '/api/congress?chamber=house'  : 'https://housestockwatcher.com/api/transactions';
+const SENATE_URL = IS_WEB ? '/api/congress?chamber=senate' : 'https://senatestockwatcher.com/api/transactions';
 
 // Cache for 4 hours — congressional disclosures lag by days anyway
 const TTL_CONGRESS = 4;

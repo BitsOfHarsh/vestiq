@@ -218,3 +218,80 @@ export async function getPolygonNews(limit = 50): Promise<PolygonArticle[]> {
     return await getStale<PolygonArticle[]>(cacheKey) ?? [];
   }
 }
+
+// ─── Quarterly financials (revenue + net income) ──────────────────────────────
+
+export interface QuarterlyFinancial {
+  period: string;
+  revenue: number;
+  netIncome: number;
+  netMargin: number;
+}
+
+export async function getQuarterlyFinancials(ticker: string, limit = 8): Promise<QuarterlyFinancial[]> {
+  const cacheKey = `poly_fin_${ticker}`;
+  try {
+    return await getCached(cacheKey, TTL.earnings, async () => {
+      type Raw = {
+        results?: Array<{
+          fiscal_period: string;
+          fiscal_year: number;
+          financials?: {
+            income_statement?: {
+              revenues?: { value: number };
+              net_income_loss?: { value: number };
+            };
+          };
+        }>;
+      };
+      const url = poly(`/vX/reference/financials`, { ticker, timeframe: 'quarterly', limit: String(limit) });
+      const data = await get<Raw>(url);
+      return (data.results ?? []).map(r => {
+        const rev = r.financials?.income_statement?.revenues?.value ?? 0;
+        const net = r.financials?.income_statement?.net_income_loss?.value ?? 0;
+        return {
+          period:    `${r.fiscal_period} ${r.fiscal_year}`,
+          revenue:   rev,
+          netIncome: net,
+          netMargin: rev > 0 ? (net / rev) * 100 : 0,
+        };
+      });
+    });
+  } catch {
+    return await getStale<QuarterlyFinancial[]>(cacheKey) ?? [];
+  }
+}
+
+export async function getAnnualFinancials(ticker: string, limit = 6): Promise<QuarterlyFinancial[]> {
+  const cacheKey = `poly_fin_annual_${ticker}`;
+  try {
+    return await getCached(cacheKey, TTL.earnings, async () => {
+      type Raw = {
+        results?: Array<{
+          fiscal_year: number;
+          financials?: {
+            income_statement?: {
+              revenues?: { value: number };
+              net_income_loss?: { value: number };
+            };
+          };
+        }>;
+      };
+      const url = poly(`/vX/reference/financials`, { ticker, timeframe: 'annual', limit: String(limit) });
+      const data = await get<Raw>(url);
+      return (data.results ?? []).map(r => {
+        const rev = r.financials?.income_statement?.revenues?.value ?? 0;
+        const net = r.financials?.income_statement?.net_income_loss?.value ?? 0;
+        return {
+          period:    `FY${r.fiscal_year}`,
+          revenue:   rev,
+          netIncome: net,
+          netMargin: rev > 0 ? (net / rev) * 100 : 0,
+        };
+      });
+    });
+  } catch {
+    return await getStale<QuarterlyFinancial[]>(cacheKey) ?? [];
+  }
+}
+

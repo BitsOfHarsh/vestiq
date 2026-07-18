@@ -12,10 +12,10 @@ import {
   StockOverview, IncomePeriod, EarningsQuarter,
   InsiderTxn, AnalystVerdict,
 } from '../../src/mock';
-import { getChartBars, OHLCVBar } from '../../src/services/polygon';
+import { getChartBars, OHLCVBar, getQuarterlyFinancials, getAnnualFinancials } from '../../src/services/polygon';
 import { getYahooQuote } from '../../src/services/market';
-import { getProfile, getIncomeStatement, getEarningsHistory, getEarningsEstimate, getPriceTargets, getInsiderTrades } from '../../src/services/fmp';
-import { getAnalystRecs, getTickerNews } from '../../src/services/finnhub';
+import { getProfile, getEarningsEstimate, getPriceTargets, getInsiderTrades } from '../../src/services/fmp';
+import { getAnalystRecs, getTickerNews, getFinnhubEarnings } from '../../src/services/finnhub';
 import { getCompanyAbout } from '../../src/services/claude';
 import { TickerLogo } from '../../src/components/ui';
 import { getCongressTrades } from '../../src/services/congress';
@@ -57,6 +57,14 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
     setTooltip({ x: pts[clamped].x, y: pts[clamped].y, value: data[clamped] });
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const idx = Math.round((mouseX / CHART_W) * (data.length - 1));
+    const clamped = Math.max(0, Math.min(data.length - 1, idx));
+    setTooltip({ x: pts[clamped].x, y: pts[clamped].y, value: data[clamped] });
+  };
+
   const tooltipLeft = tooltip
     ? Math.min(Math.max(tooltip.x - 34, 0), CHART_W - 68)
     : 0;
@@ -78,6 +86,10 @@ function PriceChart({ data, up }: { data: number[]; up: boolean }) {
           onTouchStart={handleTouch}
           onTouchMove={handleTouch}
           onTouchEnd={() => setTooltip(null)}
+          {...({
+            onMouseMove: handleMouseMove,
+            onMouseLeave: () => setTooltip(null),
+          } as object)}
         >
           {/* Area fill */}
           {pts.map((pt, i) => (
@@ -1014,28 +1026,37 @@ export default function StockScreen() {
       });
     })();
 
-    // Income statement — annual + quarterly in parallel
-    tryGet(() => getIncomeStatement(ticker, 'annual', 6)).then(income => {
+    // Income statement via Polygon (free tier)
+    tryGet(() => getAnnualFinancials(ticker, 6)).then(income => {
       if (!income?.length) return;
       updateS({ income: income.map(p => ({ period: p.period, revenue: p.revenue, netIncome: p.netIncome, margin: p.netMargin })) });
     });
-    tryGet(() => getIncomeStatement(ticker, 'quarter', 8)).then(income => {
+    tryGet(() => getQuarterlyFinancials(ticker, 8)).then(income => {
       if (!income?.length) return;
       updateS({ incomeQuarterly: income.map(p => ({ period: p.period, revenue: p.revenue, netIncome: p.netIncome, margin: p.netMargin })) });
     });
 
-    // Earnings history
-    tryGet(() => getEarningsHistory(ticker, 8)).then(hist => {
+    // Earnings history via Finnhub (free tier) + most-recent quarter summary
+    tryGet(() => getFinnhubEarnings(ticker, 8)).then(hist => {
       if (!hist?.length) return;
+      const latest = hist[0];
+      const epsResult: 'Beat' | 'Miss' = latest.beatEps ? 'Beat' : 'Miss';
       updateS({
         earningsHistory: hist.map(q => ({
           period:    q.period,
           actualEps: q.epsActual,
           estEps:    q.epsEstimate,
           beatPct:   q.epsEstimate !== 0 ? ((q.epsActual - q.epsEstimate) / Math.abs(q.epsEstimate)) * 100 : 0,
-          actualRev: q.revenueActual,
-          estRev:    q.revenueEstimate,
+          actualRev: 0,
+          estRev:    0,
         })),
+        earningsPast: {
+          period:   latest.period,
+          eps:      { result: epsResult, est: `$${latest.epsEstimate.toFixed(2)}`, actual: `$${latest.epsActual.toFixed(2)}` },
+          revenue:  { result: epsResult, est: '—', actual: '—' },
+          guidance: 'Inline',
+          summary:  [],
+        },
       });
     });
 

@@ -4,27 +4,28 @@ import { APP_CONFIG } from '../config';
 import * as claudeMock from './claudeMock';
 
 const API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY ?? '';
-const API_URL = 'https://api.anthropic.com/v1/messages';
+// On web, route through the Vercel proxy to avoid CORS and keep the key server-side
+const IS_WEB = typeof window !== 'undefined' && typeof document !== 'undefined';
+const API_URL = IS_WEB ? '/api/claude' : 'https://api.anthropic.com/v1/messages';
 const MODEL = 'claude-sonnet-4-6';
-
-// Debug: log key status on module load (first 8 chars only for safety)
-console.log('[Claude] key loaded:', API_KEY ? `${API_KEY.slice(0, 8)}…` : 'EMPTY');
 
 // ─── Base call ────────────────────────────────────────────────────────────────
 
 async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
-  if (!API_KEY) {
+  if (!IS_WEB && !API_KEY) {
     console.error('[Claude] EXPO_PUBLIC_ANTHROPIC_API_KEY is empty — did you restart the Expo server after adding the key?');
     throw new Error('Missing EXPO_PUBLIC_ANTHROPIC_API_KEY');
   }
 
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (!IS_WEB) {
+    headers['x-api-key'] = API_KEY;
+    headers['anthropic-version'] = '2023-06-01';
+  }
+
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: {
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
+    headers,
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1024,

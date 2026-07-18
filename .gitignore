@@ -46,3 +46,4 @@ skills-lock.json
 # generated native folders
 /ios
 /android
+.vercel
