@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
   useFonts,
@@ -13,18 +13,9 @@ import THEME from '../src/theme';
 
 const BG = THEME.colors.bg.primary;
 
-export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
+const IS_WEB = Platform.OS === 'web';
 
-  if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: BG }} />;
-  }
-
+function AppStack() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
@@ -43,4 +34,38 @@ export default function RootLayout() {
       </Stack>
     </SafeAreaProvider>
   );
+}
+
+export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <View style={{ flex: 1, backgroundColor: BG }} />;
+  }
+
+  if (IS_WEB) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{
+          width: 390,
+          height: '100%' as unknown as number,
+          maxHeight: 844,
+          overflow: 'hidden',
+          backgroundColor: BG,
+          // @ts-ignore web-only
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.8)',
+          borderRadius: 16,
+        }}>
+          <AppStack />
+        </View>
+      </View>
+    );
+  }
+
+  return <AppStack />;
 }
