@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, SafeAreaView, ScrollView,
   Switch,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAppStore } from '../store';
 import { Holding, WatchlistItem, PriceAlert } from '../services/types';
@@ -83,7 +83,7 @@ function LevelCard({
       <Text style={s.levelNote}>{alert.note}</Text>
       <Text style={[s.levelDist, { color: urgencyColor }]}>
         {dist.label}
-        {dist.urgency === 'close' ? ' — very close' : dist.urgency === 'near' ? ' — near' : ''}
+        {dist.urgency === 'close' ? ' · very close' : dist.urgency === 'near' ? ' · near' : ''}
       </Text>
     </View>
   );
@@ -279,7 +279,7 @@ export default function AlertsScreen() {
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <View style={s.header}>
         <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="arrow-back" size={22} color={colors.text.primary} />
+          <Feather name="arrow-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <View style={s.headerText}>
           <Text style={s.headerTitle}>Price alerts</Text>
@@ -330,7 +330,7 @@ export default function AlertsScreen() {
         {/* ── Stock blocks ───────────────────────────────────────────────── */}
         {filtered.length === 0 ? (
           <View style={s.emptyBlock}>
-            <Ionicons name="notifications-off-outline" size={36} color={colors.text.muted} />
+            <Feather name="bell-off" size={36} color={colors.text.muted} />
             <Text style={s.emptyText}>
               {filter === 'All'
                 ? 'Add holdings or watchlist items to see alerts'

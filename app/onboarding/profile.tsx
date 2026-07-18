@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useAppStore, ExperienceLevel } from '../../src/store';
 import THEME from '../../src/theme';
 import ScalePressable from '../../src/components/ui/ScalePressable';
@@ -76,7 +76,7 @@ export default function ProfileScreen() {
                     <Text style={[s.levelLabel, active && s.levelLabelActive]}>{opt.label}</Text>
                     <Text style={s.levelDesc}>{opt.desc}</Text>
                   </View>
-                  {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.brand} />}
+                  {active && <Feather name="check-circle" size={20} color={colors.accent.brand} />}
                 </ScalePressable>
               );
             })}

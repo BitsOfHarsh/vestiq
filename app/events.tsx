@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../src/theme';
 import { TickerLogo } from '../src/components/ui';
 import ScalePressable from '../src/components/ui/ScalePressable';
@@ -18,7 +18,7 @@ type Tab = 'notable' | 'earnings' | 'economic';
 function NotableTab() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingBottom: 60 }}>
-      <Ionicons name="star-outline" size={36} color={colors.text.muted} />
+      <Feather name="star" size={36} color={colors.text.muted} />
       <Text style={{ fontSize: fontSize.md, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary }}>
         Coming soon
       </Text>
@@ -73,7 +73,7 @@ function EarningsDayCard({ day }: { day: EarningsDay }) {
           {/* Pre-Market */}
           <View style={[t.section, hasPreMarket && hasPostMarket && t.sectionBorder]}>
             <View style={t.sectionHeader}>
-              <Ionicons name="sunny-outline" size={13} color={colors.status.amber} />
+              <Feather name="sun" size={13} color={colors.status.amber} />
               <Text style={t.sectionLabel}>Pre-Market</Text>
             </View>
             {hasPreMarket
@@ -89,7 +89,7 @@ function EarningsDayCard({ day }: { day: EarningsDay }) {
           {/* Post-Market */}
           <View style={t.section}>
             <View style={t.sectionHeader}>
-              <Ionicons name="moon-outline" size={13} color={colors.status.blue} />
+              <Feather name="moon" size={13} color={colors.status.blue} />
               <Text style={t.sectionLabel}>Post-Market</Text>
             </View>
             {hasPostMarket
@@ -119,7 +119,7 @@ function EarningsTab({ days, loading }: { days: EarningsDay[]; loading: boolean 
   if (!days.length) {
     return (
       <View style={t.centered}>
-        <Ionicons name="calendar-outline" size={36} color={colors.text.muted} />
+        <Feather name="calendar" size={36} color={colors.text.muted} />
         <Text style={t.emptyLabel}>No upcoming earnings</Text>
       </View>
     );
@@ -154,7 +154,7 @@ function EconomicTab({ days, loading }: { days: EconomicDay[]; loading: boolean 
   if (!days.length) {
     return (
       <View style={t.centered}>
-        <Ionicons name="calendar-outline" size={36} color={colors.text.muted} />
+        <Feather name="calendar" size={36} color={colors.text.muted} />
         <Text style={t.emptyLabel}>No economic events</Text>
       </View>
     );
@@ -182,9 +182,9 @@ function EconomicTab({ days, loading }: { days: EconomicDay[]; loading: boolean 
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 const TABS: { key: Tab; icon: string; label: string }[] = [
-  { key: 'notable',  icon: 'globe-outline',      label: 'Notable'  },
-  { key: 'earnings', icon: 'trending-up-outline', label: 'Earnings' },
-  { key: 'economic', icon: 'calendar-outline',    label: 'Economic' },
+  { key: 'notable',  icon: 'globe',      label: 'Notable'  },
+  { key: 'earnings', icon: 'trending-up', label: 'Earnings' },
+  { key: 'economic', icon: 'calendar',    label: 'Economic' },
 ];
 
 export default function EventsScreen() {
@@ -250,11 +250,11 @@ export default function EventsScreen() {
           style={s.backBtn}
           scaleTo={0.88}
         >
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>Upcoming Events</Text>
         <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="options-outline" size={20} color={colors.text.secondary} />
+          <Feather name="sliders" size={20} color={colors.text.secondary} />
         </ScalePressable>
       </View>
 
@@ -270,11 +270,11 @@ export default function EventsScreen() {
             >
               {active_
                 ? <View style={[s.tabBtnGrad, { backgroundColor: colors.accent.brand }]}>
-                    <Ionicons name={tb.icon as never} size={13} color="#fff" />
+                    <Feather name={tb.icon as never} size={13} color="#fff" />
                     <Text style={s.tabTextActive}>{tb.label}</Text>
                   </View>
                 : <>
-                    <Ionicons name={tb.icon as never} size={13} color={colors.text.muted} />
+                    <Feather name={tb.icon as never} size={13} color={colors.text.muted} />
                     <Text style={s.tabText}>{tb.label}</Text>
                   </>
               }

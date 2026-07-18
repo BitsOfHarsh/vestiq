@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import THEME from '../src/theme';
 import ScalePressable from '../src/components/ui/ScalePressable';
@@ -12,14 +12,14 @@ export default function SuperInvestorsScreen() {
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>Super Investors</Text>
         <View style={{ width: 38 }} />
       </View>
 
       <View style={s.emptyState}>
-        <Ionicons name="people-outline" size={44} color={colors.text.muted} />
+        <Feather name="users" size={44} color={colors.text.muted} />
         <Text style={s.emptyTitle}>Coming soon</Text>
         <Text style={s.emptyDesc}>
           13F filings, hedge fund conviction plays, and top-performing investor portfolios

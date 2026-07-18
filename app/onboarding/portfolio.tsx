@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useAppStore } from '../../src/store';
 import THEME from '../../src/theme';
 import ScalePressable from '../../src/components/ui/ScalePressable';
@@ -77,7 +77,7 @@ export default function MarketScreen() {
                   </View>
                   <Text style={s.optionSub}>{opt.sub}</Text>
                 </View>
-                {active && <Ionicons name="checkmark-circle" size={20} color={colors.accent.brand} />}
+                {active && <Feather name="check-circle" size={20} color={colors.accent.brand} />}
               </ScalePressable>
             );
           })}

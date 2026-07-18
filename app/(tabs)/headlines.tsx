@@ -4,7 +4,7 @@ import {
   Modal, Pressable, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Headline, SourceArticle } from '../../src/mock';
 import { useNewsStore } from '../../src/store/newsStore';
@@ -29,7 +29,7 @@ function SourcesSheet({ item, onClose }: { item: Headline | null; onClose: () =>
         <View style={sh.sheetHeader}>
           <Text style={sh.sheetTitle}>Sources</Text>
           <ScalePressable onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="close" size={20} color={colors.text.secondary} />
+            <Feather name="x" size={20} color={colors.text.secondary} />
           </ScalePressable>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={sh.list}>
@@ -61,7 +61,7 @@ const DIR_COLOR: Record<string, string> = {
   bullish: '#10B981', bearish: '#EF4444', neutral: '#F59E0B',
 };
 const DIR_ICON: Record<string, string> = {
-  bullish: 'trending-up', bearish: 'trending-down', neutral: 'remove',
+  bullish: 'trending-up', bearish: 'trending-down', neutral: 'minus',
 };
 const CONF_COLOR: Record<string, string> = {
   high: '#10B981', medium: '#F59E0B', speculative: '#EF4444',
@@ -87,7 +87,7 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
 
   const dir      = (idea?.direction ?? 'neutral') as string;
   const dirColor = DIR_COLOR[dir] ?? colors.text.primary;
-  const dirIcon  = (DIR_ICON[dir] ?? 'remove') as 'trending-up' | 'trending-down' | 'remove';
+  const dirIcon  = (DIR_ICON[dir] ?? 'minus') as 'trending-up' | 'trending-down' | 'minus';
   const confColor = CONF_COLOR[idea?.confidence ?? ''] ?? colors.text.muted;
   const primaryTicker = (idea?.stocks ?? [])[0] ?? item?.ticker ?? '';
 
@@ -106,7 +106,7 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
             {!!item?.ticker && <Text style={ti.headerSource} numberOfLines={1}>{item.headline.slice(0, 42)}…</Text>}
           </View>
           <ScalePressable onPress={onClose} style={ti.closeBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="close" size={18} color={colors.text.secondary} />
+            <Feather name="x" size={18} color={colors.text.secondary} />
           </ScalePressable>
         </View>
 
@@ -142,7 +142,7 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
 
         {errorMsg && (
           <View style={ti.center}>
-            <Ionicons name="alert-circle-outline" size={32} color={colors.text.muted} />
+            <Feather name="alert-circle" size={32} color={colors.text.muted} />
             <Text style={ti.hint}>Analysis failed</Text>
             <Text style={[ti.hint, { fontSize: 10, color: colors.text.muted }]} numberOfLines={3}>{errorMsg}</Text>
           </View>
@@ -157,14 +157,14 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
                 <View style={ti.heroLogoWrap}>
                   <TickerLogo ticker={primaryTicker} size={56} borderRadius={14} />
                   <View style={[ti.heroDirBadge, { backgroundColor: dirColor }]}>
-                    <Ionicons name={dirIcon} size={11} color="#fff" />
+                    <Feather name={dirIcon} size={11} color="#fff" />
                   </View>
                 </View>
               )}
               <View style={ti.heroText}>
                 <Text style={ti.heroTicker}>{primaryTicker || '—'}</Text>
                 <View style={[ti.dirPill, { backgroundColor: dirColor + '22', borderColor: dirColor + '55' }]}>
-                  <Ionicons name={dirIcon} size={12} color={dirColor} />
+                  <Feather name={dirIcon} size={12} color={dirColor} />
                   <Text style={[ti.dirPillText, { color: dirColor }]}>{dir.toUpperCase()}</Text>
                 </View>
               </View>
@@ -183,21 +183,21 @@ function TradeIdeaSheet({ item, onClose }: { item: Headline | null; onClose: () 
             <View style={ti.metricsRow}>
               {idea.entry && (
                 <View style={[ti.metric, { borderTopColor: colors.status.green }]}>
-                  <Ionicons name="enter-outline" size={14} color={colors.status.green} />
+                  <Feather name="log-in" size={14} color={colors.status.green} />
                   <Text style={ti.metricLabel}>ENTRY</Text>
                   <Text style={[ti.metricVal, { color: colors.status.green }]}>{idea.entry}</Text>
                 </View>
               )}
               {idea.stop && (
                 <View style={[ti.metric, { borderTopColor: colors.status.red }]}>
-                  <Ionicons name="ban-outline" size={14} color={colors.status.red} />
+                  <Feather name="slash" size={14} color={colors.status.red} />
                   <Text style={ti.metricLabel}>STOP</Text>
                   <Text style={[ti.metricVal, { color: colors.status.red }]}>{idea.stop}</Text>
                 </View>
               )}
               {idea.timeframe && (
                 <View style={[ti.metric, { borderTopColor: colors.accent.brand }]}>
-                  <Ionicons name="time-outline" size={14} color={colors.accent.brand} />
+                  <Feather name="clock" size={14} color={colors.accent.brand} />
                   <Text style={ti.metricLabel}>HORIZON</Text>
                   <Text style={[ti.metricVal, { color: colors.accent.brand }]}>{idea.timeframe}</Text>
                 </View>
@@ -375,13 +375,13 @@ function NewsCard({ item, onSourcesPress, onTradeIdeaPress }: { item: Headline; 
       <View style={s.cardFooter}>
         {sourceCount > 1 ? (
           <ScalePressable style={s.sourcesChip} onPress={onSourcesPress}>
-            <Ionicons name="newspaper-outline" size={12} color={colors.accent.brand} />
+            <Feather name="file-text" size={12} color={colors.accent.brand} />
             <Text style={s.sourcesChipText}>{sourceCount} Sources</Text>
-            <Ionicons name="chevron-forward" size={11} color={colors.accent.brand} />
+            <Feather name="chevron-right" size={11} color={colors.accent.brand} />
           </ScalePressable>
         ) : <View />}
         <ScalePressable style={s.tradeIdeaBtn} onPress={onTradeIdeaPress}>
-          <Ionicons name="flash-outline" size={12} color={colors.status.amber} />
+          <Feather name="zap" size={12} color={colors.status.amber} />
           <Text style={s.tradeIdeaText}>Trade Idea</Text>
         </ScalePressable>
       </View>
@@ -581,15 +581,15 @@ export default function HeadlinesScreen() {
       {/* Header */}
       <View style={s.header}>
         <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="menu-outline" size={24} color={colors.text.primary} />
+          <Feather name="menu" size={24} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>Top Headlines</Text>
         <View style={s.headerRight}>
           <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="options-outline" size={22} color={colors.text.secondary} />
+            <Feather name="sliders" size={22} color={colors.text.secondary} />
           </ScalePressable>
           <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="search-outline" size={22} color={colors.text.secondary} />
+            <Feather name="search" size={22} color={colors.text.secondary} />
           </ScalePressable>
         </View>
       </View>
@@ -614,7 +614,7 @@ export default function HeadlinesScreen() {
         </View>
       ) : listData.length === 0 ? (
         <View style={s.empty}>
-          <Ionicons name="newspaper-outline" size={36} color={colors.text.muted} />
+          <Feather name="file-text" size={36} color={colors.text.muted} />
           <Text style={s.emptyText}>No headlines yet</Text>
         </View>
       ) : (

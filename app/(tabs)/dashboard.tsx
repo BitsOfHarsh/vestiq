@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import THEME from '../../src/theme';
@@ -172,7 +172,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
         </View>
       ) : (
         <View style={s.briefLocked}>
-          <Ionicons name="sparkles-outline" size={14} color={colors.accent.brand} />
+          <Feather name="star" size={14} color={colors.accent.brand} />
           <Text style={s.briefLockedText}>
             Market brief unavailable. Tap to retry.
           </Text>
@@ -238,7 +238,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
                       : '—'}
                   </Text>
                   <View style={[s.tickerChangePill, { backgroundColor: cColor + '18' }]}>
-                    <Ionicons name={pos ? 'trending-up' : 'trending-down'} size={9} color={cColor} />
+                    <Feather name={pos ? 'trending-up' : 'trending-down'} size={9} color={cColor} />
                     <Text style={[s.tickerChange, { color: cColor }]}>
                       {t.value > 0 ? `${pos ? '+' : ''}${t.change.toFixed(2)}%` : '—'}
                     </Text>
@@ -294,7 +294,7 @@ function EarlySignalCell({ cell }: { cell: SignalCell }) {
           <Text style={es.cellTitle}>{cell.title}</Text>
           <Text style={es.cellSub}>{cell.sub}</Text>
         </View>
-        <Ionicons name="open-outline" size={11} color={colors.text.muted} />
+        <Feather name="external-link" size={11} color={colors.text.muted} />
       </View>
 
       <Text style={[es.cellTicker, { color: cell.accentColor }]}>{cell.ticker}</Text>
@@ -354,8 +354,8 @@ function EarlySignalsCard({
               {c === 'loading' ? (
                 <ActivityIndicator size="small" color={colors.text.muted} />
               ) : (
-                <Ionicons
-                  name={c === 'soon' ? 'time-outline' : 'alert-circle-outline'}
+                <Feather
+                  name={c === 'soon' ? 'clock' : 'alert-circle'}
                   size={18} color={colors.text.muted}
                 />
               )}
@@ -416,7 +416,7 @@ function UpcomingEventsCard({
           <View style={s.eventsSectionHeader}>
             <View style={[s.sectionAccentBar, { backgroundColor: colors.status.amber }]} />
             <Text style={s.eventsSectionLabel}>Earnings</Text>
-            <Ionicons name="chevron-forward" size={11} color={colors.text.muted} />
+            <Feather name="chevron-right" size={11} color={colors.text.muted} />
           </View>
           {earningsHint
             ? <Text style={s.emptyHint}>{earningsHint}</Text>
@@ -584,10 +584,10 @@ export default function DashboardScreen() {
         </View>
         <View style={s.headerRight}>
           <ScalePressable style={s.iconBtn} scaleTo={0.88} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="search-outline" size={20} color={colors.text.secondary} />
+            <Feather name="search" size={20} color={colors.text.secondary} />
           </ScalePressable>
           <ScalePressable style={s.iconBtn} scaleTo={0.88} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="notifications-outline" size={20} color={colors.text.secondary} />
+            <Feather name="bell" size={20} color={colors.text.secondary} />
           </ScalePressable>
         </View>
       </View>

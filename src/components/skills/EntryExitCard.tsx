@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../../theme';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
@@ -52,7 +52,7 @@ export default function EntryExitCard({ data, ticker, accentColor }: {
 
       {/* Risk/reward */}
       <View style={s.rrRow}>
-        <Ionicons name="trending-up" size={13} color={colors.text.muted} />
+        <Feather name="trending-up" size={13} color={colors.text.muted} />
         <Text style={s.rrLabel}>Risk / Reward</Text>
         <View style={[s.rrPill, { backgroundColor: colors.status.green + '18' }]}>
           <Text style={[s.rrValue, { color: colors.status.green }]}>{data.riskReward}</Text>

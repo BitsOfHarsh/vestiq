@@ -1,10 +1,10 @@
 import { View } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../../src/theme';
 
 const { colors } = THEME;
-type IconName = React.ComponentProps<typeof Ionicons>['name'];
+type IconName = React.ComponentProps<typeof Feather>['name'];
 
 function TabIcon({ name, outlineName, focused }: { name: IconName; outlineName: IconName; focused: boolean }) {
   return (
@@ -18,7 +18,7 @@ function TabIcon({ name, outlineName, focused }: { name: IconName; outlineName: 
           backgroundColor: colors.accent.brand,
         }} />
       )}
-      <Ionicons
+      <Feather
         name={focused ? name : outlineName}
         size={22}
         color={focused ? colors.accent.brand : colors.text.muted}
@@ -48,28 +48,28 @@ export default function TabsLayout() {
         name="research"
         options={{
           title: 'Research',
-          tabBarIcon: ({ focused }) => <TabIcon name="bulb" outlineName="bulb-outline" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="compass" outlineName="compass" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="dashboard"
         options={{
           title: 'Dashboard',
-          tabBarIcon: ({ focused }) => <TabIcon name="grid" outlineName="grid-outline" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="grid" outlineName="grid" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="headlines"
         options={{
           title: 'Headlines',
-          tabBarIcon: ({ focused }) => <TabIcon name="newspaper" outlineName="newspaper-outline" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="file-text" outlineName="file-text" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="portfolio"
         options={{
           title: 'Portfolio',
-          tabBarIcon: ({ focused }) => <TabIcon name="pie-chart" outlineName="pie-chart-outline" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="pie-chart" outlineName="pie-chart" focused={focused} />,
         }}
       />
     </Tabs>

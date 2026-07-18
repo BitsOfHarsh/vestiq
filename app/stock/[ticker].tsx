@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import ScalePressable from '../../src/components/ui/ScalePressable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import THEME from '../../src/theme';
 import {
@@ -367,11 +367,11 @@ const ar = StyleSheet.create({
 
 // ─── Section header ───────────────────────────────────────────────────────────
 
-function SectionHead({ icon, title, right }: { icon: keyof typeof Ionicons.glyphMap; title: string; right?: React.ReactNode }) {
+function SectionHead({ icon, title, right }: { icon: keyof typeof Feather.glyphMap; title: string; right?: React.ReactNode }) {
   return (
     <View style={d.sectionHead}>
       <View style={d.sectionHeadLeft}>
-        <Ionicons name={icon} size={16} color={colors.text.primary} />
+        <Feather name={icon} size={16} color={colors.text.primary} />
         <Text style={d.sectionTitle}>{title}</Text>
       </View>
       {right}
@@ -383,7 +383,7 @@ function ViewMore({ onPress }: { onPress?: () => void }) {
   return (
     <ScalePressable style={d.viewMore} onPress={onPress}>
       <Text style={d.viewMoreText}>View more </Text>
-      <Ionicons name="chevron-forward" size={13} color={colors.text.secondary} />
+      <Feather name="chevron-right" size={13} color={colors.text.secondary} />
     </ScalePressable>
   );
 }
@@ -396,7 +396,7 @@ function ProfileTab({ s, onOpenSheet }: { s: StockOverview; onOpenSheet: () => v
   return (
     <View style={d.tabBody}>
       {/* Key Stats */}
-      <SectionHead icon="stats-chart" title="Key Stats" />
+      <SectionHead icon="bar-chart-2" title="Key Stats" />
       <View style={d.statList}>
         {s.keyStats.map((stat, i) => (
           <View key={stat.label} style={[d.statRow, i < s.keyStats.length - 1 && d.statRowBorder]}>
@@ -408,7 +408,7 @@ function ProfileTab({ s, onOpenSheet }: { s: StockOverview; onOpenSheet: () => v
       <ViewMore onPress={onOpenSheet} />
 
       {/* Income statement */}
-      <SectionHead icon="document-text-outline" title="Income Statement" />
+      <SectionHead icon="file-text" title="Income Statement" />
       <View style={d.toggleRow}>
         {(['Annual', 'Quarterly'] as const).map(m => (
           <ScalePressable key={m} style={[d.toggleBtn, incomeMode === m && d.toggleBtnActive]} onPress={() => setIncomeMode(m)}>
@@ -420,17 +420,17 @@ function ProfileTab({ s, onOpenSheet }: { s: StockOverview; onOpenSheet: () => v
       <ViewMore onPress={onOpenSheet} />
 
       {/* Price target */}
-      <SectionHead icon="locate-outline" title="Price Target" />
+      <SectionHead icon="crosshair" title="Price Target" />
       <PriceTargetBar {...s.priceTarget} />
       <ViewMore onPress={onOpenSheet} />
 
       {/* Analyst ratings */}
-      <SectionHead icon="people-outline" title="Analyst Ratings" />
+      <SectionHead icon="users" title="Analyst Ratings" />
       <AnalystRating verdict={s.analystRating.verdict} score={s.analystRating.score} />
       <ViewMore onPress={onOpenSheet} />
 
       {/* About */}
-      <SectionHead icon="business-outline" title="About" />
+      <SectionHead icon="briefcase" title="About" />
       <Text style={d.aboutName}>{s.name}</Text>
       {(s.sector || s.industry) && (
         <Text style={d.aboutSector}>
@@ -454,9 +454,9 @@ function ProfileTab({ s, onOpenSheet }: { s: StockOverview; onOpenSheet: () => v
 // ─── Earnings tab ─────────────────────────────────────────────────────────────
 
 const RESULT_COLOR  = { Beat: colors.status.green, Miss: colors.status.red };
-const RESULT_ICON   = { Beat: 'checkmark-circle' as const, Miss: 'close-circle' as const };
+const RESULT_ICON   = { Beat: 'check-circle' as const, Miss: 'x-circle' as const };
 const GUIDANCE_COLOR = { Above: colors.status.green, Inline: colors.status.amber, Below: colors.status.red };
-const GUIDANCE_ICON  = { Above: 'trending-up' as const, Inline: 'remove' as const, Below: 'trending-down' as const };
+const GUIDANCE_ICON  = { Above: 'trending-up' as const, Inline: 'minus' as const, Below: 'trending-down' as const };
 
 function EarningsMetricRow({ label, result, est, actual }: {
   label: string; result: 'Beat' | 'Miss'; est: string; actual: string;
@@ -480,7 +480,7 @@ function EarningsMetricRow({ label, result, est, actual }: {
         </View>
       </View>
       <View style={[ec.badge, { backgroundColor: color + '20', borderColor: color + '50' }]}>
-        <Ionicons name={RESULT_ICON[result]} size={13} color={color} />
+        <Feather name={RESULT_ICON[result]} size={13} color={color} />
         <Text style={[ec.badgeText, { color }]}>{beat ? 'BEAT' : 'MISS'}</Text>
       </View>
     </View>
@@ -494,7 +494,7 @@ function GuidanceRow({ guidance }: { guidance: 'Above' | 'Inline' | 'Below' }) {
       <View style={ec.rowLeft}>
         <Text style={ec.rowLabel}>Guidance</Text>
         <View style={ec.rowValues}>
-          <Ionicons name={GUIDANCE_ICON[guidance]} size={18} color={color} />
+          <Feather name={GUIDANCE_ICON[guidance]} size={18} color={color} />
           <Text style={[ec.guidanceText, { color }]}>{guidance === 'Above' ? 'Raised' : guidance === 'Below' ? 'Lowered' : 'In-line'}</Text>
         </View>
       </View>
@@ -555,7 +555,7 @@ function EarningsTab({ s }: { s: StockOverview }) {
       <View style={d.toggleRow}>
         {(['Past', 'Upcoming'] as const).map(m => (
           <ScalePressable key={m} style={[d.bigToggle, mode === m && d.bigToggleActive]} onPress={() => setMode(m)}>
-            <Ionicons name={m === 'Past' ? 'time-outline' : 'calendar-outline'} size={15} color={mode === m ? colors.accent.brandBright : colors.text.muted} />
+            <Feather name={m === 'Past' ? 'clock' : 'calendar'} size={15} color={mode === m ? colors.accent.brandBright : colors.text.muted} />
             <Text style={[d.bigToggleText, mode === m && d.bigToggleTextActive]}>{m}</Text>
           </ScalePressable>
         ))}
@@ -570,7 +570,7 @@ function EarningsTab({ s }: { s: StockOverview }) {
             <GuidanceRow guidance={s.earningsPast.guidance} />
           </View>
 
-          <SectionHead icon="document-text-outline" title="Earnings Summary" />
+          <SectionHead icon="file-text" title="Earnings Summary" />
           <View style={d.summaryBox}>
             {s.earningsPast.summary.map((line, i) => (
               <View key={i} style={d.summaryRow}>
@@ -580,18 +580,18 @@ function EarningsTab({ s }: { s: StockOverview }) {
             ))}
             <ScalePressable style={d.transcriptBtn}>
               <Text style={d.transcriptText}>See full transcript </Text>
-              <Ionicons name="chevron-forward" size={13} color={colors.text.secondary} />
+              <Feather name="chevron-right" size={13} color={colors.text.secondary} />
             </ScalePressable>
           </View>
 
-          <SectionHead icon="bar-chart-outline" title="EPS History" />
+          <SectionHead icon="bar-chart-2" title="EPS History" />
           <EarningsBars history={s.earningsHistory} />
         </>
       ) : (
         <>
           <View style={d.nextEarnRow}>
             <View style={d.nextEarnLeft}>
-              <Ionicons name="calendar-outline" size={15} color={colors.text.muted} />
+              <Feather name="calendar" size={15} color={colors.text.muted} />
               <Text style={d.nextEarnLabel}>Next Earnings</Text>
             </View>
             <Text style={d.nextEarnDate}>{s.earningsUpcoming.date}</Text>
@@ -606,7 +606,7 @@ function EarningsTab({ s }: { s: StockOverview }) {
               <Text style={ec.upcomingCellVal}>{s.earningsUpcoming.revenueEstimate}</Text>
             </View>
           </View>
-          <SectionHead icon="eye-outline" title="What to Look Out For" />
+          <SectionHead icon="eye" title="What to Look Out For" />
           <View style={d.summaryBox}>
             {s.earningsUpcoming.lookout.map((line, i) => (
               <View key={i} style={d.summaryRow}>
@@ -671,7 +671,7 @@ function SmartMoneyTab({ s, onOpenInsiders }: { s: StockOverview; onOpenInsiders
     <View style={d.tabBody}>
       {/* Insider trades */}
       <SectionHead
-        icon="people-outline" title="Insider Trades"
+        icon="users" title="Insider Trades"
         right={<ScalePressable style={d.seeTradesBtn} onPress={onOpenInsiders}><Text style={d.seeTradesText}>See Trades</Text></ScalePressable>}
       />
       <SplitBar buyPct={sm.insiderBuyPct} />
@@ -685,7 +685,7 @@ function SmartMoneyTab({ s, onOpenInsiders }: { s: StockOverview; onOpenInsiders
 
       {/* Congress trades */}
       <SectionHead
-        icon="business-outline" title="Congress Trades"
+        icon="briefcase" title="Congress Trades"
         right={<ScalePressable style={d.seeTradesBtn} onPress={() => router.push('/congress')}><Text style={d.seeTradesText}>See Trades</Text></ScalePressable>}
       />
       <View style={d.congressGrid}>
@@ -707,7 +707,7 @@ function SmartMoneyTab({ s, onOpenInsiders }: { s: StockOverview; onOpenInsiders
 
       {/* Super investors */}
       <SectionHead
-        icon="cash-outline" title="Super Investors"
+        icon="dollar-sign" title="Super Investors"
         right={<Text style={d.quarterText}>Q1 2026</Text>}
       />
       <View style={d.holdersHeaderRow}>
@@ -749,7 +749,7 @@ function NewsTab({ s }: { s: StockOverview }) {
                 <Text style={d.newsTime}>{n.time}</Text>
               </View>
             </View>
-            {n.url && <Ionicons name="open-outline" size={14} color={colors.text.muted} style={{ flexShrink: 0, marginTop: 3 }} />}
+            {n.url && <Feather name="external-link" size={14} color={colors.text.muted} style={{ flexShrink: 0, marginTop: 3 }} />}
           </ScalePressable>
           {i < s.news.length - 1 && <View style={d.newsDivider} />}
         </View>
@@ -772,7 +772,7 @@ function ProfileSheet({ s, visible, onClose }: { s: StockOverview; visible: bool
           <View style={d.sheetHeader}>
             <Text style={d.sheetTitle}>{s.ticker} Profile</Text>
             <ScalePressable onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-              <View style={d.sheetClose}><Ionicons name="close" size={18} color={colors.text.primary} /></View>
+              <View style={d.sheetClose}><Feather name="x" size={18} color={colors.text.primary} /></View>
             </ScalePressable>
           </View>
 
@@ -791,14 +791,14 @@ function ProfileSheet({ s, visible, onClose }: { s: StockOverview; visible: bool
               <AnalystRating verdict={s.analystRating.verdict} score={s.analystRating.score} />
             ) : (
               <>
-                <SheetGroup icon="business-outline" title="Market Value" caption="USD | Core market valuation and enterprise value metrics">
+                <SheetGroup icon="briefcase" title="Market Value" caption="USD | Core market valuation and enterprise value metrics">
                   <SheetPair a={['Market Capitalization', ps.marketCap]} b={['Enterprise Value (EV)', ps.enterpriseValue]} />
                 </SheetGroup>
-                <SheetGroup icon="stats-chart" title="Trading Multiple Analysis" caption="Key price-based valuation ratios for comparative analysis">
+                <SheetGroup icon="bar-chart-2" title="Trading Multiple Analysis" caption="Key price-based valuation ratios for comparative analysis">
                   <SheetPair a={['Price-to-Earnings (P/E)', ps.pe]} b={['Price-to-Book (P/B)', ps.pb]} />
                   <SheetPair a={['Price-to-Sales (P/S)', ps.ps]} b={['EV/EBITDA', ps.evEbitda]} />
                 </SheetGroup>
-                <SheetGroup icon="pulse-outline" title="Per Share Performance" caption="USD | Key financial metrics on a per share basis">
+                <SheetGroup icon="activity" title="Per Share Performance" caption="USD | Key financial metrics on a per share basis">
                   <SheetPair a={['Revenue per Share', ps.revenuePerShare]} b={['Earnings per Share (EPS)', ps.eps]} />
                   <SheetPair a={['Book Value per Share (BVPS)', ps.bvps]} b={['Dividend per Share (DPS)', ps.dps]} />
                 </SheetGroup>
@@ -812,11 +812,11 @@ function ProfileSheet({ s, visible, onClose }: { s: StockOverview; visible: bool
   );
 }
 
-function SheetGroup({ icon, title, caption, children }: { icon: keyof typeof Ionicons.glyphMap; title: string; caption: string; children: React.ReactNode }) {
+function SheetGroup({ icon, title, caption, children }: { icon: keyof typeof Feather.glyphMap; title: string; caption: string; children: React.ReactNode }) {
   return (
     <View style={d.sheetGroup}>
       <View style={d.sheetGroupHead}>
-        <Ionicons name={icon} size={16} color={colors.text.primary} />
+        <Feather name={icon} size={16} color={colors.text.primary} />
         <Text style={d.sheetGroupTitle}>{title}</Text>
       </View>
       <Text style={d.sheetGroupCaption}>{caption}</Text>
@@ -850,7 +850,7 @@ function InsiderSheet({ txns, visible, onClose }: { txns: InsiderTxn[]; visible:
           <View style={d.sheetHeader}>
             <Text style={d.sheetTitle}>Insider Trades</Text>
             <ScalePressable onPress={onClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-              <View style={d.sheetClose}><Ionicons name="close" size={18} color={colors.text.primary} /></View>
+              <View style={d.sheetClose}><Feather name="x" size={18} color={colors.text.primary} /></View>
             </ScalePressable>
           </View>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={d.sheetScroll}>
@@ -871,8 +871,8 @@ function InsiderSheet({ txns, visible, onClose }: { txns: InsiderTxn[]; visible:
                     <Text style={[d.insiderMeta, { textAlign: 'right', flex: 1 }]}>Value · <Text style={d.insiderMetaVal}>{tx.value}</Text></Text>
                   </View>
                   <View style={d.insiderLinks}>
-                    <ScalePressable style={d.insiderLink}><Text style={d.insiderLinkText}>View Filing </Text><Ionicons name="open-outline" size={12} color={colors.text.secondary} /></ScalePressable>
-                    {tx.trades > 1 && <ScalePressable style={d.insiderLink}><Text style={d.insiderLinkText}>View Transactions </Text><Ionicons name="chevron-down" size={12} color={colors.text.secondary} /></ScalePressable>}
+                    <ScalePressable style={d.insiderLink}><Text style={d.insiderLinkText}>View Filing </Text><Feather name="external-link" size={12} color={colors.text.secondary} /></ScalePressable>
+                    {tx.trades > 1 && <ScalePressable style={d.insiderLink}><Text style={d.insiderLinkText}>View Transactions </Text><Feather name="chevron-down" size={12} color={colors.text.secondary} /></ScalePressable>}
                   </View>
                   {i < txns.length - 1 && <View style={d.newsDivider} />}
                 </View>
@@ -1181,10 +1181,10 @@ export default function StockScreen() {
       {/* Header */}
       <View style={d.header}>
         <ScalePressable onPress={() => router.back()} style={d.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <ScalePressable onPress={() => setStarred(v => !v)} style={d.headerBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name={starred ? 'star' : 'star-outline'} size={22} color={starred ? colors.status.amber : colors.text.secondary} />
+          <Feather name={starred ? 'star' : 'star'} size={22} color={starred ? colors.status.amber : colors.text.secondary} />
         </ScalePressable>
       </View>
 
@@ -1204,7 +1204,7 @@ export default function StockScreen() {
             <Text style={d.priceColLabel}>At close: {s.price.closeDate}</Text>
             <Text style={d.priceBig}>{s.price.atClose.toFixed(2)} <Text style={d.priceUnit}>USD</Text></Text>
             <View style={d.priceChangeRow}>
-              <Ionicons name={closeUp ? 'arrow-up' : 'arrow-down'} size={13} color={closeUp ? colors.status.green : colors.status.red} />
+              <Feather name={closeUp ? 'arrow-up' : 'arrow-down'} size={13} color={closeUp ? colors.status.green : colors.status.red} />
               <Text style={[d.priceChange, { color: closeUp ? colors.status.green : colors.status.red }]}>
                 {closeUp ? '+' : ''}{s.price.closeChange.toFixed(2)} ({closeUp ? '+' : ''}{s.price.closeChangePct.toFixed(2)}%)
               </Text>
@@ -1215,7 +1215,7 @@ export default function StockScreen() {
               <Text style={d.priceColLabel}>After Hours</Text>
               <Text style={d.priceBig}>{s.price.postMarket.toFixed(2)} <Text style={d.priceUnit}>USD</Text></Text>
               <View style={d.priceChangeRow}>
-                <Ionicons name={postUp ? 'arrow-up' : 'arrow-down'} size={13} color={postUp ? colors.status.green : colors.status.red} />
+                <Feather name={postUp ? 'arrow-up' : 'arrow-down'} size={13} color={postUp ? colors.status.green : colors.status.red} />
                 <Text style={[d.priceChange, { color: postUp ? colors.status.green : colors.status.red }]}>
                   {postUp ? '+' : ''}{s.price.postChange.toFixed(2)} ({postUp ? '+' : ''}{s.price.postChangePct.toFixed(2)}%)
                 </Text>

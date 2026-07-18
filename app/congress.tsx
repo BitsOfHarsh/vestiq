@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import THEME from '../src/theme';
 import { CongressTrade } from '../src/mock';
@@ -22,7 +22,7 @@ function TradeCard({ item }: { item: CongressTrade }) {
       {/* Left: logo box */}
       <View style={s.logoCol}>
         <ScalePressable style={s.arrowBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="open-outline" size={13} color={colors.text.muted} />
+          <Feather name="external-link" size={13} color={colors.text.muted} />
         </ScalePressable>
         <TickerLogo ticker={item.ticker} size={52} borderRadius={10} />
         <Text style={s.logoTicker}>{item.ticker}</Text>
@@ -52,7 +52,7 @@ function TradeCard({ item }: { item: CongressTrade }) {
         </View>
         <ScalePressable style={s.seeWhyBtn}>
           <Text style={s.seeWhyText}>See why </Text>
-          <Ionicons name="chevron-forward" size={13} color={colors.text.secondary} />
+          <Feather name="chevron-right" size={13} color={colors.text.secondary} />
         </ScalePressable>
       </View>
     </View>
@@ -95,14 +95,14 @@ export default function CongressScreen() {
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>U.S. Congress Trades</Text>
         <View style={{ width: 38 }} />
       </View>
 
       <View style={s.searchWrap}>
-        <Ionicons name="search-outline" size={16} color={colors.text.muted} />
+        <Feather name="search" size={16} color={colors.text.muted} />
         <TextInput
           style={s.searchInput}
           placeholder="Search by ticker or representative..."

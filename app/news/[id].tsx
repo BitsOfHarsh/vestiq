@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import ScalePressable from '../../src/components/ui/ScalePressable';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import THEME from '../../src/theme';
 import { TickerLogo } from '../../src/components/ui';
@@ -82,7 +82,7 @@ const imp = StyleSheet.create({
 const SENTIMENT_CONFIG = {
   bullish: { label: 'Bullish', color: colors.status.green, icon: 'trending-up' as const },
   bearish: { label: 'Bearish', color: colors.status.red,   icon: 'trending-down' as const },
-  neutral: { label: 'Neutral', color: colors.text.muted,   icon: 'remove' as const },
+  neutral: { label: 'Neutral', color: colors.text.muted,   icon: 'minus' as const },
 };
 
 function WatchStockCard({
@@ -107,7 +107,7 @@ function WatchStockCard({
         <View style={ws.middle}>
           <View style={ws.nameRow}>
             <Text style={ws.ticker}>{stock.ticker}</Text>
-            <Ionicons name={cfg.icon} size={12} color={cfg.color} />
+            <Feather name={cfg.icon} size={12} color={cfg.color} />
             <Text style={[ws.sentiment, { color: cfg.color }]}>{cfg.label}</Text>
           </View>
           <Text style={ws.name} numberOfLines={1}>{tickerName || stock.ticker}</Text>
@@ -131,7 +131,7 @@ function WatchStockCard({
         scaleTo={0.95}
       >
         <Text style={ws.readMoreText}>Read More </Text>
-        <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={12} color={colors.accent.brand} />
+        <Feather name={expanded ? 'chevron-up' : 'chevron-down'} size={12} color={colors.accent.brand} />
       </ScalePressable>
     </View>
   );
@@ -174,7 +174,7 @@ function SourcesModal({ visible, onClose, url, source, logoUrl }: {
           <View style={src.header}>
             <Text style={src.title}>Sources</Text>
             <ScalePressable onPress={onClose} style={src.closeBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-              <Ionicons name="close" size={18} color={colors.text.primary} />
+              <Feather name="x" size={18} color={colors.text.primary} />
             </ScalePressable>
           </View>
 
@@ -195,7 +195,7 @@ function SourcesModal({ visible, onClose, url, source, logoUrl }: {
                   <Text style={src.sourceDomain}>{source}</Text>
                 </View>
               </View>
-              <Ionicons name="open-outline" size={16} color={colors.text.muted} />
+              <Feather name="external-link" size={16} color={colors.text.muted} />
             </ScalePressable>
           ) : (
             <Text style={src.empty}>No source URL available</Text>
@@ -290,7 +290,7 @@ export default function NewsDetailScreen() {
     return (
       <SafeAreaView style={d.container}>
         <ScalePressable style={d.backBtn} onPress={() => router.back()} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ color: colors.text.muted }}>Article not found</Text>
@@ -322,12 +322,12 @@ export default function NewsDetailScreen() {
       {/* Header */}
       <View style={d.header}>
         <ScalePressable onPress={() => router.back()} style={d.headerIconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={d.headerTitle}>VESTIQ</Text>
         <View style={d.headerRight}>
           <ScalePressable style={d.headerIconBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="copy-outline" size={20} color={colors.text.secondary} />
+            <Feather name="copy" size={20} color={colors.text.secondary} />
           </ScalePressable>
           <ScalePressable
             style={d.headerIconBtn}
@@ -335,7 +335,7 @@ export default function NewsDetailScreen() {
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             scaleTo={0.88}
           >
-            <Ionicons name="share-outline" size={20} color={colors.text.secondary} />
+            <Feather name="share-2" size={20} color={colors.text.secondary} />
           </ScalePressable>
         </View>
       </View>
@@ -459,9 +459,9 @@ export default function NewsDetailScreen() {
                     style={d.digCard}
                     onPress={() => setAskText(q)}
                   >
-                    <Ionicons name="sparkles-outline" size={14} color={colors.accent.brand} />
+                    <Feather name="star" size={14} color={colors.accent.brand} />
                     <Text style={d.digText}>{q}</Text>
-                    <Ionicons name="chevron-forward" size={14} color={colors.text.muted} />
+                    <Feather name="chevron-right" size={14} color={colors.text.muted} />
                   </ScalePressable>
                 ))}
               </View>
@@ -472,7 +472,7 @@ export default function NewsDetailScreen() {
           {!!item.url && (
             <ScalePressable style={d.readMoreBtn} onPress={() => Linking.openURL(item.url!).catch(() => {})} scaleTo={0.98}>
               <Text style={d.readMoreText}>Read Full Article </Text>
-              <Ionicons name="chevron-forward" size={14} color={colors.text.secondary} />
+              <Feather name="chevron-right" size={14} color={colors.text.secondary} />
             </ScalePressable>
           )}
 
@@ -493,11 +493,11 @@ export default function NewsDetailScreen() {
           </View>
           <View style={d.askActions}>
             <ScalePressable style={d.askActionBtn}>
-              <Ionicons name="layers-outline" size={14} color={colors.text.secondary} />
+              <Feather name="layers" size={14} color={colors.text.secondary} />
               <Text style={d.askActionText}>Skills</Text>
             </ScalePressable>
             <ScalePressable style={d.askActionBtn}>
-              <Ionicons name="flash-outline" size={14} color={colors.text.secondary} />
+              <Feather name="zap" size={14} color={colors.text.secondary} />
               <Text style={d.askActionText}>Blitz</Text>
             </ScalePressable>
             <ScalePressable
@@ -505,7 +505,7 @@ export default function NewsDetailScreen() {
               onPress={() => { if (askText.trim()) router.push('/(tabs)/research'); }}
               scaleTo={0.88}
             >
-              <Ionicons name="arrow-up" size={16} color="#FFFFFF" />
+              <Feather name="arrow-up" size={16} color="#FFFFFF" />
             </ScalePressable>
           </View>
         </View>

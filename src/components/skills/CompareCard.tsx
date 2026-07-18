@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { TickerLogo } from '../ui';
 import THEME from '../../theme';
 
@@ -43,7 +43,7 @@ export default function CompareCard({ data, accentColor }: {
             <TickerLogo ticker={data.ticker1 ?? '—'} size={52} borderRadius={14} />
             {data.winner === data.ticker1 && (
               <View style={s.crownBadge}>
-                <Ionicons name="trophy" size={9} color={colors.status.amber} />
+                <Feather name="award" size={9} color={colors.status.amber} />
               </View>
             )}
           </View>
@@ -66,7 +66,7 @@ export default function CompareCard({ data, accentColor }: {
             <TickerLogo ticker={data.ticker2 ?? '—'} size={52} borderRadius={14} />
             {data.winner === data.ticker2 && (
               <View style={s.crownBadge}>
-                <Ionicons name="trophy" size={9} color={colors.status.amber} />
+                <Feather name="award" size={9} color={colors.status.amber} />
               </View>
             )}
           </View>
@@ -111,7 +111,7 @@ export default function CompareCard({ data, accentColor }: {
 
       {/* ── Winner verdict ──────────────────────────────────── */}
       <View style={s.verdict}>
-        <Ionicons name="trophy" size={14} color={colors.status.amber} />
+        <Feather name="award" size={14} color={colors.status.amber} />
         <Text style={s.verdictText}>{data.winnerReason ?? ''}</Text>
       </View>
 

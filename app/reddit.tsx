@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import THEME from '../src/theme';
 import { RedditStock, RedditMover } from '../src/mock';
@@ -36,7 +36,7 @@ function RankChange({ value }: { value: number }) {
   const pos = value > 0;
   return (
     <View style={rc.row}>
-      <Ionicons name={pos ? 'trending-up' : 'trending-down'} size={11} color={pos ? colors.status.green : colors.status.red} />
+      <Feather name={pos ? 'trending-up' : 'trending-down'} size={11} color={pos ? colors.status.green : colors.status.red} />
       <Text style={[rc.text, { color: pos ? colors.status.green : colors.status.red }]}>
         {pos ? '+' : ''}{value}
       </Text>
@@ -68,7 +68,7 @@ function MoverCard({ mover, selected, onPress }: { mover: RedditMover; selected:
 
       <Text style={mc.label}>Rank Change</Text>
       <View style={[mc.pill, { backgroundColor: rcPos ? colors.status.green + '30' : colors.status.red + '30' }]}>
-        <Ionicons name={rcPos ? 'trending-up' : 'trending-down'} size={11} color={rcPos ? colors.status.green : colors.status.red} />
+        <Feather name={rcPos ? 'trending-up' : 'trending-down'} size={11} color={rcPos ? colors.status.green : colors.status.red} />
         <Text style={[mc.pillText, { color: rcPos ? colors.status.green : colors.status.red }]}>
           {rcPos ? '+' : ''}{mover.rankChange}
         </Text>
@@ -76,7 +76,7 @@ function MoverCard({ mover, selected, onPress }: { mover: RedditMover; selected:
 
       <Text style={mc.label}>Post-Market</Text>
       <View style={[mc.pill, { backgroundColor: pmPos ? colors.status.green + '30' : colors.status.red + '30' }]}>
-        <Ionicons name={pmPos ? 'trending-up' : 'trending-down'} size={11} color={pmPos ? colors.status.green : colors.status.red} />
+        <Feather name={pmPos ? 'trending-up' : 'trending-down'} size={11} color={pmPos ? colors.status.green : colors.status.red} />
         <Text style={[mc.pillText, { color: pmPos ? colors.status.green : colors.status.red }]}>
           {pmPos ? '+' : ''}{mover.postMarket.toFixed(1)}%
         </Text>
@@ -84,7 +84,7 @@ function MoverCard({ mover, selected, onPress }: { mover: RedditMover; selected:
 
       <Text style={mc.label}>Prev. Regular{'\n'}Session</Text>
       <View style={[mc.pill, { backgroundColor: psPos ? colors.status.green + '30' : colors.status.red + '30' }]}>
-        <Ionicons name={psPos ? 'trending-up' : 'trending-down'} size={11} color={psPos ? colors.status.green : colors.status.red} />
+        <Feather name={psPos ? 'trending-up' : 'trending-down'} size={11} color={psPos ? colors.status.green : colors.status.red} />
         <Text style={[mc.pillText, { color: psPos ? colors.status.green : colors.status.red }]}>
           {psPos ? '+' : ''}{mover.prevSession.toFixed(1)}%
         </Text>
@@ -152,11 +152,11 @@ export default function RedditScreen() {
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>Reddit Trending</Text>
         <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="filter-outline" size={20} color={colors.text.secondary} />
+          <Feather name="filter" size={20} color={colors.text.secondary} />
         </ScalePressable>
       </View>
 
@@ -165,7 +165,7 @@ export default function RedditScreen() {
         {/* Trending Stocks table */}
         <View style={s.section}>
           <View style={s.sectionTitleRow}>
-            <Ionicons name="trending-up" size={16} color={colors.text.primary} />
+            <Feather name="trending-up" size={16} color={colors.text.primary} />
             <Text style={s.sectionTitle}>Reddit Trending Stocks</Text>
           </View>
 
@@ -208,14 +208,14 @@ export default function RedditScreen() {
           })}
 
           <ScalePressable style={s.showMoreBtn} onPress={() => setShowAllRanks(v => !v)}>
-            <Ionicons name={showAllRanks ? 'chevron-up' : 'chevron-down'} size={18} color={colors.text.muted} />
+            <Feather name={showAllRanks ? 'chevron-up' : 'chevron-down'} size={18} color={colors.text.muted} />
           </ScalePressable>
         </View>
 
         {/* Notable Top Rank Change */}
         <View style={s.section}>
           <View style={s.sectionTitleRow}>
-            <Ionicons name="sparkles" size={16} color={colors.text.primary} />
+            <Feather name="star" size={16} color={colors.text.primary} />
             <View>
               <Text style={s.sectionTitle}>Notable Top Rank Change Analysis</Text>
               <Text style={s.sectionSub}>Live analysis of biggest Reddit trending changes</Text>
@@ -250,7 +250,7 @@ export default function RedditScreen() {
                 onPress={() => router.push({ pathname: '/stock/[ticker]', params: { ticker: activeMover.ticker, name: activeMover.name } })}
               >
                 <Text style={s.overviewBtnText}>{activeMover.ticker} Overview </Text>
-                <Ionicons name="chevron-forward" size={14} color={colors.text.secondary} />
+                <Feather name="chevron-right" size={14} color={colors.text.secondary} />
               </ScalePressable>
             </>
           ) : (

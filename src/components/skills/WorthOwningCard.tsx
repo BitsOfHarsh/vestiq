@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../../theme';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
@@ -21,10 +21,10 @@ const VERDICT_COLOR: Record<string, string> = {
   'Avoid': colors.status.red,
 };
 
-const SENTIMENT_ICON: Record<string, { name: React.ComponentProps<typeof Ionicons>['name']; color: string }> = {
-  positive: { name: 'checkmark-circle', color: colors.status.green },
-  neutral:  { name: 'remove-circle',   color: colors.status.amber },
-  negative: { name: 'close-circle',    color: colors.status.red },
+const SENTIMENT_ICON: Record<string, { name: React.ComponentProps<typeof Feather>['name']; color: string }> = {
+  positive: { name: 'check-circle', color: colors.status.green },
+  neutral:  { name: 'minus-circle',   color: colors.status.amber },
+  negative: { name: 'x-circle',    color: colors.status.red },
 };
 
 export default function WorthOwningCard({ data, ticker, accentColor }: {
@@ -68,7 +68,7 @@ export default function WorthOwningCard({ data, ticker, accentColor }: {
           const icon = SENTIMENT_ICON[m.sentiment] ?? SENTIMENT_ICON.neutral;
           return (
             <View key={i} style={s.metricRow}>
-              <Ionicons name={icon.name} size={15} color={icon.color} />
+              <Feather name={icon.name} size={15} color={icon.color} />
               <Text style={s.metricLabel}>{m.label}</Text>
               <Text style={[s.metricValue, { color: icon.color }]}>{m.value}</Text>
             </View>
@@ -85,7 +85,7 @@ export default function WorthOwningCard({ data, ticker, accentColor }: {
       {data.concerns.length > 0 && (
         <View style={[s.concernsBox, { backgroundColor: colors.status.amber + '0c', borderColor: colors.status.amber + '30' }]}>
           <View style={s.concernsHeader}>
-            <Ionicons name="warning-outline" size={13} color={colors.status.amber} />
+            <Feather name="alert-triangle" size={13} color={colors.status.amber} />
             <Text style={[s.concernsTitle, { color: colors.status.amber }]}>WATCH OUT</Text>
           </View>
           {data.concerns.map((c, i) => (

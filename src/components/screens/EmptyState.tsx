@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import ScalePressable from '../ui/ScalePressable';
 import THEME from '../../theme';
 
 const { colors, fontSize, fontWeight, radius, spacing } = THEME;
 
 interface EmptyStateProps {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: React.ComponentProps<typeof Feather>['name'];
   title: string;
   subtitle?: string;
   buttonLabel?: string;
@@ -16,7 +16,7 @@ interface EmptyStateProps {
 export default function EmptyState({ icon, title, subtitle, buttonLabel, onPress }: EmptyStateProps) {
   return (
     <View style={s.card}>
-      <Ionicons name={icon} size={40} color={colors.accent.brand} />
+      <Feather name={icon} size={40} color={colors.accent.brand} />
       <Text style={s.title}>{title}</Text>
       {subtitle && <Text style={s.subtitle}>{subtitle}</Text>}
       {buttonLabel && onPress && (

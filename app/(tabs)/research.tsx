@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import ScalePressable from '../../src/components/ui/ScalePressable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import THEME from '../../src/theme';
 import { TickerLogo } from '../../src/components/ui';
@@ -49,7 +49,7 @@ interface FeaturedSkill {
   title: string;
   sub: string;
   analyzeHeading: string;
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: React.ComponentProps<typeof Feather>['name'];
   accentColor: string;
   systemPrompt: string;
   isCompare: boolean;
@@ -61,7 +61,7 @@ const FEATURED: FeaturedSkill[] = [
     title: 'Smart Entry & Exit',
     sub: 'When to buy or sell?',
     analyzeHeading: 'smart entry\nand exit points:',
-    icon: 'analytics',
+    icon: 'activity',
     accentColor: colors.accent.brand,
     systemPrompt: 'You are Vestiq. Identify entry, stop-loss, and target levels based on technicals. Beginner-friendly. Respond ONLY with valid JSON matching this exact schema — no markdown, no extra text:\n{"setup":"one-line setup e.g. Neutral — near 50-day MA","entry":{"zone":"$X–$Y","reason":"brief reason"},"target":{"zone":"$X–$Y","reason":"brief reason"},"stopLoss":{"zone":"$X","reason":"brief reason"},"riskReward":"1:X","bullets":["insight 1","insight 2","insight 3"]}',
     isCompare: false,
@@ -71,7 +71,7 @@ const FEATURED: FeaturedSkill[] = [
     title: 'Compare Stocks',
     sub: 'Head-to-head analysis',
     analyzeHeading: 'which stock\nwins head-to-head:',
-    icon: 'scale',
+    icon: 'bar-chart-2',
     accentColor: '#3B82F6',
     systemPrompt: 'You are Vestiq. Compare two stocks head-to-head across 5 categories. Beginner-friendly. Respond ONLY with valid JSON — no markdown, no extra text:\n{"ticker1":"","ticker2":"","winner":"","winnerReason":"one sentence","categories":[{"name":"Valuation","winner":"","note":"brief"},{"name":"Growth","winner":"","note":"brief"},{"name":"Analyst Sentiment","winner":"","note":"brief"},{"name":"Momentum","winner":"","note":"brief"},{"name":"Risk","winner":"","note":"brief"}],"buyFirst":"","buyFirstReason":"one sentence why to buy this one first"}',
     isCompare: true,
@@ -81,7 +81,7 @@ const FEATURED: FeaturedSkill[] = [
     title: 'Worth Owning',
     sub: 'Is this a long-term keeper?',
     analyzeHeading: 'fundamentals and\nif it is a good buy:',
-    icon: 'diamond',
+    icon: 'award',
     accentColor: '#D4A017',   // amber-gold — "premium keeper" (distinct from profit-green)
     systemPrompt: 'You are Vestiq. Analyse business quality for long-term investors. Beginner-friendly. Respond ONLY with valid JSON — no markdown, no extra text:\n{"verdict":"Great Company","score":0,"moat":"Wide","management":"Excellent","metrics":[{"label":"Revenue Growth","value":"+X%","sentiment":"positive"},{"label":"Profit Margin","value":"X%","sentiment":"positive"},{"label":"Debt Level","value":"Low","sentiment":"positive"},{"label":"PE Ratio","value":"Xx","sentiment":"neutral"}],"summary":"2-3 sentence overview","concerns":["concern 1","concern 2"]}. verdict must be one of: Great Company, Good Company, Average, Avoid. moat: Wide/Narrow/None. management: Excellent/Good/Average/Poor. sentiment: positive/neutral/negative.',
     isCompare: false,
@@ -91,7 +91,7 @@ const FEATURED: FeaturedSkill[] = [
     title: 'Buy the Dip?',
     sub: 'Good buying opportunity?',
     analyzeHeading: 'if the dip\nis worth buying:',
-    icon: 'flash',
+    icon: 'zap',
     accentColor: '#DB2777',   // rose — "opportunity" (kills AI-purple, distinct from loss-red)
     systemPrompt: 'You are Vestiq. Score this stock dip 0–100 and assess buying opportunity. Beginner-friendly. Respond ONLY with valid JSON — no markdown, no extra text:\n{"score":0,"verdict":"Good Dip","fromHigh":"-X%","analystUpside":"+X%","support":"$X","isKnife":false,"reasons":["reason 1","reason 2","reason 3"],"warning":null}. verdict must be one of: Strong Buy, Good Dip, Wait, Falling Knife. isKnife true only for Falling Knife.',
     isCompare: false,
@@ -103,7 +103,7 @@ const ASK_SKILL: FeaturedSkill = {
   title: 'Ask Vestiq',
   sub: 'Free-form question',
   analyzeHeading: 'your question:',
-  icon: 'chatbubble-ellipses-outline',
+  icon: 'message-circle',
   accentColor: colors.accent.brand,
   systemPrompt: 'You are Vestiq, an AI trading assistant for beginner investors. Answer the user\'s question about stocks, markets, or investing clearly and concisely. No markdown formatting — plain sentences only.',
   isCompare: false,
@@ -213,7 +213,7 @@ function ModelToggle({ model, onToggle }: { model: 'blitz' | 'deep'; onToggle: (
     <View style={s.modelRow}>
       <Text style={s.modelLabel}>Model</Text>
       <ScalePressable style={s.modelPill} onPress={onToggle}>
-        <Ionicons name="flash" size={13} color={colors.accent.brand} />
+        <Feather name="zap" size={13} color={colors.accent.brand} />
         <Text style={s.modelPillText}>{model === 'blitz' ? 'Blitz' : 'Deep'}</Text>
       </ScalePressable>
       <View style={s.modelBars}>
@@ -235,7 +235,7 @@ function ModelToggle({ model, onToggle }: { model: 'blitz' | 'deep'; onToggle: (
         </View>
       </View>
       <ScalePressable onPress={onToggle} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-        <Ionicons name="chevron-up" size={16} color={colors.text.muted} />
+        <Feather name="chevron-up" size={16} color={colors.text.muted} />
       </ScalePressable>
     </View>
   );
@@ -261,6 +261,7 @@ export default function ResearchScreen() {
   const [deepResult,      setDeepResult]     = useState<DeepAnalysis | null>(null);
   const [parsedResult,    setParsedResult]   = useState<ParsedSkillResult | null>(null);
   const [askQuery,        setAskQuery]       = useState('');
+  const [askFocused,      setAskFocused]     = useState(false);
   const [kbHeight,        setKbHeight]       = useState(0);
 
   // Compare-specific state
@@ -471,14 +472,14 @@ export default function ResearchScreen() {
                   <View style={s.skillCardTopRow}>
                     <Text style={[s.skillCardNum, { color: skill.accentColor }]}>{`0${i + 1}`}</Text>
                     <View style={[s.skillIconBadge, { backgroundColor: skill.accentColor + '28' }]}>
-                      <Ionicons name={skill.icon} size={22} color={skill.accentColor} />
+                      <Feather name={skill.icon} size={22} color={skill.accentColor} />
                     </View>
                   </View>
                   <View style={s.skillCardBottom}>
                     <Text style={s.skillTitle} numberOfLines={2}>{skill.title}</Text>
                     <View style={s.skillSubRow}>
                       <Text style={s.skillSub} numberOfLines={2}>{skill.sub}</Text>
-                      <Ionicons name="arrow-forward" size={11} color={skill.accentColor + 'aa'} />
+                      <Feather name="arrow-right" size={11} color={skill.accentColor + 'aa'} />
                     </View>
                   </View>
                 </ScalePressable>
@@ -488,20 +489,23 @@ export default function ResearchScreen() {
           </ScrollView>
 
         <View style={[s.askBarWrap, { bottom: kbHeight > 0 ? kbHeight + spacing.sm : spacing.lg }]}>
-          <View style={s.askBar}>
+          <View style={[s.askBar, askFocused && s.askBarFocused]}>
             <TextInput
               ref={askInputRef}
-              style={s.askInput}
+              style={[s.askInput, { outlineWidth: 0, outlineStyle: 'none' } as object]}
               placeholder="Ask me anything..."
               placeholderTextColor={colors.text.muted}
+              selectionColor={colors.accent.brand}
               value={askQuery}
               onChangeText={setAskQuery}
               returnKeyType="send"
               onSubmitEditing={handleAsk}
+              onFocus={() => setAskFocused(true)}
+              onBlur={() => setAskFocused(false)}
             />
             <ScalePressable onPress={handleAsk} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
               <View style={s.askSendBtn}>
-                <Ionicons name="arrow-up" size={14} color="#FFFFFF" />
+                <Feather name="arrow-up" size={14} color="#FFFFFF" />
               </View>
             </ScalePressable>
           </View>
@@ -520,7 +524,7 @@ export default function ResearchScreen() {
       <SafeAreaView style={s.container}>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <ScalePressable style={s.backRow} onPress={goHome} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+            <Feather name="chevron-left" size={22} color={colors.text.primary} />
           </ScalePressable>
 
           <ScrollView contentContainerStyle={s.analyzeScroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
@@ -532,11 +536,11 @@ export default function ResearchScreen() {
                 {/* Step indicators */}
                 <View style={s.stepRow}>
                   <View style={[s.stepDot, { backgroundColor: accentA }]}>
-                    {tickerA ? <Ionicons name="checkmark" size={12} color="#fff" /> : <Text style={s.stepNum}>1</Text>}
+                    {tickerA ? <Feather name="check" size={12} color="#fff" /> : <Text style={s.stepNum}>1</Text>}
                   </View>
                   <View style={[s.stepLine, { backgroundColor: tickerA ? accentA : colors.border.default }]} />
                   <View style={[s.stepDot, { backgroundColor: compareStep === 2 ? accentA : colors.border.default }]}>
-                    {tickerB ? <Ionicons name="checkmark" size={12} color="#fff" /> : <Text style={s.stepNum}>2</Text>}
+                    {tickerB ? <Feather name="check" size={12} color="#fff" /> : <Text style={s.stepNum}>2</Text>}
                   </View>
                 </View>
 
@@ -545,20 +549,20 @@ export default function ResearchScreen() {
                   <View style={s.lockedChip}>
                     <TickerLogo ticker={tickerA} size={28} borderRadius={6} />
                     <Text style={s.lockedChipText}>{tickerA}</Text>
-                    <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
+                    <Feather name="check-circle" size={16} color={colors.status.green} />
                     <ScalePressable
                       onPress={() => { setTickerA(''); setCompareStep(1); setQuery(''); }}
                       hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                       scaleTo={0.88}
                     >
-                      <Ionicons name="close-circle" size={16} color={colors.text.muted} />
+                      <Feather name="x-circle" size={16} color={colors.text.muted} />
                     </ScalePressable>
                   </View>
                 ) : (
                   <View>
                     <Text style={s.stepHint}>Select ticker A</Text>
                     <View style={s.searchBar}>
-                      <Ionicons name="search" size={16} color={accentA} />
+                      <Feather name="search" size={16} color={accentA} />
                       <TextInput
                         style={s.searchInput}
                         placeholder="e.g. NVDA"
@@ -585,7 +589,7 @@ export default function ResearchScreen() {
                     <View>
                       <Text style={s.stepHint}>Select ticker B</Text>
                       <View style={[s.searchBar, { borderColor: accentA + '60' }]}>
-                        <Ionicons name="search" size={16} color={accentA} />
+                        <Feather name="search" size={16} color={accentA} />
                         <TextInput
                           style={s.searchInput}
                           placeholder="e.g. AMD"
@@ -625,7 +629,7 @@ export default function ResearchScreen() {
               /* ── Single ticker flow ── */
               <View>
                 <View style={s.searchBar}>
-                  <Ionicons name="search" size={16} color={colors.accent.brand} />
+                  <Feather name="search" size={16} color={colors.accent.brand} />
                   <TextInput
                     style={s.searchInput}
                     placeholder="Enter ticker"
@@ -709,7 +713,7 @@ export default function ResearchScreen() {
   return (
     <SafeAreaView style={s.container}>
       <ScalePressable style={s.backRow} onPress={goAnalyze} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-        <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+        <Feather name="chevron-left" size={22} color={colors.text.primary} />
       </ScalePressable>
 
       <ScrollView contentContainerStyle={s.resultScroll} showsVerticalScrollIndicator={false}>
@@ -760,7 +764,7 @@ export default function ResearchScreen() {
             <View style={s.debateRow}>
               <View style={[s.debateCard, { backgroundColor: colors.status.green + '0c' }]}>
                 <View style={[s.debateHeader, { borderBottomColor: colors.status.green + '30' }]}>
-                  <Ionicons name="trending-up" size={14} color={colors.status.green} />
+                  <Feather name="trending-up" size={14} color={colors.status.green} />
                   <Text style={[s.debateLabel, { color: colors.status.green }]}>Bull case</Text>
                 </View>
                 {(deepResult.bullCase ?? []).map((pt, i) => (
@@ -772,7 +776,7 @@ export default function ResearchScreen() {
               </View>
               <View style={[s.debateCard, { backgroundColor: colors.status.red + '0c' }]}>
                 <View style={[s.debateHeader, { borderBottomColor: colors.status.red + '30' }]}>
-                  <Ionicons name="trending-down" size={14} color={colors.status.red} />
+                  <Feather name="trending-down" size={14} color={colors.status.red} />
                   <Text style={[s.debateLabel, { color: colors.status.red }]}>Bear case</Text>
                 </View>
                 {(deepResult.bearCase ?? []).map((pt, i) => (
@@ -812,7 +816,7 @@ export default function ResearchScreen() {
               <Text style={s.resultTicker}>{analysisLabel}</Text>
               <Text style={s.resultSkillName}>{activeSkill?.title ?? ''}</Text>
               <View style={[s.modelBadge, { backgroundColor: accentColor + '20' }]}>
-                <Ionicons name="flash" size={11} color={accentColor} />
+                <Feather name="zap" size={11} color={accentColor} />
                 <Text style={[s.modelBadgeText, { color: accentColor }]}>Blitz</Text>
               </View>
             </View>
@@ -825,7 +829,7 @@ export default function ResearchScreen() {
 
         {!analysisLoading && (
           <ScalePressable style={s.tryAnotherBtn} onPress={goAnalyze}>
-            <Ionicons name="search-outline" size={16} color={colors.accent.brand} />
+            <Feather name="search" size={16} color={colors.accent.brand} />
             <Text style={s.tryAnotherText}>Try another stock</Text>
           </ScalePressable>
         )}
@@ -884,7 +888,8 @@ const s = StyleSheet.create({
   carouselSub:   { fontSize: 10, fontFamily: fontFamily.regular, color: colors.text.muted, lineHeight: 14 },
 
   askBarWrap: { position: 'absolute', left: spacing.xl, right: spacing.xl, zIndex: 30 },
-  askBar: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.bg.elevated, borderRadius: radius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 2, borderWidth: 0.5, borderColor: colors.border.strong },
+  askBar: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.bg.elevated, borderRadius: radius.full, paddingHorizontal: spacing.md, paddingVertical: spacing.sm + 2, borderWidth: 1, borderColor: colors.border.strong },
+  askBarFocused: { borderColor: colors.accent.brand, backgroundColor: colors.accent.brandDim },
   askInput: { flex: 1, fontSize: fontSize.base, fontFamily: fontFamily.regular, color: colors.text.primary },
   askTag: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: colors.bg.card, borderRadius: radius.full, paddingHorizontal: spacing.sm, paddingVertical: 5, borderWidth: 0.5, borderColor: colors.border.default },
   askTagText: { fontSize: 11, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.secondary },

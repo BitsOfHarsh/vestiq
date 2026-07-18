@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import ScalePressable from '../../src/components/ui/ScalePressable';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAppStore } from '../../src/store';
 import { CONTENT } from '../../src/content';
@@ -125,7 +125,7 @@ function MetricRow({ title, subtitle, value, metricKey }: {
         <View style={s.metricRowRight}>
           <Text style={[s.metricValue, { color }]}>{displayVal}</Text>
           <ScalePressable onPress={() => setTooltip(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-            <Ionicons name="information-circle-outline" size={14} color={colors.text.muted} />
+            <Feather name="info" size={14} color={colors.text.muted} />
           </ScalePressable>
         </View>
       </View>
@@ -175,7 +175,7 @@ function CompactHoldingCard({ holding }: { holding: Holding }) {
         </View>
         <Text style={s.compactValue}>{formatCurrency(holdingValue(holding))}</Text>
         <View style={[s.compactPnLPill, { backgroundColor: gainColor + '18' }]}>
-          <Ionicons name={gain >= 0 ? 'trending-up' : 'trending-down'} size={9} color={gainColor} />
+          <Feather name={gain >= 0 ? 'trending-up' : 'trending-down'} size={9} color={gainColor} />
           <Text style={[s.compactPnL, { color: gainColor }]}>
             {gain >= 0 ? '+' : ''}{formatPercent(gainPct, 1)}
           </Text>
@@ -360,7 +360,7 @@ function AddHoldingModal({ visible, onClose }: { visible: boolean; onClose: () =
 
               {toast.length > 0 && (
                 <View style={s.toast}>
-                  <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
+                  <Feather name="check-circle" size={16} color={colors.status.green} />
                   <Text style={s.toastText}>{toast}</Text>
                 </View>
               )}
@@ -513,7 +513,7 @@ function AddWatchlistModal({ visible, onClose }: { visible: boolean; onClose: ()
 
               {toast.length > 0 && (
                 <View style={s.toast}>
-                  <Ionicons name="checkmark-circle" size={16} color={colors.status.green} />
+                  <Feather name="check-circle" size={16} color={colors.status.green} />
                   <Text style={s.toastText}>{toast}</Text>
                 </View>
               )}
@@ -575,10 +575,10 @@ export default function PortfolioScreen() {
             <Text style={s.heroLabel}>Portfolio Value</Text>
             <View style={s.heroIcons}>
               <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-                <Ionicons name="search-outline" size={20} color={colors.text.secondary} />
+                <Feather name="search" size={20} color={colors.text.secondary} />
               </ScalePressable>
               <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-                <Ionicons name="star-outline" size={20} color={colors.text.secondary} />
+                <Feather name="star" size={20} color={colors.text.secondary} />
               </ScalePressable>
             </View>
           </View>
@@ -587,12 +587,12 @@ export default function PortfolioScreen() {
           <View style={s.heroCashRow}>
             <Text style={s.heroCash}>Available cash: $0</Text>
             <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-              <Ionicons name="pencil-outline" size={12} color={colors.text.muted} />
+              <Feather name="edit-2" size={12} color={colors.text.muted} />
             </ScalePressable>
           </View>
           <View style={s.heroStatsRow}>
             <View style={[s.heroStatPill, { backgroundColor: pnlColor + '15', borderColor: pnlColor + '30' }]}>
-              <Ionicons name={lifetimePnL >= 0 ? 'trending-up' : 'trending-down'} size={11} color={pnlColor} />
+              <Feather name={lifetimePnL >= 0 ? 'trending-up' : 'trending-down'} size={11} color={pnlColor} />
               <Text style={[s.heroStatText, { color: pnlColor }]}>
                 Lifetime {formatPercent(lifetimePnLPct, 2)} ({lifetimePnL >= 0 ? '+' : ''}{formatCurrency(lifetimePnL)})
               </Text>
@@ -613,7 +613,7 @@ export default function PortfolioScreen() {
               {enrichedHoldings.length > 0 && (
                 <ScalePressable style={s.addBtn} onPress={() => setAddHoldVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
                   <View style={[s.addBtnInner, { backgroundColor: colors.accent.brand }]}>
-                    <Ionicons name="add" size={13} color="#FFFFFF" />
+                    <Feather name="plus" size={13} color="#FFFFFF" />
                   </View>
                   <Text style={s.addBtnText}>Add</Text>
                 </ScalePressable>
@@ -622,7 +622,7 @@ export default function PortfolioScreen() {
 
             {enrichedHoldings.length === 0 ? (
               <View style={s.colEmpty}>
-                <Ionicons name="briefcase-outline" size={22} color={colors.text.muted} />
+                <Feather name="briefcase" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>No holdings yet</Text>
                 <ScalePressable onPress={() => setAddHoldVisible(true)} scaleTo={0.95}>
                   <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.brand }]}>
@@ -647,7 +647,7 @@ export default function PortfolioScreen() {
               {watchlist.length > 0 && (
                 <ScalePressable style={s.addBtn} onPress={() => setAddWatchVisible(true)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
                   <View style={[s.addBtnInner, { backgroundColor: colors.accent.brand }]}>
-                    <Ionicons name="add" size={13} color="#FFFFFF" />
+                    <Feather name="plus" size={13} color="#FFFFFF" />
                   </View>
                   <Text style={s.addBtnText}>Add</Text>
                 </ScalePressable>
@@ -656,7 +656,7 @@ export default function PortfolioScreen() {
 
             {watchlist.length === 0 ? (
               <View style={s.colEmpty}>
-                <Ionicons name="eye-outline" size={22} color={colors.text.muted} />
+                <Feather name="eye" size={22} color={colors.text.muted} />
                 <Text style={s.colEmptyText}>Watchlist empty</Text>
                 <ScalePressable onPress={() => setAddWatchVisible(true)} scaleTo={0.95}>
                   <View style={[s.colEmptyBtn, { backgroundColor: colors.accent.brand }]}>
@@ -690,20 +690,20 @@ export default function PortfolioScreen() {
           <View style={[StyleSheet.absoluteFillObject, { backgroundColor: colors.accent.brand + '08', borderRadius: radius.lg }]} pointerEvents="none" />
           <View style={s.aiTop}>
             <View style={[s.aiIconWrap, { backgroundColor: colors.accent.brand }]}>
-              <Ionicons name="bar-chart" size={16} color="#FFFFFF" />
+              <Feather name="bar-chart-2" size={16} color="#FFFFFF" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={s.aiTitle}>AI Portfolio Analysis</Text>
               <Text style={s.aiAvail}>(1/1 analysis available today)</Text>
             </View>
             <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-              <Ionicons name="information-circle-outline" size={17} color={colors.text.muted} />
+              <Feather name="info" size={17} color={colors.text.muted} />
             </ScalePressable>
           </View>
           <Text style={s.aiDesc}>{CONTENT.portfolio.aiCard.description}</Text>
           <ScalePressable onPress={() => router.push('/(tabs)/research')} scaleTo={0.98}>
             <View style={[s.aiBtn, { backgroundColor: colors.accent.brand }]}>
-              <Ionicons name="sparkles" size={15} color="#FFFFFF" />
+              <Feather name="star" size={15} color="#FFFFFF" />
               <Text style={s.aiBtnText}>Analyze Portfolio</Text>
             </View>
           </ScalePressable>

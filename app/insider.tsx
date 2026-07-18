@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import THEME from '../src/theme';
 import { InsiderTrade } from '../src/mock';
@@ -21,7 +21,7 @@ function InsiderCard({ item }: { item: InsiderTrade }) {
       {/* Left */}
       <View style={s.logoCol}>
         <ScalePressable style={s.arrowBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="open-outline" size={13} color={colors.text.muted} />
+          <Feather name="external-link" size={13} color={colors.text.muted} />
         </ScalePressable>
         <TickerLogo ticker={item.ticker} size={52} borderRadius={10} />
         <Text style={s.logoTicker}>{item.ticker}</Text>
@@ -55,7 +55,7 @@ function InsiderCard({ item }: { item: InsiderTrade }) {
 
         <ScalePressable style={s.seeWhyBtn}>
           <Text style={s.seeWhyText}>See why </Text>
-          <Ionicons name="chevron-forward" size={13} color={colors.text.secondary} />
+          <Feather name="chevron-right" size={13} color={colors.text.secondary} />
         </ScalePressable>
       </View>
     </View>
@@ -100,16 +100,16 @@ export default function InsiderScreen() {
     <SafeAreaView style={s.container}>
       <View style={s.header}>
         <ScalePressable onPress={() => router.back()} style={s.backBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="chevron-back" size={22} color={colors.text.primary} />
+          <Feather name="chevron-left" size={22} color={colors.text.primary} />
         </ScalePressable>
         <Text style={s.headerTitle}>Active Insider Trades</Text>
         <ScalePressable hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
-          <Ionicons name="information-circle-outline" size={22} color={colors.text.secondary} />
+          <Feather name="info" size={22} color={colors.text.secondary} />
         </ScalePressable>
       </View>
 
       <View style={s.searchWrap}>
-        <Ionicons name="search-outline" size={16} color={colors.text.muted} />
+        <Feather name="search" size={16} color={colors.text.muted} />
         <TextInput
           style={s.searchInput}
           placeholder="Search by ticker or insider..."

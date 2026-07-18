@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../../theme';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
@@ -55,7 +55,7 @@ export default function DipScoreCard({ data, ticker, accentColor }: {
           <Text style={s.ticker}>{ticker}</Text>
           <Text style={s.skillName}>Buy the Dip?</Text>
           <View style={[s.verdictPill, { backgroundColor: vColor + '20', borderColor: vColor + '40' }]}>
-            {data.isKnife && <Ionicons name="warning" size={11} color={vColor} />}
+            {data.isKnife && <Feather name="alert-triangle" size={11} color={vColor} />}
             <Text style={[s.verdictText, { color: vColor }]}>{data.verdict}</Text>
           </View>
         </View>
@@ -74,7 +74,7 @@ export default function DipScoreCard({ data, ticker, accentColor }: {
       <View style={s.reasonList}>
         {data.reasons.map((r, i) => (
           <View key={i} style={s.reasonRow}>
-            <Ionicons name="checkmark-circle" size={14} color={sColor} />
+            <Feather name="check-circle" size={14} color={sColor} />
             <Text style={s.reasonText}>{r}</Text>
           </View>
         ))}
@@ -83,7 +83,7 @@ export default function DipScoreCard({ data, ticker, accentColor }: {
       {/* Warning */}
       {!!data.warning && (
         <View style={[s.warningBox, { backgroundColor: colors.status.amber + '0c', borderColor: colors.status.amber + '30' }]}>
-          <Ionicons name="alert-circle-outline" size={14} color={colors.status.amber} />
+          <Feather name="alert-circle" size={14} color={colors.status.amber} />
           <Text style={s.warningText}>{data.warning}</Text>
         </View>
       )}

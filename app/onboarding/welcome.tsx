@@ -1,16 +1,16 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import THEME from '../../src/theme';
 import ScalePressable from '../../src/components/ui/ScalePressable';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
-const FEATURES: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string; sub: string }[] = [
-  { icon: 'trending-up-outline',   text: 'Know when to act',        sub: 'AI signals for buy, hold, and sell decisions' },
-  { icon: 'notifications-outline', text: 'Never miss a level',      sub: 'Alerts the moment price hits your target' },
-  { icon: 'flash-outline',         text: 'Headline to trade idea',  sub: 'One tap turns any news into an actionable plan' },
+const FEATURES: { icon: React.ComponentProps<typeof Feather>['name']; text: string; sub: string }[] = [
+  { icon: 'trending-up',   text: 'Know when to act',        sub: 'AI signals for buy, hold, and sell decisions' },
+  { icon: 'bell', text: 'Never miss a level',      sub: 'Alerts the moment price hits your target' },
+  { icon: 'zap',         text: 'Headline to trade idea',  sub: 'One tap turns any news into an actionable plan' },
 ];
 
 const proceed = () => router.push('/onboarding/profile');
@@ -38,7 +38,7 @@ export default function WelcomeScreen() {
           {FEATURES.map(({ icon, text, sub }) => (
             <View key={text} style={s.featureRow}>
               <View style={s.featureIconWrap}>
-                <Ionicons name={icon} size={20} color={colors.accent.brand} />
+                <Feather name={icon} size={20} color={colors.accent.brand} />
               </View>
               <View style={s.featureTextBlock}>
                 <Text style={s.featureTitle}>{text}</Text>
@@ -52,7 +52,7 @@ export default function WelcomeScreen() {
         <View style={s.bottom}>
           <ScalePressable style={s.primaryBtn} onPress={proceed} scaleTo={0.97}>
             <Text style={s.primaryBtnText}>Get started</Text>
-            <Ionicons name="arrow-forward" size={16} color="#fff" />
+            <Feather name="arrow-right" size={16} color="#fff" />
           </ScalePressable>
           <ScalePressable
             style={s.skipLink}
