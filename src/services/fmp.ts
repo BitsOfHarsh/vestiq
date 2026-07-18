@@ -90,7 +90,25 @@ export interface FMPQuote {
   sharesOutstanding: number;
 }
 
+// In-flight request coalescing: the dashboard fires the same ticker (SPY/VIX/BTC)
+// from two concurrent Promise.all blocks before the cache is written, so each hit
+// the network twice and tripped FMP's free-tier rate limit (429). Sharing one
+// promise per ticker collapses concurrent duplicates into a single request.
+const inflightQuotes = new Map<string, Promise<FMPQuote | null>>();
+
 export async function getQuote(ticker: string): Promise<FMPQuote | null> {
+  const pending = inflightQuotes.get(ticker);
+  if (pending) return pending;
+  const p = fetchQuote(ticker);
+  inflightQuotes.set(ticker, p);
+  try {
+    return await p;
+  } finally {
+    inflightQuotes.delete(ticker);
+  }
+}
+
+async function fetchQuote(ticker: string): Promise<FMPQuote | null> {
   const cacheKey = `fmpq_${ticker}`;
   try {
     return await getCached(cacheKey, TTL.quote, async () => {

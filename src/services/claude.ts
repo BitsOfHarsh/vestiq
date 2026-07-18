@@ -18,6 +18,13 @@ const STYLE_RULE =
   'Use a period, comma, or hyphen instead. Avoid filler words like "elevate", "seamless", ' +
   '"unleash", "supercharge". Write plainly and concretely.';
 
+// The prompt asks the model to avoid em/en dashes, but that is best-effort.
+// This guarantees it: en-dash -> hyphen (ranges), em-dash -> spaced hyphen (prose).
+// Applied to the whole payload; only string values ever contain these chars.
+function deDash(text: string): string {
+  return text.replace(/–/g, '-').replace(/\s*—\s*/g, ' - ');
+}
+
 async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
   if (!IS_WEB && !API_KEY) {
     console.error('[Claude] EXPO_PUBLIC_ANTHROPIC_API_KEY is empty — did you restart the Expo server after adding the key?');
@@ -48,7 +55,7 @@ async function callClaude(systemPrompt: string, userMessage: string): Promise<st
   }
 
   const data = await response.json() as { content: { text: string }[] };
-  return data.content[0].text;
+  return deDash(data.content[0].text);
 }
 
 // Strips markdown code fences that Claude sometimes wraps JSON in
@@ -583,7 +590,7 @@ export async function sendMessage(messages: AIMessage[], userMessage: string): P
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1024,
-      system: CHAT_SYSTEM,
+      system: CHAT_SYSTEM + STYLE_RULE,
       messages: [
         ...messages.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user' as const, content: userMessage },
@@ -597,5 +604,5 @@ export async function sendMessage(messages: AIMessage[], userMessage: string): P
   }
 
   const data = await response.json() as { content: { text: string }[] };
-  return data.content[0].text;
+  return deDash(data.content[0].text);
 }

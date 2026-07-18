@@ -262,7 +262,6 @@ export default function ResearchScreen() {
   const [parsedResult,    setParsedResult]   = useState<ParsedSkillResult | null>(null);
   const [askQuery,        setAskQuery]       = useState('');
   const [kbHeight,        setKbHeight]       = useState(0);
-  const [inputFocused,    setInputFocused]   = useState(false);
 
   // Compare-specific state
   const [compareStep, setCompareStep] = useState<1 | 2>(1);
@@ -279,7 +278,7 @@ export default function ResearchScreen() {
     );
     const hide = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => { setKbHeight(0); setInputFocused(false); },
+      () => setKbHeight(0),
     );
     return () => { show.remove(); hide.remove(); };
   }, []);
@@ -448,21 +447,19 @@ export default function ResearchScreen() {
   // ── VIEW: Home ────────────────────────────────────────────────────────────
 
   if (view === 'home') {
-    const ASK_BAR_H = 56;
     return (
       <SafeAreaView style={s.container}>
         <View style={s.header}>
           <Text style={s.headerTitle}>Research</Text>
         </View>
 
-        {!inputFocused && (
-          <ScrollView contentContainerStyle={s.homeScroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-            <View style={s.heroWrap}>
-              <Text style={s.heroSub}>What do you want to</Text>
-              <Text style={s.heroMain}>research today?</Text>
-            </View>
-            <Text style={s.sectionLabel}>AI Skills</Text>
-            <View style={s.skillGrid}>
+        <ScrollView contentContainerStyle={s.homeScroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <View style={s.heroWrap}>
+            <Text style={s.heroSub}>What do you want to</Text>
+            <Text style={s.heroMain}>research today?</Text>
+          </View>
+          <Text style={s.sectionLabel}>AI Skills</Text>
+          <View style={s.skillGrid}>
               {FEATURED.map((skill, i) => (
                 <ScalePressable
                   key={skill.id}
@@ -489,32 +486,6 @@ export default function ResearchScreen() {
             </View>
             <View style={{ height: 88 }} />
           </ScrollView>
-        )}
-
-        {inputFocused && (
-          <ScalePressable style={s.dimOverlay} onPress={() => Keyboard.dismiss()} scaleTo={1}>{null}</ScalePressable>
-        )}
-
-        {inputFocused && kbHeight > 0 && (
-          <View style={[s.carouselWrap, { bottom: kbHeight + ASK_BAR_H + spacing.md }]}>
-            <Text style={s.carouselLabel}>Popular skills</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.carouselContent} keyboardShouldPersistTaps="handled">
-              {FEATURED.map((skill) => (
-                <ScalePressable
-                  key={skill.id}
-                  style={[s.carouselCard, { backgroundColor: skill.accentColor + '0d', borderColor: skill.accentColor + '30' }]}
-                  onPress={() => { Keyboard.dismiss(); setActiveSkill(skill); setView('analyze'); loadTrending(); }}
-                >
-                  <View style={[s.carouselIconCircle, { backgroundColor: skill.accentColor + '28' }]}>
-                    <Ionicons name={skill.icon} size={18} color={skill.accentColor} />
-                  </View>
-                  <Text style={s.carouselTitle} numberOfLines={2}>{skill.title}</Text>
-                  <Text style={s.carouselSub} numberOfLines={2}>{skill.sub}</Text>
-                </ScalePressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
 
         <View style={[s.askBarWrap, { bottom: kbHeight > 0 ? kbHeight + spacing.sm : spacing.lg }]}>
           <View style={s.askBar}>
@@ -527,16 +498,7 @@ export default function ResearchScreen() {
               onChangeText={setAskQuery}
               returnKeyType="send"
               onSubmitEditing={handleAsk}
-              onFocus={() => setInputFocused(true)}
             />
-            <ScalePressable style={s.askTag} onPress={() => askInputRef.current?.focus()} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-              <Ionicons name="terminal-outline" size={12} color={colors.text.secondary} />
-              <Text style={s.askTagText}>Skills</Text>
-            </ScalePressable>
-            <ScalePressable style={s.askTag} onPress={() => setModel(m => m === 'blitz' ? 'deep' : 'blitz')} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-              <Ionicons name="flash" size={12} color={colors.text.secondary} />
-              <Text style={s.askTagText}>{model === 'blitz' ? 'Blitz' : 'Deep'}</Text>
-            </ScalePressable>
             <ScalePressable onPress={handleAsk} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} scaleTo={0.88}>
               <View style={s.askSendBtn}>
                 <Ionicons name="arrow-up" size={14} color="#FFFFFF" />
