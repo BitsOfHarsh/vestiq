@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import THEME from '../../src/theme';
@@ -6,7 +7,24 @@ const { colors } = THEME;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function TabIcon({ name, outlineName, focused }: { name: IconName; outlineName: IconName; focused: boolean }) {
-  return <Ionicons name={focused ? name : outlineName} size={22} color={focused ? colors.accent.violet : colors.text.muted} />;
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      {focused && (
+        <View style={{
+          position: 'absolute',
+          top: -10,
+          width: 20, height: 2,
+          borderRadius: 1,
+          backgroundColor: colors.accent.violet,
+        }} />
+      )}
+      <Ionicons
+        name={focused ? name : outlineName}
+        size={22}
+        color={focused ? colors.accent.violet : colors.text.muted}
+      />
+    </View>
+  );
 }
 
 export default function TabsLayout() {
@@ -18,9 +36,9 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.accent.violet,
         tabBarInactiveTintColor: colors.text.muted,
         tabBarStyle: {
-          backgroundColor: colors.bg.secondary,
+          backgroundColor: colors.bg.primary,
           borderTopWidth: 0.5,
-          borderTopColor: colors.border.default,
+          borderTopColor: colors.border.subtle,
           height: 60,
           paddingBottom: 8,
         },

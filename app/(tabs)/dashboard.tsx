@@ -149,7 +149,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
 
       {/* Header */}
       <View style={s.snapHeaderRow}>
-        <Text style={s.sectionLabel}>MARKET SNAPSHOT</Text>
+        <Text style={s.sectionLabel}>Market snapshot</Text>
         <View style={s.statusPill}>
           <View style={[s.statusDot, { backgroundColor: dotColor }]} />
           <Text style={s.statusLabel}>{statusLabel}</Text>
@@ -185,7 +185,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
           <View style={s.divider} />
           <View style={s.indexSection}>
             <View style={s.indexRow}>
-              <Text style={s.indexLabel}>FEAR & GREED</Text>
+              <Text style={s.indexLabel}>Fear & Greed</Text>
               <View style={s.indexScoreRow}>
                 <Text style={s.indexScore}>{fearGreed.value}</Text>
                 <View style={[s.indexRatingPill, {
@@ -206,7 +206,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
       {brief?.valuationLabel ? (
         <View style={s.indexSection}>
           <View style={s.indexRow}>
-            <Text style={s.indexLabel}>VALUATION INDEX</Text>
+            <Text style={s.indexLabel}>Valuation</Text>
             <View style={[s.indexRatingPill, {
               backgroundColor: (VAL_LABEL_COLOR[brief.valuationLabel.toUpperCase()] ?? colors.status.amber) + '20',
             }]}>
@@ -254,7 +254,7 @@ function MarketSnapshotCard({ fearGreed, tickers, fetchedAt, brief }: {
       {brief?.bullets?.length ? (
         <>
           <View style={s.divider} />
-          <Text style={[s.sectionLabel, { marginBottom: 2 }]}>MARKET SUMMARY</Text>
+          <Text style={[s.sectionLabel, { marginBottom: 2 }]}>Summary</Text>
           <View style={s.summaryList}>
             {brief.bullets.map((b, i) => (
               <View key={i} style={s.summaryRow}>
@@ -337,7 +337,7 @@ function EarlySignalsCard({
     <View style={es.card}>
       <View style={es.labelRow}>
         <View style={[es.labelAccent, { backgroundColor: colors.accent.violet }]} />
-        <Text style={es.label}>POTENTIAL EARLY SIGNALS</Text>
+        <Text style={es.label}>Early signals</Text>
       </View>
       <View style={es.grid}>
         {cells.map((c, i) =>
@@ -404,7 +404,7 @@ function UpcomingEventsCard({
 
   return (
     <View style={s.eventsCard}>
-      <Text style={s.sectionLabel}>UPCOMING EVENTS</Text>
+      <Text style={s.sectionLabel}>Upcoming events</Text>
 
       <View style={s.earningsEconomicRow}>
         {/* Earnings */}
@@ -415,7 +415,7 @@ function UpcomingEventsCard({
         >
           <View style={s.eventsSectionHeader}>
             <View style={[s.sectionAccentBar, { backgroundColor: colors.status.amber }]} />
-            <Text style={s.eventsSectionLabel}>EARNINGS</Text>
+            <Text style={s.eventsSectionLabel}>Earnings</Text>
             <Ionicons name="chevron-forward" size={11} color={colors.text.muted} />
           </View>
           {earningsHint
@@ -430,7 +430,7 @@ function UpcomingEventsCard({
         <View style={s.economicCol}>
           <View style={s.eventsSectionHeader}>
             <View style={[s.sectionAccentBar, { backgroundColor: colors.accent.violet }]} />
-            <Text style={s.eventsSectionLabel}>NOTABLE</Text>
+            <Text style={s.eventsSectionLabel}>Notable</Text>
           </View>
           {notableHint
             ? <Text style={s.emptyHint}>{notableHint}</Text>
@@ -633,21 +633,19 @@ const s = StyleSheet.create({
   divider: { height: 0.5, backgroundColor: colors.border.subtle },
 
   sectionLabel: {
-    fontSize: 11, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
-    color: colors.text.muted, letterSpacing: 1, textTransform: 'uppercase',
+    fontSize: 11, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold,
+    color: colors.text.muted, letterSpacing: 0.2,
   },
 
   // ── Market Snapshot ─────────────────────────────────────────────────────────
   snapCard: {
     backgroundColor: colors.bg.card, borderRadius: radius.lg,
     borderWidth: 0.5, borderColor: colors.border.default,
+    borderTopColor: colors.accent.violet + '50',
     padding: spacing.lg, gap: spacing.md, overflow: 'hidden',
   },
-  snapAccent: {
-    position: 'absolute', top: 0, left: 0, right: 0, height: 3,
-    backgroundColor: colors.accent.violet, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg,
-  },
-  snapHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
+  snapAccent: { display: 'none' },
+  snapHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   snapUpdated: {
     fontSize: fontSize.xs, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
     color: colors.text.muted,
@@ -672,8 +670,8 @@ const s = StyleSheet.create({
   },
   briefLockedAccent: { color: colors.accent.violet },
   snapHeadline: {
-    fontSize: fontSize.lg, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold,
-    color: colors.text.primary, lineHeight: 26,
+    fontSize: fontSize.xl, fontFamily: fontFamily.bold, fontWeight: fontWeight.bold,
+    color: colors.text.primary, lineHeight: 28, letterSpacing: -0.3,
   },
   snapDesc: {
     fontSize: fontSize.sm, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
@@ -696,8 +694,8 @@ const s = StyleSheet.create({
   indexSection: { gap: spacing.sm },
   indexRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   indexLabel: {
-    fontSize: 11, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
-    color: colors.text.muted, letterSpacing: 0.8,
+    fontSize: 11, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold,
+    color: colors.text.muted, letterSpacing: 0.2,
   },
   indexScoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   indexScore: {
@@ -750,7 +748,7 @@ const s = StyleSheet.create({
   sectionAccentBar: { width: 3, height: 13, borderRadius: radius.full },
   eventsSectionLabel: {
     fontSize: 11, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold,
-    color: colors.text.secondary, letterSpacing: 0.8, textTransform: 'uppercase', flex: 1,
+    color: colors.text.secondary, letterSpacing: 0.2, flex: 1,
   },
 
   notableRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
@@ -799,8 +797,8 @@ const es = StyleSheet.create({
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   labelAccent: { width: 3, height: 13, borderRadius: radius.full },
   label: {
-    fontSize: 11, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
-    color: colors.text.muted, letterSpacing: 1,
+    fontSize: 11, fontFamily: fontFamily.semibold, fontWeight: fontWeight.semibold,
+    color: colors.text.muted, letterSpacing: 0.2,
   },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

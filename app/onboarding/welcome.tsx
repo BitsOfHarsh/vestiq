@@ -7,10 +7,10 @@ import ScalePressable from '../../src/components/ui/ScalePressable';
 
 const { colors, fontSize, fontWeight, fontFamily, radius, spacing } = THEME;
 
-const FEATURES: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string }[] = [
-  { icon: 'trending-up-outline',    text: 'Know exactly when to buy, hold or sell' },
-  { icon: 'notifications-outline',  text: 'Get alerted the moment price hits your level' },
-  { icon: 'newspaper-outline',      text: 'Turn any headline into a trade idea instantly' },
+const FEATURES: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string; sub: string }[] = [
+  { icon: 'trending-up-outline',   text: 'Know when to act',        sub: 'AI signals for buy, hold, and sell decisions' },
+  { icon: 'notifications-outline', text: 'Never miss a level',      sub: 'Alerts the moment price hits your target' },
+  { icon: 'flash-outline',         text: 'Headline to trade idea',  sub: 'One tap turns any news into an actionable plan' },
 ];
 
 const proceed = () => router.push('/onboarding/profile');
@@ -20,39 +20,48 @@ export default function WelcomeScreen() {
     <SafeAreaView style={s.container}>
       <View style={s.content}>
 
-        {/* Logo */}
-        <View style={s.logoRow}>
-          <View style={s.logoCircle}>
-            <Text style={s.logoV}>V</Text>
+        {/* Top — wordmark */}
+        <View style={s.top}>
+          <View style={s.logoRow}>
+            <View style={s.logoPip} />
+            <Text style={s.logoWord}>VESTIQ</Text>
           </View>
-          <Text style={s.logoWord}>VESTIQ</Text>
+
+          <View style={s.heroBlock}>
+            <Text style={s.tagline}>Your edge{'\n'}in the market.</Text>
+            <Text style={s.sub}>Built for investors who want clarity, not confusion.</Text>
+          </View>
         </View>
 
-        {/* Hero copy */}
-        <Text style={s.tagline}>Your AI investing co-pilot</Text>
-        <Text style={s.sub}>Built for investors who want clarity, not confusion</Text>
-
-        {/* Feature rows */}
+        {/* Middle — features */}
         <View style={s.features}>
-          {FEATURES.map(({ icon, text }) => (
+          {FEATURES.map(({ icon, text, sub }) => (
             <View key={text} style={s.featureRow}>
               <View style={s.featureIconWrap}>
-                <Ionicons name={icon} size={18} color={colors.accent.violet} />
+                <Ionicons name={icon} size={20} color={colors.accent.violet} />
               </View>
-              <Text style={s.featureText}>{text}</Text>
+              <View style={s.featureTextBlock}>
+                <Text style={s.featureTitle}>{text}</Text>
+                <Text style={s.featureSub}>{sub}</Text>
+              </View>
             </View>
           ))}
         </View>
 
-        <View style={s.spacer} />
-
-        {/* CTA */}
-        <ScalePressable style={s.primaryBtn} onPress={proceed} scaleTo={0.98}>
-          <Text style={s.primaryBtnText}>Get started →</Text>
-        </ScalePressable>
-        <ScalePressable style={s.skipLink} onPress={proceed} hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}>
-          <Text style={s.skipLinkText}>I'll set up later</Text>
-        </ScalePressable>
+        {/* Bottom — CTA */}
+        <View style={s.bottom}>
+          <ScalePressable style={s.primaryBtn} onPress={proceed} scaleTo={0.97}>
+            <Text style={s.primaryBtnText}>Get started</Text>
+            <Ionicons name="arrow-forward" size={16} color="#fff" />
+          </ScalePressable>
+          <ScalePressable
+            style={s.skipLink}
+            onPress={proceed}
+            hitSlop={{ top: 12, bottom: 12, left: 24, right: 24 }}
+          >
+            <Text style={s.skipLinkText}>I'll set up later</Text>
+          </ScalePressable>
+        </View>
 
       </View>
     </SafeAreaView>
@@ -62,49 +71,96 @@ export default function WelcomeScreen() {
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg.primary },
   content: {
-    flex: 1, paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xxxl + spacing.xl, paddingBottom: spacing.xl,
+    flex: 1,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+    justifyContent: 'space-between',
   },
 
-  // Logo row
-  logoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xxxl },
-  logoCircle: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: colors.accent.violet, alignItems: 'center', justifyContent: 'center',
-  },
-  logoV: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
-  logoWord: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: colors.text.primary, letterSpacing: 3 },
+  // ── Top ──────────────────────────────────────────────────────────────────────
+  top: { gap: spacing.xxxl },
 
-  // Hero
+  logoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  logoPip: {
+    width: 8, height: 8, borderRadius: 2,
+    backgroundColor: colors.accent.violet,
+  },
+  logoWord: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.semibold,
+    fontWeight: fontWeight.semibold,
+    color: colors.text.primary,
+    letterSpacing: 4,
+  },
+
+  heroBlock: { gap: spacing.md },
   tagline: {
-    fontSize: fontSize.xxl, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium,
-    color: colors.text.primary, lineHeight: 34, marginBottom: spacing.sm,
+    fontSize: 38,
+    fontFamily: fontFamily.bold,
+    fontWeight: fontWeight.bold,
+    color: colors.text.primary,
+    lineHeight: 46,
+    letterSpacing: -0.5,
   },
   sub: {
-    fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
-    color: colors.text.secondary, lineHeight: 22, marginBottom: spacing.xxxl,
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.regular,
+    fontWeight: fontWeight.regular,
+    color: colors.text.secondary,
+    lineHeight: 22,
   },
 
-  // Features
-  features: { gap: spacing.lg },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  // ── Features ─────────────────────────────────────────────────────────────────
+  features: { gap: spacing.xl },
+  featureRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   featureIconWrap: {
-    width: 36, height: 36, borderRadius: radius.md,
-    backgroundColor: colors.accent.violetDim, alignItems: 'center', justifyContent: 'center',
+    width: 40, height: 40,
+    borderRadius: radius.md,
+    backgroundColor: colors.bg.card,
+    borderWidth: 0.5,
+    borderColor: colors.border.default,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
-  featureText: {
-    flex: 1, fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular,
-    color: colors.text.primary, lineHeight: 21,
+  featureTextBlock: { flex: 1, gap: 3 },
+  featureTitle: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.semibold,
+    fontWeight: fontWeight.semibold,
+    color: colors.text.primary,
+  },
+  featureSub: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
+    fontWeight: fontWeight.regular,
+    color: colors.text.muted,
+    lineHeight: 18,
   },
 
-  spacer: { flex: 1 },
-
-  // Buttons
+  // ── Bottom ────────────────────────────────────────────────────────────────────
+  bottom: { gap: spacing.sm },
   primaryBtn: {
-    backgroundColor: colors.accent.violet, borderRadius: radius.lg,
-    height: 52, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
+    backgroundColor: colors.accent.violet,
+    borderRadius: radius.md,
+    height: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
-  primaryBtnText: { fontSize: fontSize.lg, fontFamily: fontFamily.medium, fontWeight: fontWeight.medium, color: '#FFFFFF' },
+  primaryBtnText: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.semibold,
+    fontWeight: fontWeight.semibold,
+    color: '#FFFFFF',
+  },
   skipLink: { alignItems: 'center', minHeight: 44, justifyContent: 'center' },
-  skipLinkText: { fontSize: fontSize.md, fontFamily: fontFamily.regular, fontWeight: fontWeight.regular, color: colors.text.muted },
+  skipLinkText: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.regular,
+    fontWeight: fontWeight.regular,
+    color: colors.text.muted,
+  },
 });
